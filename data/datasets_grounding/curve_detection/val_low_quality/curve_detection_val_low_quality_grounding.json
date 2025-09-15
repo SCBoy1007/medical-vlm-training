@@ -1,0 +1,145 @@
+[
+  {
+    "image": "images/sunhl-1th-04-Jan-2017-165 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPlease assess this spine X-ray for any pathological curvatures and mark their regions."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [224, 132, 422, 592]}, {\"bbox_2d\": [219, 496, 438, 910]}, {\"bbox_2d\": [166, 799, 366, 1426]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-204 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nScan this spinal radiograph and highlight any abnormal curve formations with bounding boxes."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [13, 420, 310, 1130]}, {\"bbox_2d\": [161, 994, 464, 1286]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-234 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nEvaluate this anteroposterior spine X-ray for scoliotic patterns and their boundaries."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine appears to be within normal alignment limits without pathological curves."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-250 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat spinal deformities can you detect in this radiographic image? Provide coordinates."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [274, 316, 416, 831]}, {\"bbox_2d\": [270, 750, 438, 1303]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-132 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind all curved segments of the spine in this image and output their bounding boxes."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [190, 46, 333, 376]}, {\"bbox_2d\": [174, 1266, 433, 1756]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-152 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPlease assess this spine X-ray for any pathological curvatures and mark their regions."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [246, 397, 480, 952]}, {\"bbox_2d\": [189, 825, 447, 1349]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-15 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat spinal deformities can you detect in this radiographic image? Provide coordinates."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [255, 281, 517, 978]}, {\"bbox_2d\": [173, 828, 465, 1123]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-45 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nInspect this X-ray for lateral spinal deviations and output their precise locations."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [136, 35, 353, 590]}, {\"bbox_2d\": [125, 474, 345, 992]}, {\"bbox_2d\": [165, 852, 438, 1668]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-72 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nInspect this X-ray for lateral spinal deviations and output their precise locations."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [56, 275, 288, 930]}, {\"bbox_2d\": [129, 774, 456, 1544]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-239 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze this spine X-ray and identify any abnormal curvatures with their locations."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [35, 305, 254, 867]}, {\"bbox_2d\": [129, 762, 401, 1190]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-292 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nEvaluate this anteroposterior spine X-ray for scoliotic patterns and their boundaries."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"bbox_2d\": [221, 164, 403, 609]}, {\"bbox_2d\": [105, 513, 334, 1109]}, {\"bbox_2d\": [154, 1012, 335, 1362]}]}"
+      }
+    ]
+  }
+]

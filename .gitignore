@@ -43,13 +43,10 @@ checkpoints/*/
 # Data and logs
 *.log
 logs/
+# Include all JSON dataset files (public datasets)
+# data/datasets_* are now included
+# Only exclude large image directories
 data/images/
-data/datasets_grounding/*/train*/
-data/datasets_grounding/*/val*/
-data/datasets_text/*/train*/
-data/datasets_text/*/val*/
-data/datasets_text_grounding/*/train*/
-data/datasets_text_grounding/*/val*/
 
 # Video files
 *.mp4

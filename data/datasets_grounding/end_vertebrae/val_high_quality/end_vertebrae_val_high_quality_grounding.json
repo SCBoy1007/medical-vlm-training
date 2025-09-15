@@ -1,0 +1,639 @@
+[
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-314 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [200, 349, 296, 424]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [192, 690, 283, 782]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [192, 690, 283, 782]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [295, 1264, 414, 1332]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-314 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the end vertebrae of each spinal curvature and output their positions in JSON format."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [245, 294, 324, 364]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [302, 710, 403, 792]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [302, 710, 403, 792]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [331, 1084, 447, 1156]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-321 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T3\", \"bbox_2d\": [230, 90, 330, 153]}, \"upper\": {\"name\": \"T8\", \"bbox_2d\": [219, 418, 325, 476]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T8\", \"bbox_2d\": [219, 418, 325, 476]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [233, 634, 356, 708]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [233, 634, 356, 708]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [207, 1105, 348, 1199]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-321 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [271, 59, 369, 114]}, \"upper\": {\"name\": \"T7\", \"bbox_2d\": [291, 374, 389, 437]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [291, 374, 389, 437]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [284, 661, 398, 731]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [284, 661, 398, 731]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [279, 922, 413, 1010]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-03-Jan-2017-164 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [209, 296, 315, 369]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [175, 1471, 369, 1589]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-05-Jan-2017-176 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the upper and lower end vertebrae that define each spinal curve."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine appears to have normal alignment without pathological curves requiring end vertebrae localization."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-177 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the transitional vertebrae that demarcate each curve segment in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T3\", \"bbox_2d\": [259, 185, 358, 259]}, \"upper\": {\"name\": \"T10\", \"bbox_2d\": [263, 732, 397, 840]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [263, 732, 397, 840]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [247, 1128, 381, 1233]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [247, 1128, 381, 1233]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [148, 1473, 284, 1535]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-187 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine appears to have normal alignment without pathological curves requiring end vertebrae localization."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-197 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T8\", \"bbox_2d\": [255, 532, 347, 605]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [254, 1048, 359, 1134]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-206 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [171, 398, 286, 488]}, \"upper\": {\"name\": \"T12\", \"bbox_2d\": [171, 985, 313, 1101]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T12\", \"bbox_2d\": [171, 985, 313, 1101]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [259, 1566, 434, 1664]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-214 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the end vertebrae of each spinal curvature and output their positions in JSON format."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [214, 83, 326, 137]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [262, 353, 342, 414]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [350, 736, 481, 829]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [290, 1105, 414, 1214]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [290, 1105, 414, 1214]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [117, 1376, 278, 1485]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-219 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [228, 222, 305, 273]}, \"upper\": {\"name\": \"T10\", \"bbox_2d\": [168, 708, 293, 812]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [168, 708, 293, 812]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [244, 1321, 384, 1458]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-231 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [306, 68, 399, 118]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [263, 306, 362, 384]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [263, 306, 362, 384]}, \"upper\": {\"name\": \"T12\", \"bbox_2d\": [218, 833, 334, 928]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T12\", \"bbox_2d\": [218, 833, 334, 928]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [202, 1231, 351, 1346]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-231 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [294, 106, 389, 159]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [263, 297, 369, 380]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [263, 297, 369, 380]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [229, 724, 334, 824]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [229, 724, 334, 824]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [258, 1218, 392, 1328]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-239 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [211, 369, 307, 442]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [260, 1027, 386, 1137]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [260, 1027, 386, 1137]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [289, 1372, 432, 1442]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-239 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [173, 367, 277, 454]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [232, 890, 355, 1010]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [232, 890, 355, 1010]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [397, 1308, 535, 1387]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-254 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [213, 100, 336, 157]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [187, 429, 299, 501]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [187, 429, 299, 501]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [197, 951, 320, 1053]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [197, 951, 320, 1053]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [275, 1336, 404, 1417]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 I AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [298, 53, 393, 110]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [291, 281, 383, 358]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [291, 281, 383, 358]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [286, 956, 393, 1042]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [286, 956, 393, 1042]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [279, 1241, 402, 1321]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 K AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [299, 43, 391, 100]}, \"upper\": {\"name\": \"T7\", \"bbox_2d\": [222, 366, 326, 450]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [222, 366, 326, 450]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [259, 813, 366, 914]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [259, 813, 366, 914]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [304, 1190, 435, 1275]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 M AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [304, 132, 401, 190]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [240, 405, 339, 477]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [240, 405, 339, 477]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [281, 1016, 418, 1127]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [281, 1016, 418, 1127]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [289, 1340, 438, 1436]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 N AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [302, 102, 403, 166]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [238, 387, 348, 491]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [238, 387, 348, 491]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [237, 938, 371, 1060]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [237, 938, 371, 1060]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [294, 1382, 449, 1478]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-255 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [287, 409, 368, 474]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [313, 787, 408, 860]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [313, 787, 408, 860]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [283, 1042, 408, 1144]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [283, 1042, 408, 1144]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [193, 1336, 327, 1414]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-256 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the terminal vertebrae for each detected spinal curvature."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary upper_thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [284, 215, 365, 276]}, \"upper\": {\"name\": \"T8\", \"bbox_2d\": [285, 468, 388, 545]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-257 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the upper and lower end vertebrae that define each spinal curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [223, 133, 309, 187]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [193, 390, 278, 459]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [193, 390, 278, 459]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [219, 851, 335, 945]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [219, 851, 335, 945]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [239, 1396, 364, 1488]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-15-Feb-2017-288 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary vertebrae that mark the beginning and end of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [234, 346, 320, 453]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [262, 795, 378, 907]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [262, 795, 378, 907]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [260, 1193, 396, 1304]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-15-Feb-2017-290 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine appears to have normal alignment without pathological curves requiring end vertebrae localization."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal10.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the terminal vertebrae for each detected spinal curvature."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [218, 241, 330, 327]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [249, 756, 392, 881]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [249, 756, 392, 881]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [216, 1360, 385, 1481]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal4.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [252, 402, 372, 509]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [261, 809, 392, 912]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [261, 809, 392, 912]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [209, 1223, 383, 1360]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L3\", \"bbox_2d\": [209, 1223, 383, 1360]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [172, 1472, 358, 1567]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Jul-2016-24 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat are the cranial and caudal limits of each spinal curve? Provide vertebrae locations."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [335, 75, 457, 135]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [224, 337, 358, 455]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [224, 337, 358, 455]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [229, 887, 399, 1023]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [229, 887, 399, 1023]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [239, 1279, 461, 1419]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-136 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the transitional vertebrae that demarcate each curve segment in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [200, 261, 335, 390]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [215, 1149, 420, 1334]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-138 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat are the cranial and caudal limits of each spinal curve? Provide vertebrae locations."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [272, 38, 422, 99]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [235, 334, 369, 440]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [235, 334, 369, 440]}, \"upper\": {\"name\": \"T10\", \"bbox_2d\": [230, 821, 393, 922]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [230, 821, 393, 922]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [155, 1256, 372, 1401]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [155, 1256, 372, 1401]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [111, 1544, 325, 1643]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-140 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [228, 23, 375, 107]}, \"upper\": {\"name\": \"T7\", \"bbox_2d\": [205, 528, 349, 628]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [205, 528, 349, 628]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [242, 892, 416, 1016]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [242, 892, 416, 1016]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [158, 1510, 377, 1677]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-141 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [192, 198, 328, 304]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [251, 862, 433, 1015]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [251, 862, 433, 1015]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [125, 1444, 357, 1638]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-146 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the terminal vertebrae for each detected spinal curvature."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [235, 32, 370, 98]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [140, 415, 295, 541]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [140, 415, 295, 541]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [127, 833, 321, 980]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [127, 833, 321, 980]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [215, 1405, 416, 1529]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-155 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the terminal vertebrae for each detected spinal curvature."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [239, 276, 334, 360]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [216, 866, 367, 982]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [216, 866, 367, 982]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [204, 1303, 370, 1430]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L3\", \"bbox_2d\": [204, 1303, 370, 1430]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [174, 1565, 332, 1654]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-29 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [262, 277, 368, 362]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [270, 806, 423, 917]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [270, 806, 423, 917]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [206, 1227, 391, 1389]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-34 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the terminal vertebrae for each detected spinal curvature."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [265, 98, 393, 176]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [228, 370, 362, 469]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [228, 370, 362, 469]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [208, 763, 355, 862]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [208, 763, 355, 862]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [179, 1392, 369, 1503]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-39 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [229, 40, 354, 95]}, \"upper\": {\"name\": \"T8\", \"bbox_2d\": [330, 525, 471, 641]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T8\", \"bbox_2d\": [330, 525, 471, 641]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [270, 1040, 449, 1198]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [270, 1040, 449, 1198]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [92, 1331, 310, 1467]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-42 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the transitional vertebrae that demarcate each curve segment in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [177, 245, 282, 344]}, \"upper\": {\"name\": \"T10\", \"bbox_2d\": [263, 777, 414, 892]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [263, 777, 414, 892]}, \"upper\": {\"name\": \"L2\", \"bbox_2d\": [225, 1221, 405, 1361]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L2\", \"bbox_2d\": [225, 1221, 405, 1361]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [126, 1581, 312, 1712]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-57 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [132, 289, 256, 401]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [149, 781, 310, 923]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [149, 781, 310, 923]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [229, 1359, 412, 1487]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-70 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the transitional vertebrae that demarcate each curve segment in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T4\", \"bbox_2d\": [271, 239, 387, 317]}, \"upper\": {\"name\": \"T7\", \"bbox_2d\": [233, 478, 367, 576]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [233, 478, 367, 576]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [241, 833, 414, 948]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [241, 833, 414, 948]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [183, 1398, 386, 1555]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-88 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [199, 665, 338, 780]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [119, 1344, 293, 1518]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-91 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the end vertebrae of each spinal curvature and output their positions in JSON format."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T10\", \"bbox_2d\": [117, 745, 276, 823]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [122, 1239, 310, 1323]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-241 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the transitional vertebrae that demarcate each curve segment in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [275, 116, 359, 179]}, \"upper\": {\"name\": \"T5\", \"bbox_2d\": [273, 318, 360, 381]}}, {\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [262, 462, 347, 508]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [199, 757, 309, 838]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [199, 757, 309, 838]}, \"upper\": {\"name\": \"L3\", \"bbox_2d\": [244, 1110, 377, 1230]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L3\", \"bbox_2d\": [244, 1110, 377, 1230]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [293, 1338, 438, 1417]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-291 I AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T5\", \"bbox_2d\": [240, 416, 316, 482]}, \"upper\": {\"name\": \"T9\", \"bbox_2d\": [265, 732, 369, 826]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T9\", \"bbox_2d\": [265, 732, 369, 826]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [110, 1409, 292, 1545]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-295 H AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the marginal vertebrae defining the extent of each scoliotic curve pattern."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T2\", \"bbox_2d\": [269, 75, 351, 125]}, \"upper\": {\"name\": \"T7\", \"bbox_2d\": [249, 368, 346, 436]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T7\", \"bbox_2d\": [249, 368, 346, 436]}, \"upper\": {\"name\": \"T12\", \"bbox_2d\": [253, 726, 352, 803]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"T12\", \"bbox_2d\": [253, 726, 352, 803]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [233, 1087, 350, 1176]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the superior and inferior vertebrae that bound each pathological curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [239, 389, 335, 459]}, \"upper\": {\"name\": \"T12\", \"bbox_2d\": [218, 828, 319, 914]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the junction vertebrae that separate normal from curved spinal segments."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary upper_thoracic\", \"lower\": {\"name\": \"T1\", \"bbox_2d\": [290, 96, 382, 147]}, \"upper\": {\"name\": \"T6\", \"bbox_2d\": [255, 381, 347, 453]}}, {\"curve_type\": \"primary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [255, 381, 347, 453]}, \"upper\": {\"name\": \"L1\", \"bbox_2d\": [274, 891, 384, 993]}}, {\"curve_type\": \"secondary lumbar\", \"lower\": {\"name\": \"L1\", \"bbox_2d\": [274, 891, 384, 993]}, \"upper\": {\"name\": \"L5\", \"bbox_2d\": [355, 1281, 466, 1341]}}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-310 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine the proximal and distal vertebrae for each curve region in this radiograph."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"end_vertebrae\": [{\"curve_type\": \"secondary thoracic\", \"lower\": {\"name\": \"T6\", \"bbox_2d\": [195, 345, 282, 412]}, \"upper\": {\"name\": \"T11\", \"bbox_2d\": [223, 728, 345, 824]}}, {\"curve_type\": \"primary lumbar\", \"lower\": {\"name\": \"T11\", \"bbox_2d\": [223, 728, 345, 824]}, \"upper\": {\"name\": \"L4\", \"bbox_2d\": [219, 1173, 369, 1289]}}]}"
+      }
+    ]
+  }
+]
