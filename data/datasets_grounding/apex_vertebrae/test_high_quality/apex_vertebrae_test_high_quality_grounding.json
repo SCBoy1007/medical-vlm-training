@@ -1,0 +1,652 @@
+[
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-311 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [159, 606, 274, 677]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [361, 1070, 503, 1166]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat vertebrae are positioned at the convex peak of each spinal curve?"
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [181, 658, 299, 727]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [294, 1053, 424, 1146]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine which vertebrae mark the highest point of convexity in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [154, 603, 254, 673]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [290, 1070, 437, 1180]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [169, 616, 274, 671]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [289, 963, 409, 1054]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-313 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the central vertebrae that represent the apex of each spinal deformity."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [347, 254, 428, 313]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [275, 515, 361, 575]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [325, 1025, 439, 1109]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-05-Jan-2017-172 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae representing the greatest angular displacement in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T7\", \"bbox_2d\": [97, 442, 225, 516]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [268, 898, 414, 990]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-05-Jan-2017-174 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine shows normal alignment without pathological curves requiring apex vertebrae identification."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-177 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [162, 606, 273, 694]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [320, 1078, 468, 1176]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-180 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the vertebrae at the curvature maximum for each pathological spinal segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [261, 1438, 415, 1553]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-08-Feb-2017-284 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine which vertebrae mark the highest point of convexity in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [193, 551, 289, 626]}, {\"curve\": \"thoracic\", \"vertebra\": \"T12\", \"bbox_2d\": [301, 889, 411, 969]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [150, 1267, 287, 1366]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-196 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the vertebrae at the curvature maximum for each pathological spinal segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [187, 1253, 327, 1331]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-197 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [236, 1073, 339, 1165]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-209 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [245, 772, 364, 854]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [181, 1168, 320, 1261]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-215 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T7\", \"bbox_2d\": [198, 395, 311, 462]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [145, 864, 265, 948]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [174, 1160, 323, 1234]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-216 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine which vertebrae mark the highest point of convexity in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine shows normal alignment without pathological curves requiring apex vertebrae identification."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-216 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [253, 587, 367, 663]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-218 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the apical vertebrae representing the peak of each spinal curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [448, 573, 563, 649]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [143, 897, 289, 1008]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Feb-2017-284 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the central vertebrae that represent the apex of each spinal deformity."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [162, 572, 271, 639]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [323, 979, 443, 1069]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-227 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [275, 593, 376, 660]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-237 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine which vertebrae mark the highest point of convexity in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [219, 576, 312, 643]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-237 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the central vertebrae that represent the apex of each spinal deformity."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [226, 590, 310, 656]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [274, 1023, 381, 1097]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-253 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae representing the greatest angular displacement in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [309, 227, 389, 283]}, {\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [216, 664, 311, 736]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [320, 1152, 435, 1234]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-254 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat vertebrae are positioned at the convex peak of each spinal curve?"
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [212, 613, 317, 674]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [334, 1032, 468, 1116]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-269 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T5\", \"bbox_2d\": [306, 299, 401, 375]}, {\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [224, 652, 325, 722]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [250, 914, 355, 980]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-269 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat vertebrae are positioned at the convex peak of each spinal curve?"
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [151, 598, 252, 669]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [276, 1131, 404, 1221]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-15-Feb-2017-287 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDetermine which vertebrae mark the highest point of convexity in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [146, 566, 262, 636]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [314, 845, 436, 946]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-16 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [251, 197, 367, 274]}, {\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [156, 665, 278, 738]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [242, 1137, 406, 1236]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal16.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T12\", \"bbox_2d\": [267, 848, 422, 927]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal9.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [279, 161, 375, 224]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [210, 560, 321, 646]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [337, 998, 489, 1090]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-131 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the vertebrae at the curvature maximum for each pathological spinal segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T2\", \"bbox_2d\": [199, 129, 337, 202]}, {\"curve\": \"thoracic\", \"vertebra\": \"T11\", \"bbox_2d\": [212, 1013, 403, 1140]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [263, 1395, 462, 1513]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [105, 1459, 320, 1631]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-131 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T11\", \"bbox_2d\": [247, 980, 419, 1101]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [237, 1317, 485, 1455]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-134 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [64, 808, 222, 919]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [217, 1365, 423, 1485]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-142 A AP (2).jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat vertebrae are positioned at the convex peak of each spinal curve?"
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [105, 595, 234, 688]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [216, 1232, 416, 1358]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-148 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae representing the greatest angular displacement in each curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [241, 603, 378, 686]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [295, 1100, 458, 1210]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-32 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the vertebrae at the curvature maximum for each pathological spinal segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [199, 635, 322, 723]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [237, 1019, 391, 1115]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-37 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [288, 168, 399, 248]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [218, 554, 347, 641]}, {\"curve\": \"thoracic\", \"vertebra\": \"T12\", \"bbox_2d\": [326, 901, 488, 995]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [173, 1326, 369, 1461]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-38 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the apical vertebrae representing the peak of each spinal curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [164, 554, 285, 635]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [284, 1107, 453, 1194]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jan-2017-280 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [295, 227, 385, 284]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [210, 559, 300, 631]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [301, 959, 412, 1043]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-46 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the apical vertebrae representing the peak of each spinal curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [217, 170, 320, 260]}, {\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [79, 662, 205, 747]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [240, 1269, 409, 1405]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-46 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of spinal curvatures in this image and output their locations in JSON format."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [229, 165, 330, 255]}, {\"curve\": \"thoracic\", \"vertebra\": \"T9\", \"bbox_2d\": [62, 631, 174, 717]}, {\"curve\": \"lumbar\", \"vertebra\": \"L3\", \"bbox_2d\": [243, 1195, 415, 1332]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-53 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T5\", \"bbox_2d\": [197, 287, 317, 376]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-55 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T3\", \"bbox_2d\": [201, 184, 319, 271]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [117, 560, 223, 636]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [198, 1180, 361, 1298]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-70 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [179, 764, 339, 866]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [242, 1218, 418, 1320]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-71 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of spinal curvatures in this image and output their locations in JSON format."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [283, 231, 406, 321]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [181, 577, 328, 664]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [318, 1053, 504, 1165]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-291 H AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [401, 987, 518, 1091]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-295 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the central vertebrae that represent the apex of each spinal deformity."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [285, 296, 377, 349]}, {\"curve\": \"thoracic\", \"vertebra\": \"T8\", \"bbox_2d\": [241, 552, 321, 602]}, {\"curve\": \"lumbar\", \"vertebra\": \"L1\", \"bbox_2d\": [310, 916, 407, 984]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [259, 1194, 377, 1275]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 J AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the vertebrae at the maximum point of curvature for each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"upper_thoracic\", \"vertebra\": \"T4\", \"bbox_2d\": [297, 222, 384, 290]}, {\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [204, 624, 288, 702]}, {\"curve\": \"lumbar\", \"vertebra\": \"L2\", \"bbox_2d\": [324, 961, 435, 1055]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-307 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nWhat vertebrae are positioned at the convex peak of each spinal curve?"
+      },
+      {
+        "from": "gpt",
+        "value": "No significant spinal curvatures detected. The spine shows normal alignment without pathological curves requiring apex vertebrae identification."
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-308 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the most displaced vertebrae at the summit of each scoliotic curve."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T7\", \"bbox_2d\": [292, 519, 380, 592]}, {\"curve\": \"thoracic\", \"vertebra\": \"T12\", \"bbox_2d\": [425, 883, 553, 952]}, {\"curve\": \"lumbar\", \"vertebra\": \"L4\", \"bbox_2d\": [209, 1143, 329, 1233]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-30-Dec-2016-159 A AP2.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nPinpoint the vertebrae showing maximum lateral deviation in each curve segment."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"apex_vertebrae\": [{\"curve\": \"thoracic\", \"vertebra\": \"T10\", \"bbox_2d\": [283, 795, 442, 849]}]}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Models and large files
+*.bin
+*.safetensors
+models/*/
+checkpoints/*/
+
+# Data and logs
+*.log
+logs/
+data/images/
+data/datasets_grounding/*/train*/
+data/datasets_grounding/*/val*/
+data/datasets_text/*/train*/
+data/datasets_text/*/val*/
+data/datasets_text_grounding/*/train*/
+data/datasets_text_grounding/*/val*/
+
+# Video files
+*.mp4
+*.avi
+*.mov
+demo/videos/
+
+# Generated outputs
+batch_test_results/
+vis/
+json/
+*.png
+*.jpg
+*.jpeg
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp

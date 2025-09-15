@@ -1,0 +1,652 @@
+[
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [169, 437, 352, 892],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary dextroconvex thoracic scoliosis with apex near mid-thoracic vertebrae. Moderate magnitude with visible vertebral rotation and rib asymmetry; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [231, 806, 420, 1282],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory levoconvex lumbar curve centered in the mid-to-lower lumbar region. Mild-to-moderate in size with less rotation than the thoracic curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-05-Jan-2017-172 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [97, 287, 307, 747],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Primary thoracic scoliosis with apex directed to the right. Moderate magnitude with visible vertebral rotation and rib asymmetry; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [178, 641, 414, 1369],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory lumbar curve with apex to the left. Mild-to-moderate in size, less rotational change than the thoracic segment.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-177 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [161, 337, 348, 883],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic dextrocurvature with visible vertebral rotation and rib asymmetry. Appears moderate in magnitude, consistent with structural scoliosis.\"\n    },\n    {\n      \"bbox_2d\": [219, 775, 468, 1491],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory lumbar levocurvature balancing the thoracic curve. Likely mild-to-moderate with some vertebral wedging; overall double-curve pattern.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [181, 513, 385, 958],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic curve with rightward convexity and visible vertebral rotation. Magnitude appears moderate based on lateral deviation of the thoracic vertebrae; clinical correlation with Cobb angle recommended.\"\n    },\n    {\n      \"id\": 2,\n      \"bbox_2d\": [247, 860, 424, 1392],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory lumbar curve with leftward convexity below the thoracic apex. Likely mild-to-moderate in size; maintains coronal balance but suggests a typical double-curve scoliosis pattern.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-08-Feb-2017-284 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"id\": 1, \"location\": \"thoracic\", \"direction\": \"right-convex\", \"assessment\": \"Primary thoracic dextrocurvature with visible rib asymmetry and vertebral rotation. Appears moderate in magnitude; likely structural and clinically significant.\", \"bbox_2d\": [186, 328, 395, 871]}, {\"id\": 2, \"location\": \"thoracolumbar\", \"direction\": \"left-convex\", \"assessment\": \"Compensatory thoracolumbar levocurvature transitioning below the thoracic apex. Mild-to-moderate; helps balance the primary thoracic curve.\", \"bbox_2d\": [238, 769, 411, 1175]}, {\"id\": 3, \"location\": \"lumbar\", \"direction\": \"right-convex\", \"assessment\": \"Distal lumbar dextrocurvature with mild wedging/rotation of lower lumbar bodies. Mild; contributes to overall coronal balance but less severe than the proximal curves.\", \"bbox_2d\": [136, 1065, 373, 1451]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-06-Jan-2017-180 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [214, 1096, 415, 1680],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Moderate lumbar scoliosis with apex in the mid-to-lower lumbar region, showing distinct rightward deviation and mild vertebral rotation. Likely structural; assess Cobb angle and pelvic parameters for severity grading and progression risk.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-311 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [159, 341, 415, 1002],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic dextrocurvature with prominent rib asymmetry and apical vertebral rotation. Appears moderate in magnitude; likely structural and clinically significant.\"\n    },\n    {\n      \"bbox_2d\": [286, 893, 540, 1344],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory lumbar levocurvature balancing the thoracic curve. Mild-to-moderate, with less rotation than the thoracic segment.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-05-Jan-2017-174 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"location\": \"thoracic\",\n      \"direction\": \"none\",\n      \"assessment\": \"No measurable thoracic scoliosis. Alignment is within normal limits without pathological curvature.\"\n    },\n    {\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No thoracolumbar curve detected. The transition zone shows normal coronal alignment.\"\n    },\n    {\n      \"location\": \"lumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No lumbar scoliosis identified. Coronal balance is maintained with no significant lateral deviation.\"\n    }\n  ],\n  \"overall\": \"No significant spinal curvatures detected; coronal alignment appears normal.\"\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-312 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [154, 396, 355, 889],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic scoliosis with marked rightward convexity and vertebral rotation. Appears moderate-to-severe, likely exceeding bracing thresholds; assess Cobb angle and Risser stage for management.\"\n    },\n    {\n      \"bbox_2d\": [221, 783, 437, 1383],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory thoracolumbar curve with leftward convexity below the apex of the thoracic curve. Mild-to-moderate in magnitude without obvious structural rigidity; monitor for balance and progression.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-01-Mar-2017-313 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [291, 69, 428, 449],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary right thoracic scoliosis with apex in mid–upper thoracic region. Moderate magnitude with visible vertebral rotation; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [275, 378, 409, 825],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory left thoracolumbar curve bridging the lower thoracic to upper lumbar levels. Mild-to-moderate, helps balance the right thoracic primary curve.\"\n    },\n    {\n      \"bbox_2d\": [255, 743, 439, 1314],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Right lumbar curve with apex in mid-lumbar spine. Mild; less rotation than the thoracic curve and likely compensatory.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-291 H AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [299, 705, 518, 1378],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary right-convex thoracolumbar scoliosis with the apex near the thoracolumbar junction and visible vertebral rotation. Radiographically appears moderate in magnitude; correlation with Cobb angle measurement and clinical symptoms is recommended.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-30-Dec-2016-159 A AP2.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [254, 677, 442, 953],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild lumbar scoliosis with gentle rightward deviation centered in the lower lumbar spine. No obvious vertebral rotation or structural deformity; likely nonstructural or low-grade structural curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-38 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [160, 239, 396, 897],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Primary thoracic scoliosis with apex deviating to the right. Moderate magnitude with vertebral rotation and rib asymmetry consistent with a structural curve.\"\n    },\n    {\n      \"bbox_2d\": [214, 782, 453, 1442],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory lumbar curve bending to the left. Mild-to-moderate magnitude without marked wedging, balancing the thoracic deformity.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-227 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [275, 450, 384, 826],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"A single thoracolumbar curve apexing to the right is evident. The magnitude appears mild-to-moderate with preserved vertebral body heights; consider Cobb angle measurement and clinical correlation for symptoms.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-237 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [219, 255, 353, 1009],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Single gentle C-shaped curve spanning lower thoracic into upper lumbar spine with mild lateral deviation. No obvious vertebral wedging or rotation suggesting a mild scoliosis; clinical correlation and Cobb angle measurement recommended.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-237 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"id\": 1, \"location\": \"thoracic\", \"direction\": \"right-convex\", \"assessment\": \"Mild rightward thoracic scoliosis centered in the mid-to-lower thoracic spine. Curve appears gentle without obvious vertebral rotation or structural deformity; likely low-grade (mild) curvature.\", \"bbox_2d\": [226, 369, 340, 830]}, {\"id\": 2, \"location\": \"lumbar\", \"direction\": \"left-convex\", \"assessment\": \"Compensatory leftward lumbar curve extending into the lower lumbar segments. Magnitude appears mild and balanced, with no clear signs of advanced degeneration or wedging.\", \"bbox_2d\": [213, 748, 381, 1420]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-307 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"location\": \"thoracic\",\n      \"direction\": \"none\",\n      \"assessment\": \"No thoracic scoliosis identified. Alignment is within normal limits with no measurable coronal curvature.\"\n    },\n    {\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No thoracolumbar curve detected. Vertebral bodies appear aligned without lateral deviation.\"\n    },\n    {\n      \"location\": \"lumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No lumbar scoliosis present. Coronal balance is normal and there is no evidence of pathological curvature.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-15-Feb-2017-287 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [142, 336, 353, 803],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic scoliosis with prominent rightward apex and rib cage asymmetry. Appears moderate to severe, likely requiring clinical correlation with Cobb angle and pulmonary/postural assessment.\"\n    },\n    {\n      \"bbox_2d\": [230, 692, 470, 1353],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory thoracolumbar curve bending left, smaller than the thoracic primary. Mild to moderate magnitude; helps balance overall alignment but should be monitored for progression.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-197 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [229, 966, 353, 1286],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild thoracolumbar scoliosis centered around the T12–L1 region with subtle vertebral tilt toward the right. No obvious wedge deformity or significant rotation; likely low-grade (mild) curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-216 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [238, 441, 367, 943],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Mild thoracolumbar scoliosis with the apex deviating to the right. No marked vertebral wedging or rotation; likely a low-grade curve without overt structural degeneration on this view.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-196 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [187, 965, 364, 1527],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild thoracolumbar scoliotic curvature centered near the T12–L1 region with gentle rightward deviation. No obvious vertebral wedging or significant rotational deformity; likely low-grade (mild) curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal16.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [215, 441, 422, 1228],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Single gentle rightward curve spanning the lower thoracic into upper lumbar segments. Appears mild without significant vertebral rotation; likely nonstructural or early scoliosis—clinical correlation and Cobb angle measurement recommended.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-37 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [253, 37, 400, 395],\n      \"location\": \"upper thoracic\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Mild compensatory curve in the upper thoracic region. Likely non-structural and balances the larger distal curves.\"\n    },\n    {\n      \"bbox_2d\": [214, 299, 437, 814],\n      \"location\": \"mid–lower thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic scoliosis with moderate magnitude and visible vertebral rotation. This is the dominant structural curve.\"\n    },\n    {\n      \"bbox_2d\": [270, 692, 488, 1239],\n      \"location\": \"thoracolumbar junction\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Transitional curve at T12–L1 region, mild to moderate in size. Likely compensatory to the thoracic primary curve.\"\n    },\n    {\n      \"bbox_2d\": [142, 1097, 452, 1586],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Lower lumbar curve of mild magnitude with minimal rotation. Functions as a distal compensatory curve to maintain overall balance.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-209 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [197, 587, 365, 1045],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Moderate thoracic scoliosis with the apex deviating to the right. Vertebral alignment suggests a structural curve with mild rib asymmetry; clinical correlation and Cobb angle measurement recommended.\"\n    },\n    {\n      \"bbox_2d\": [181, 962, 413, 1495],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory lumbar curve with leftward convexity. Appears mild-to-moderate; no gross coronal decompensation, but measure Cobb angle and assess for rotation for management planning.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-295 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"id\": 1, \"location\": \"upper thoracic\", \"direction\": \"left-convex\", \"assessment\": \"Mild left-convex curvature centered in the upper thoracic spine. Vertebral alignment is preserved without obvious wedging; likely a compensatory segment.\", \"bbox_2d\": [261, 132, 377, 481]}, {\"id\": 2, \"location\": \"mid–lower thoracic\", \"direction\": \"right-convex\", \"assessment\": \"Primary right-convex thoracic curve with visible apical vertebral rotation. Appears moderate in magnitude and structurally significant.\", \"bbox_2d\": [241, 418, 371, 819]}, {\"id\": 3, \"location\": \"thoracolumbar junction\", \"direction\": \"left-convex\", \"assessment\": \"Left-convex thoracolumbar curve bridging T12–L2 region. Likely compensatory to the thoracic deformity; rotation is mild to moderate.\", \"bbox_2d\": [277, 741, 410, 1191]}, {\"id\": 4, \"location\": \"lumbar\", \"direction\": \"right-convex\", \"assessment\": \"Right-convex lumbar curve of mild to moderate size with limited rotation. Likely compensatory; no gross degenerative changes evident.\", \"bbox_2d\": [249, 1096, 402, 1386]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-70 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [177, 593, 395, 1084],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild thoracic dextrocurvature with gentle apex in the mid–lower thoracic region. Vertebral alignment is preserved without significant rotation or wedging; likely low-grade scoliosis.\"\n    },\n    {\n      \"bbox_2d\": [177, 960, 418, 1604],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Moderate lumbar levocurvature with apex in the mid-lumbar spine. Greater magnitude than the thoracic curve, with mild vertebral tilt; consistent with compensatory lumbar scoliosis.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-53 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [197, 89, 358, 754],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild rightward curvature centered near the thoracolumbar junction with preserved vertebral alignment and no obvious rotational deformity. Appearance suggests a low-grade scoliosis; clinical correlation and Cobb angle measurement recommended.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-308 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [273, 307, 497, 807],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic curve with apex at mid–lower thoracic levels, convex to the right. Appears moderate in magnitude with visible vertebral rotation and rib asymmetry.\"\n    },\n    {\n      \"id\": 2,\n      \"bbox_2d\": [336, 702, 553, 1107],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory thoracolumbar curve centered near the T12–L1 junction, convex to the left. Mild-to-moderate, helping balance the thoracic deformity.\"\n    },\n    {\n      \"id\": 3,\n      \"bbox_2d\": [190, 998, 465, 1317],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Distal lumbar curve with right convexity involving lower lumbar segments. Mild, likely compensatory; no gross coronal decompensation noted.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jan-2017-280 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"id\": 1, \"location\": \"thoracic\", \"direction\": \"right-convex\", \"assessment\": \"Primary thoracic scoliosis with apex directed to the right and visible vertebral rotation. Appears moderate in magnitude; likely the structural curve.\", \"bbox_2d\": [255, 94, 390, 423]}, {\"id\": 2, \"location\": \"thoracolumbar\", \"direction\": \"left-convex\", \"assessment\": \"Transitional thoracolumbar compensatory curve with leftward convexity below the thoracic apex. Mild-to-moderate; partially balances the primary thoracic curve.\", \"bbox_2d\": [210, 344, 352, 869]}, {\"id\": 3, \"location\": \"lumbar\", \"direction\": \"right-convex\", \"assessment\": \"Distal lumbar counter-curve with rightward convexity. Mild; likely compensatory with less rotation than the thoracic segment.\", \"bbox_2d\": [248, 778, 417, 1282]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-254 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [211, 276, 389, 945],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary dextroconvex thoracic curve with apex in the mid–lower thoracic spine. Moderate magnitude with mild vertebral rotation; consistent with structural thoracic scoliosis.\"\n    },\n    {\n      \"bbox_2d\": [267, 842, 488, 1318],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory levoconvex lumbar curve centered in the upper–mid lumbar spine. Mild to moderate in size, balancing the thoracic deformity without obvious degenerative collapse.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-134 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [55, 428, 393, 1374],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic scoliosis with apex directed to the right and clear vertebral rotation. Appears moderate in magnitude; likely requires clinical correlation and Cobb angle measurement for bracing vs. monitoring.\"\n    },\n    {\n      \"bbox_2d\": [184, 1230, 437, 1749],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory lumbar curve with left convexity balancing the thoracic deformity. Mild-to-moderate; less pronounced than the thoracic curve with preserved disc heights.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-148 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [241, 414, 432, 986],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Moderate right-convex thoracic scoliosis centered in the mid–lower thoracic spine. Vertebral alignment shows smooth curvature without gross wedging; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [184, 872, 458, 1586],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory left-convex lumbar curve extending into the thoracolumbar junction. Magnitude appears mild-to-moderate with maintained disc heights and no obvious rotational deformity noted on this AP view.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-215 E AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [182, 265, 311, 607],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic curve with apex deviating to the right. Magnitude appears mild-to-moderate with maintained vertebral body heights and no obvious structural deformity.\"\n    },\n    {\n      \"bbox_2d\": [142, 775, 275, 1049],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Transitional compensatory curve centered around T12–L1 bending to the left. Likely mild; serves to balance the right thoracic primary curve.\"\n    },\n    {\n      \"bbox_2d\": [142, 958, 327, 1321],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Distal lumbar compensatory curve with rightward convexity. Appears mild with preserved disc spaces; overall coronal balance near midline.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-16 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [210, 130, 367, 463],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic scoliosis with apex directed to the right. Moderate magnitude with visible vertebral rotation; consider Cobb measurement and Risser assessment for management.\"\n    },\n    {\n      \"bbox_2d\": [154, 354, 363, 1030],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory thoracolumbar curve bending to the left. Likely mild-to-moderate; maintains overall coronal balance with less rotation than the thoracic curve.\"\n    },\n    {\n      \"bbox_2d\": [196, 914, 433, 1474],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Distal lumbar rightward curve, mild. Acts as a counter-curve to maintain alignment; minimal vertebral wedging noted.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-22-Nov-2016-142 A AP (2).jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [105, 336, 306, 1001],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Moderate rightward thoracic scoliosis with visible vertebral rotation and rib asymmetry. Curve appears structural; monitor progression and correlate with Cobb angle and clinical symptoms.\"\n    },\n    {\n      \"bbox_2d\": [152, 870, 430, 1720],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory leftward lumbar curve of mild-to-moderate magnitude with less rotation than the thoracic curve. Likely balances the primary thoracic deformity; evaluate with Cobb measurement and assess for flexibility.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-71 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [243, 33, 430, 411],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Mild to moderate rightward thoracic scoliosis with gentle apical deviation and rib asymmetry. No gross vertebral wedging; likely compensatory to lower curves.\"\n    },\n    {\n      \"bbox_2d\": [179, 301, 385, 856],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Primary left-convex thoracolumbar curve of moderate severity with visible apical rotation. This appears to be the dominant structural curve driving overall coronal imbalance.\"\n    },\n    {\n      \"bbox_2d\": [216, 733, 504, 1524],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Right-convex lumbar compensatory curve, mild to moderate, with mild vertebral rotation. Pelvic leveling appears relatively preserved without marked truncal shift.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 J AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [247, 106, 393, 412],\n      \"location\": \"thoracic (upper–mid thoracic)\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Primary right thoracic curve with visible vertebral rotation and rib asymmetry. Appears moderate in magnitude; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [204, 344, 397, 977],\n      \"location\": \"thoracolumbar (lower thoracic to upper lumbar)\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory left thoracolumbar curve bridging the transition zone. Moderate severity with mild wedging/rotation; maintains overall balance.\"\n    },\n    {\n      \"bbox_2d\": [286, 874, 482, 1242],\n      \"location\": \"lumbar (mid–lower lumbar)\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Distal right lumbar counter-curve, smaller than proximal curves. Mild, likely compensatory, without obvious coronal decompensation.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-269 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\"curves\": [{\"id\": 1, \"location\": \"thoracic\", \"direction\": \"right-convex\", \"assessment\": \"Primary thoracic scoliosis with apex in the mid-to-lower thoracic region, showing moderate coronal deviation and mild vertebral rotation. Likely structural; consider Cobb angle measurement to quantify severity and monitor progression.\", \"bbox_2d\": [147, 362, 347, 1031]}, {\"id\": 2, \"location\": \"thoracolumbar\", \"direction\": \"left-convex\", \"assessment\": \"Compensatory thoracolumbar curve with apex near the thoracolumbar junction, milder than the thoracic curve. Appears flexible on visual assessment; quantify with Cobb angle and assess sagittal balance.\", \"bbox_2d\": [225, 939, 423, 1316]}]}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-55 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [155, 24, 325, 415],\n      \"location\": \"thoracic (upper–mid thoracic)\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary right thoracic scoliotic curve with rib asymmetry. Appears moderate in magnitude with vertebral rotation; likely the structural curve.\"\n    },\n    {\n      \"bbox_2d\": [113, 317, 286, 937],\n      \"location\": \"thoracolumbar junction\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory left thoracolumbar curve centered near T12–L1. Mild to moderate; helps balance the right thoracic primary curve.\"\n    },\n    {\n      \"bbox_2d\": [143, 821, 372, 1568],\n      \"location\": \"lumbar (mid–lower lumbar)\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Secondary right lumbar curve extending toward L4–L5. Mild; maintains coronal balance with limited vertebral rotation.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Feb-2017-284 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [162, 420, 371, 896],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Primary thoracic scoliotic curve with apex deviated to the right. Appears moderate in magnitude with associated mild vertebral rotation; likely structural.\"\n    },\n    {\n      \"bbox_2d\": [249, 789, 446, 1281],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory lumbar curve bending to the left. Mild-to-moderate in size with visible tilt of lower lumbar vertebrae; less pronounced than the thoracic curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-253 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [274, 42, 389, 437],\n      \"location\": \"upper thoracic\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Small proximal compensatory curve at the upper thoracic level. Mild magnitude without obvious vertebral wedging; likely secondary to the main thoracolumbar deformity.\"\n    },\n    {\n      \"bbox_2d\": [216, 354, 395, 1033],\n      \"location\": \"main thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary right thoracic curve with moderate severity. Vertebral rotation and rib asymmetry are evident, suggesting a structural curve requiring clinical correlation and Cobb angle measurement.\"\n    },\n    {\n      \"bbox_2d\": [270, 922, 442, 1470],\n      \"location\": \"thoracolumbar/lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory left thoracolumbar to lumbar curve of mild-to-moderate degree. Maintains overall coronal balance inferiorly; assess flexibility on bending films.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-218 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [294, 305, 567, 876],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"clinical_assessment\": \"Primary thoracic scoliotic curve with apex directed to the right. Appears moderate in magnitude with associated vertebral rotation and rib asymmetry.\"\n    },\n    {\n      \"bbox_2d\": [86, 747, 422, 1191],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"clinical_assessment\": \"Compensatory lumbar curve with apex to the left. Mild-to-moderate in size; less pronounced than the thoracic curve but shows some vertebral rotation.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-12-Jan-2017-269 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [259, 178, 425, 510],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary mid–upper thoracic curve bowing to the right with visible vertebral rotation. Appears moderate in magnitude and structural.\"\n    },\n    {\n      \"bbox_2d\": [224, 438, 357, 892],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory thoracolumbar curve sweeping to the left, smaller than the thoracic curve. Likely flexible with mild to moderate severity.\"\n    },\n    {\n      \"bbox_2d\": [229, 818, 364, 1181],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Distal lumbar curve curving right, mild and likely compensatory. Minimal vertebral rotation; limited structural change.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal9.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [240, 35, 381, 382],\n      \"location\": \"thoracic (upper–mid thoracic)\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary right-sided thoracic scoliosis with vertebral rotation and rib asymmetry. Appears moderate in magnitude; clinical correlation with Cobb angle recommended.\"\n    },\n    {\n      \"bbox_2d\": [207, 296, 422, 914],\n      \"location\": \"thoracolumbar junction\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory left thoracolumbar curve bridging T12–L2 region. Moderate deformity with evident apical rotation; consider structural features.\"\n    },\n    {\n      \"bbox_2d\": [264, 800, 495, 1423],\n      \"location\": \"lumbar (mid–lower lumbar)\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Right lumbar compensatory curve with mild-to-moderate magnitude. Alignment suggests three-curve pattern; evaluate for coronal balance and flexibility.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-131 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [240, 759, 455, 1231],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild to moderate dextrocurvature centered in the mid–lower thoracic spine with gentle apical translation. Vertebral alignment otherwise maintained; no marked wedging or rotation suggesting severe deformity.\"\n    },\n    {\n      \"id\": 2,\n      \"bbox_2d\": [119, 1085, 488, 1564],\n      \"location\": \"thoracolumbar to lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory levocurvature through the thoracolumbar/lumbar region with more pronounced lateral translation than the thoracic curve, consistent with a moderate curve. Disc spaces appear relatively preserved; no acute osseous abnormality seen.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-24-Jul-2016-32 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [199, 548, 350, 909],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Moderate dextroconvex thoracic scoliosis centered in the mid–lower thoracic spine. Vertebral alignment shows mild rotation; no acute osseous abnormality apparent.\"\n    },\n    {\n      \"id\": 2,\n      \"bbox_2d\": [206, 820, 394, 1354],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory mild-to-moderate levoconvex lumbar curve extending into the thoracolumbar junction. Less pronounced than the thoracic curve with minimal vertebral rotation.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-131 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nDescribe the lateral deviations visible in this X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"id\": 1,\n      \"bbox_2d\": [199, 36, 346, 293],\n      \"location\": \"upper thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Mild rightward deviation of the upper thoracic spine. Likely compensatory; no marked vertebral rotation or structural deformity seen.\"\n    },\n    {\n      \"id\": 2,\n      \"bbox_2d\": [212, 790, 470, 1392],\n      \"location\": \"mid–lower thoracic\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Moderate leftward thoracic curve with visible apical shift. Suggests structural scoliosis; correlate with Cobb angle and clinical symptoms.\"\n    },\n    {\n      \"id\": 3,\n      \"bbox_2d\": [156, 1252, 470, 1564],\n      \"location\": \"thoracolumbar junction\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Rightward thoracolumbar transition curve, mild-to-moderate magnitude. Likely a compensatory curve balancing the thoracic deviation.\"\n    },\n    {\n      \"id\": 4,\n      \"bbox_2d\": [41, 1403, 364, 1746],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Right-convex lumbar curve with lateral translation of lower lumbar vertebrae. Appears moderate; assess for coronal imbalance and measure Cobb angle.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-46 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [191, 98, 320, 347],\n      \"location\": \"upper thoracic\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Short compensatory curve at the upper thoracic level with mild magnitude. Likely balances the main thoracic deformity; no clear structural changes.\"\n    },\n    {\n      \"bbox_2d\": [79, 242, 339, 1177],\n      \"location\": \"main thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Long, structural right thoracic scoliosis with vertebral rotation and rib asymmetry, consistent with a moderate to severe primary curve. This appears to be the dominant deformity driving overall coronal imbalance.\"\n    },\n    {\n      \"bbox_2d\": [169, 1026, 436, 1613],\n      \"location\": \"lumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Counterbalancing left lumbar curve of moderate magnitude with visible apical rotation. Likely compensatory to the main thoracic curve; evaluate for flexibility and pelvic balance.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-46 D AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nAnalyze the spinal curvatures in this image."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"bbox_2d\": [115, 32, 330, 482],\n      \"location\": \"thoracic\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Primary thoracic dextroscoliosis with prominent rib asymmetry and vertebral rotation. Appears moderate in magnitude and structurally established.\"\n    },\n    {\n      \"bbox_2d\": [62, 370, 337, 1121],\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"left-convex\",\n      \"assessment\": \"Compensatory levoscoliosis spanning the thoracolumbar junction. Likely moderate, balancing the thoracic curve with visible apical rotation.\"\n    },\n    {\n      \"bbox_2d\": [165, 970, 440, 1538],\n      \"location\": \"lumbar\",\n      \"direction\": \"right-convex\",\n      \"assessment\": \"Distal compensatory dextroscoliosis in the lumbar region. Mild-to-moderate, maintaining global coronal balance without evident collapse.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-216 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify and describe the scoliotic curves in this spine X-ray."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"location\": \"thoracic\",\n      \"direction\": \"none\",\n      \"assessment\": \"No significant lateral curvature identified. Alignment is within normal limits with no radiographic evidence of scoliosis.\"\n    },\n    {\n      \"location\": \"thoracolumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No measurable coronal deformity across the thoracolumbar junction. Vertebral alignment appears physiologic without pathologic curve.\"\n    },\n    {\n      \"location\": \"lumbar\",\n      \"direction\": \"none\",\n      \"assessment\": \"No lateral deviation consistent with scoliosis. Coronal balance is normal and there are no features of structural curvature.\"\n    }\n  ],\n  \"overall_impression\": \"No clinically significant coronal spinal curvature detected on this radiograph.\"\n}"
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "total_json_files": 609,
+  "task_statistics": {
+    "curve_detection": {
+      "samples": 609,
+      "success_rate": 100.0
+    },
+    "end_vertebrae": {
+      "samples": 609,
+      "success_rate": 100.0
+    },
+    "apex_vertebrae": {
+      "samples": 609,
+      "success_rate": 100.0
+    }
+  },
+  "prompt_variants_per_task": {
+    "curve_detection": 12,
+    "end_vertebrae": 10,
+    "apex_vertebrae": 10
+  }
+}

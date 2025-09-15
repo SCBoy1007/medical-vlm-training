@@ -1,0 +1,172 @@
+[
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-44 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the end vertebrae defining each curve's boundaries."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"primary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"T10\",\n        \"explanation\": \"T10 is the most cephalad vertebra whose endplate demonstrates maximal tilt toward the curve apex and where segmental wedging begins, marking the transition from the relatively neutral thoracic levels above.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L4\",\n        \"explanation\": \"L4 is the most caudal vertebra with maximal endplate tilt opposite to T10 and persistent rotation; levels below begin to realign toward the midline, indicating the distal limit of the structural curve.\"\n      },\n      \"significance\": \"Defining T10--L4 as the end vertebrae sets the boundaries for Cobb angle measurement and guides selection of fusion/instrumentation levels; it also identifies the span of structural deformity most likely to drive symptoms and progression.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-77 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T4\",\n        \"explanation\": \"T4 is the most cephalad vertebra whose endplate tilts into the thoracic curve; above it, endplates are relatively level.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the most caudal thoracic vertebra maintaining consistent tilt before the transition to the lumbar curve, marking the inflection toward the next curve.\"\n      },\n      \"significance\": \"Defines the thoracic curve span for Cobb measurement (T4--T11), guiding assessment of thoracic deformity and determining whether bracing or surgical planning must address the upper thoracic apex and thoracolumbar junction.\"\n    },\n    {\n      \"curve\": \"primary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 serves as the transitional upper end where the tilt reverses from the thoracic curve into the lumbar sweep.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L4\",\n        \"explanation\": \"L4 is the most inferior vertebra with maximal tilt before the lumbosacral segment begins to re-level.\"\n      },\n      \"significance\": \"Identifies the structural lumbar curve (T11--L4) for Cobb angle calculation and selection of fusion or bracing levels, with implications for coronal balance and preservation of lumbosacral motion.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-200 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"region\": \"Cervicothoracic\",\n      \"upper_end_vertebra\": \"C7\",\n      \"lower_end_vertebra\": \"T1\",\n      \"boundary_rationale\": \"Vertebral endplates are parallel with no tilt change across the junction, indicating no apex or segmental angulation to define a structural curve.\",\n      \"clinical_significance\": \"No measurable coronal curve; routine follow‑up only if symptoms or clinical asymmetry develop.\"\n    },\n    {\n      \"region\": \"Thoracic\",\n      \"upper_end_vertebra\": \"T1\",\n      \"lower_end_vertebra\": \"T12\",\n      \"boundary_rationale\": \"Pedicles and endplates remain symmetrically aligned from T1 to T12 without wedging; no end vertebrae demonstrating maximal tilt.\",\n      \"clinical_significance\": \"Physiologic alignment with no scoliotic deformity; Cobb angle expected <10° and not clinically significant.\"\n    },\n    {\n      \"region\": \"Thoracolumbar\",\n      \"upper_end_vertebra\": \"T12\",\n      \"lower_end_vertebra\": \"L1\",\n      \"boundary_rationale\": \"Transition segment shows neutral coronal alignment on both sides of the disc space, lacking directional change to mark a curve endpoint.\",\n      \"clinical_significance\": \"No structural thoracolumbar curve; observation only.\"\n    },\n    {\n      \"region\": \"Lumbar\",\n      \"upper_end_vertebra\": \"L1\",\n      \"lower_end_vertebra\": \"L5\",\n      \"boundary_rationale\": \"Lumbar vertebral bodies display parallel endplates and centered spinous processes without lateral deviation or tilt maxima.\",\n      \"clinical_significance\": \"No lumbar scoliosis; Cobb angle not indicated, and no curve-driven management is"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-140 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the end vertebrae defining each curve's boundaries."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"curve_type\": \"curve_1\",\n      \"upper_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"lower_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"boundary_rationale\": \"End vertebrae boundaries\"\n    },\n    {\n      \"curve_type\": \"curve_2\",\n      \"upper_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"lower_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"boundary_rationale\": \"End vertebrae boundaries\"\n    },\n    {\n      \"curve_type\": \"curve_3\",\n      \"upper_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"lower_end_vertebra\": {\n        \"vertebra\": \"T1\"\n      },\n      \"boundary_rationale\": \"End vertebrae boundaries\"\n    }\n  ]\n}"
+      }
+    ],
+    "text": "{}"
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-41 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary points of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T4\",\n        \"explanation\": \"T4 is the most tilted vertebra at the apex transition superiorly, bracketing the proximal compensatory curve above the main thoracic deviation.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T1\",\n        \"explanation\": \"T1 is the most tilted caudal to the cervical-thoracic junction where the endplate angulation reverses, defining the inferior boundary of the compensatory segment.\"\n      },\n      \"significance\": \"Defines the proximal compensatory segment; monitoring its size guides brace design and fusion extent to avoid proximal junctional problems.\"\n    },\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T12\",\n        \"explanation\": \"T12 is the most tilted vertebra below the thoracic apex, with disc wedging reversing beyond this level, capturing the inferior extent of maximal coronal deformity.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T7\",\n        \"explanation\": \"T7 is the most tilted vertebra above the thoracic apex, capturing the superior extent of maximal coronal deformity for Cobb measurement.\"\n      },\n      \"significance\": \"Represents the structural main thoracic curve; its magnitude drives treatment decisions (observation, bracing, or surgery) and is the key determinant of fusion levels if operative care is needed.\"\n    },\n    {\n      \"curve\": \"secondary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L5\",\n        \"explanation\": \"Upper end vertebra for the lumbar compensatory curve based on being the most tilted caudally within the lumbar segment in relation to the thoracic curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T12\",\n        \"explanation\": \"Lower end vertebra for the lumbar compensatory curve aligning with the thoracolumbar junction and the point where disc wedging reverses relative to the lumbar compensation.\"\n      },\n      \"significance\": \"Defines the distal compensatory segment balancing the main thoracic curve; its extent informs brace tuning and distal fusion boundary to maintain coronal and sagittal balance.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 H AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T5\",\n        \"explanation\": \"T5 is the most tilted vertebra at the apex transition of the upper thoracic concavity.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T1\",\n        \"explanation\": \"T1 is the most cephalad vertebra whose endplate is maximally tilted in the opposite direction; between T1 and T5 the vertebral endplates progressively change tilt defining this minor compensatory arc.\"\n      },\n      \"significance\": \"Short compensatory curve balancing the main thoracic deformity; typically not fused unless structurally rigid or large, but it influences shoulder balance and selection of upper instrumented vertebra.\"\n    },\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T5\",\n        \"explanation\": \"T5 is the upper end vertebra with maximal cephalad tilt into the main curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L1\",\n        \"explanation\": \"L1 is the caudal vertebra with maximal opposite tilt before the lumbar compensation begins; these levels bracket the segment with the greatest coronal deviation and rotation.\"\n      },\n      \"significance\": \"Primary structural curve driving trunk imbalance and rib prominence; defines main Cobb angle and typical fusion span from a selected upper thoracic level down to near the thoracolumbar junction.\"\n    },\n    {\n      \"curve\": \"secondary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L1\",\n        \"explanation\": \"L1 marks the transition from the thoracic primary curve to the caudal compensation.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L5\",\n        \"explanation\": \"L5 is the most caudal vertebra with notable counter-tilt before the pelvis; the tilt reversal across L1—\"\n      },\n      \"significance\": \"Secondary compensatory curve that balances the primary thoracic deformity; typically spared from fusion unless structurally involved or large.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-232 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T5\",\n        \"explanation\": \"T5 is the most cranial vertebra whose endplate is maximally tilted toward the concavity and begins the thoracic deviation.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L2\",\n        \"explanation\": \"L2 is the caudal vertebra with the greatest opposing tilt before the lumbar compensation begins, marking the end of the thoracic curve.\"\n      },\n      \"significance\": \"Defines the span for Cobb angle measurement of the main thoracic deformity and guides decisions on selective versus nonselective fusion and brace coverage.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L2\",\n        \"explanation\": \"L2 serves as the transition point from the primary thoracic curve and is the first lumbar vertebra with maximal tilt into the compensatory arc.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L5\",\n        \"explanation\": \"L5 is the most caudal vertebra showing clear tilt before the pelvis/sacrum align vertically, indicating the distal limit of the lumbar compensation.\"\n      },\n      \"significance\": \"Establishes the compensatory lumbar curve extent for Cobb measurement, balance assessment, and determining distal fusion level or need for selective thoracic fusion.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal2.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T5\",\n        \"explanation\": \"T5 is the most tilted vertebra at the proximal thoracic segment with endplate inclination directing into the curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the caudal vertebra with maximal opposing tilt before transition to the primary thoracic segment.\"\n      },\n      \"significance\": \"Defines the proximal compensatory curve used for Cobb angle and flexibility assessment; guides brace pad placement and indicates proximal balance demands above the main thoracic curve.\"\n    },\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 shows the greatest cephalad tilt toward the apical region of the main curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L2\",\n        \"explanation\": \"L2 is the most caudal vertebra with maximal tilt in the opposite direction before the lumbar compensatory reversal.\"\n      },\n      \"significance\": \"Represents the structural main thoracic curve used to determine Cobb magnitude and surgical fusion levels; extent into the thoracolumbar junction impacts de-rotation strategy and risk of junctional problems.\"\n    },\n    {\n      \"curve\": \"secondary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L2\",\n        \"explanation\": \"L2 marks the proximal limit of the lumbar compensatory curve as the transition from the primary thoracic curve, showing maximal proximal tilt into the lumbar segment.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L5\",\n        \"explanation\": \"L5 is identified as the most caudal vertebra with opposing tilt before the pelvis, demarcating the distal end of the lumbar compensatory curve.\"\n      },\n      \"significance\": \"Defines the distal compensatory lumbar curve relevant for overall coronal balance, brace pad positioning, and decisions regarding selective thoracic fusion versus extending into the lumbar spine.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-20 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T7\",\n        \"explanation\": \"T7 is the most cephalad vertebra whose endplate is maximally tilted toward the convexity of the upper thoracic deviation; T2 is the most cranial vertebra below the cervicothoracic junction showing the opposite maximal tilt. Together they bracket the visible upper compensatory bend.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T2\",\n        \"explanation\": \"T7 is the most cephalad vertebra whose endplate is maximally tilted toward the convexity of the upper thoracic deviation; T2 is the most cranial vertebra below the cervicothoracic junction showing the opposite maximal tilt. Together they bracket the visible upper compensatory bend.\"\n      },\n      \"significance\": \"Defines the small proximal counter-curve above the main thoracic deformity; useful for measuring proximal Cobb angle and assessing the need to include the upper thoracic levels if fusion is contemplated.\"\n    },\n    {\n      \"curve\": \"secondary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the most caudal thoracic level with maximal tilt before the alignment changes toward the lumbar curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T7\",\n        \"explanation\": \"T7 marks the transition from the proximal counter-curve to the main thoracic deviation, showing maximal tilt into the main curve.\"\n      },\n      \"significance\": \"Represents the structural main thoracic component; determines thoracic Cobb angle and influences selection of thoracic instrumentation levels and assessment of rib hump/respiratory impact.\"\n    },\n    {\n      \"curve\": \"primary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L4\",\n        \"explanation\": \"L4 is the most caudal lumbar level with maximal tilt before the lumbosacral junction begins to neutralize\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the first vertebra below the thoracic apex with maximal opposing tilt, indicating the start of the lumbar curve.\"\n      },\n      \"significance\": \"Defines the primary lumbar structural deformity; critical for lumbar Cobb measurement, coronal balance assessment, and determining lower instrumented vertebra selection to optimize sagittal/coronal alignment.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-03-Jan-2017-165 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T7\",\n        \"explanation\": \"T7 is the most tilted vertebra cephalad where the apical deviation transitions to the primary thoracic curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T2\",\n        \"explanation\": \"T2 is the most tilted cranial vertebra above the upper thoracic sweep before the spine realigns toward midline.\"\n      },\n      \"significance\": \"Defines the compensatory upper thoracic curve limits, useful for measuring Cobb angle and planning selective thoracic fusion to preserve proximal balance.\"\n    },\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the most caudal vertebra with maximal tilt toward the convexity before the lumbar alignment improves.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T7\",\n        \"explanation\": \"T7 marks the proximal end where vertebral tilt reverses from the compensatory curve above.\"\n      },\n      \"significance\": \"Establishes the main structural thoracic curve extent for Cobb measurement and surgical level selection, as this segment drives overall coronal deformity and rib hump.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-30-Dec-2016-158 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae that mark the curve limits."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"primary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T5\",\n        \"explanation\": \"T5 is the most tilted vertebra at the superior end of the upper thoracic arc, bracketing the maximal coronal angulation of the upper thoracic curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T1\",\n        \"explanation\": \"T1 is the most tilted vertebra inferiorly where the tilt reverses toward the adjacent segment, completing the boundaries of the upper thoracic curve.\"\n      },\n      \"significance\": \"Defines the limits for Cobb angle measurement and guides selection of fusion/instrumentation levels to control proximal thoracic alignment and shoulder balance.\"\n    },\n    {\n      \"curve\": \"secondary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T11\",\n        \"explanation\": \"T11 is the most cephalad vertebra with maximal endplate tilt at the distal thoracic curve, encompassing the segment with peak coronal deviation.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T9\",\n        \"explanation\": \"T9 is the caudal vertebra where the tilt changes toward the proximal segment, defining the distal boundary of the compensatory curve.\"\n      },\n      \"significance\": \"Accurate identification determines the Cobb extent of the distal thoracic compensatory curve, informing need for extension of fusion and assessing balance below the primary curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-82 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the end vertebrae defining each curve's boundaries."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"secondary upper_thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T1\",\n        \"explanation\": \"T1 is the first vertebra showing tilt into the proximal compensatory curve, marking the transition from cervical–upper thoracic alignment into the primary thoracic deformity.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"T9\",\n        \"explanation\": \"T9 is the last cephalad thoracic level whose endplate remains angulated before the main thoracic curve takes over.\"\n      },\n      \"significance\": \"Defines the proximal compensatory curve needed to balance the head over the main thoracic curve; important for deciding whether proximal fusion levels must extend above T2–T3 to control shoulder balance.\"\n    },\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T9\",\n        \"explanation\": \"T9 is the uppermost vertebra maximally tilted toward the convexity of the main curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L3\",\n        \"explanation\": \"L3 is the lowest vertebra with persistent endplate tilt and pedicle asymmetry before lumbar compensation begins.\"\n      },\n      \"significance\": \"Primary structural curve driving trunk imbalance and rib\"\n    },\n    {\n      \"curve\": \"secondary lumbar\",\n      \"upper_end\": {\n        \"vertebra\": \"L3\",\n        \"explanation\": \"L3 represents the upper transition where lumbar compensation begins relative to the primary thoracic curve.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L5\",\n        \"explanation\": \"L5 marks the distal extent of the compensatory lumbar curve as the lowest vertebra involved in the lumbar adjustment.\"\n      },\n      \"significance\": \"Defines the distal compensatory curve that balances the primary thoracic deformity and influences selection of distal fusion levels.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the boundary points of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"end_vertebrae\": [\n    {\n      \"curve\": \"primary thoracic\",\n      \"upper_end\": {\n        \"vertebra\": \"T6\",\n        \"explanation\": \"T6 shows the first clearly tilted endplate toward the apex with maximal divergence from the adjacent level above, marking the start of consistent coronal angulation.\"\n      },\n      \"lower_end\": {\n        \"vertebra\": \"L2\",\n        \"explanation\": \"L2 is the most caudal vertebra whose endplate remains maximally tilted into the curve before the alignment transitions toward neutral below.\"\n      },\n      \"significance\": \"The curve spans T6--L2, crossing the thoracolumbar junction; this extent influences Cobb angle measurement, potential structural behavior, and selection of fusion/brace levels, as distal involvement to L2 increases risk of lumbar compensation.\"\n    }\n  ]\n}"
+      }
+    ]
+  }
+]

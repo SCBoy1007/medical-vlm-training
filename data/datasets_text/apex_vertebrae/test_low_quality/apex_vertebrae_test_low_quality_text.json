@@ -1,0 +1,171 @@
+[
+  {
+    "image": "images/sunhl-1th-09-Jan-2017-200 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"curves\": [\n    {\n      \"apex_vertebra\": \"None identified\",\n      \"significance\": \"No lateral deviation of the vertebral column is present; therefore, there is no vertebra serving as a maximum deviation point.\",\n      \"clinical_assessment\": \"Normal spinal alignment without scoliotic curves; no measurable Cobb angle at any level.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-03-Jan-2017-165 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T5\",\n      \"significance\": \"T5 is the point of maximal lateral deviation in the upper thoracic segment, indicating the crest of the proximal curve.\",\n      \"severity\": \"Mild-to-moderate proximal thoracic scoliotic prominence at T5; vertebral bodies show rib asymmetry consistent with a right-convex curve.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T9\",\n      \"significance\": \"T9 represents the greatest offset from the midline within the main thoracic curve, marking the true apex.\",\n      \"severity\": \"Moderate main thoracic scoliosis centered at T9 with evident vertebral rotation and rib cage asymmetry, suggesting a structural right-convex curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-11-Jan-2017-254 H AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nLocate the vertebrae with maximum lateral deviation."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T3\",\n      \"significance\": \"T3 represents the point of greatest lateral deviation in the proximal thoracic curve, where the vertebral body is most displaced from the midline.\",\n      \"severity\": \"Mild proximal thoracic prominence with limited wedging and rotation; likely a compensatory curve.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T10\",\n      \"significance\": \"T10 is the maximal deviation point of the main thoracic curve, indicating the center of the structural scoliosis.\",\n      \"severity\": \"Moderate to severe thoracic scoliosis at the apex with evident vertebral rotation and rib asymmetry; likely the primary structural curve.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L3\",\n      \"significance\": \"L3 marks the greatest lateral offset in the lumbar curve, defining the compensatory lumbar component.\",\n      \"severity\": \"Mild to moderate lumbar curve with some vertebral rotation; less structural than the thoracic curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-10-Jan-2017-232 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the peak points of spinal curvatures."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T11\",\n      \"significance\": \"T11 lies at the point of maximal lateral deviation of the thoracic curve, indicating the fulcrum where the ribcage and thoracic spine bend most.\",\n      \"severity\": \"Moderate thoracic scoliosis apex at T11 with apparent vertebral tilt and mild rotational features; likely Cobb angle in the moderate range, warranting clinical correlation and serial monitoring.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L4\",\n      \"significance\": \"L4 represents the peak of the compensatory lumbar curve, marking the segment most displaced from the midline in the lumbar region.\",\n      \"severity\": \"Mild-to-moderate lumbar scoliosis apex at L4 with vertebral wedging/tilt; monitor for progression and assess coronal balance and symptoms.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-21-Nov-2016-140 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the peak points of spinal curvatures."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T3\",\n      \"significance\": \"Represents the point of maximal lateral deviation for the proximal thoracic curve; local rotation and rib asymmetry would peak here.\",\n      \"severity\": \"Mild residual deformity at the apex with instrumentation spanning the region, suggesting postoperative correction and maintained alignment.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T8\",\n      \"significance\": \"Marks the greatest coronal deviation of the main thoracic curve; vertebral tilt and rotation are maximal at this level.\",\n      \"severity\": \"Moderate preoperative apex location but currently well controlled by segmental pedicle-screw fixation, consistent with a corrected main thoracic curve.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L3\",\n      \"significance\": \"Denotes the point of maximal lateral displacement for the lumbar curve, influencing truncal balance and pelvic obliquity.\",\n      \"severity\": \"Mild-to-moderate residual curvature at the apex with hardware support extending across the segment, indicating postoperative stabilization and acceptable alignment.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-41 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the peak points of spinal curvatures."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T3\",\n      \"significance\": \"T3 marks the point of maximal lateral deviation in the upper thoracic curve, where the vertebral body is most displaced from the midline and defines curve convexity.\",\n      \"severity\": \"Mild upper thoracic curvature at the apex with subtle wedging and rib asymmetry; no gross rotational deformity.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T9\",\n      \"significance\": \"T9 represents the peak of the main thoracic curve and is the reference for measuring the largest Cobb angle across the thoracic segment.\",\n      \"severity\": \"Moderate thoracic scoliosis at the apex with evident vertebral rotation and rib prominence, consistent with a structural curve.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L4\",\n      \"significance\": \"L4 is the point of maximum deviation in the compensatory lumbar curve, balancing the thoracic deformity and influencing coronal alignment.\",\n      \"severity\": \"Mild-to-moderate lumbar curvature at the apex with early rotational change; no marked lateral listhesis.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-77 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T7\",\n      \"significance\": \"T7 marks the point of greatest lateral deviation in the thoracic curve, where the rib cage is most displaced from the midline.\",\n      \"severity\": \"Moderate thoracic curvature at the apex with visible vertebral wedging/rotation; likely mid-thoracic scoliosis requiring Cobb angle confirmation.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L2\",\n      \"significance\": \"L2 is the maximal deviation point of the compensatory lumbar curve, representing the peak of lumbar shift from the sacral midline.\",\n      \"severity\": \"Mild-to-moderate lumbar curvature at the apex with early rotational change; assess Cobb angle and coronal balance to guide management.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-25-Jul-2016-44 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the peak points of spinal curvatures."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L1\",\n      \"significance\": \"L1 is the point of greatest lateral deviation in the lumbar curve, marking the maximal offset from the midline and the center of coronal imbalance for this segment.\",\n      \"severity\": \"Mild coronal deformity at L1 with subtle wedging and lateral translation; likely a mild lumbar scoliosis without gross rotational deformity. Correlate with Cobb angle measurement for precise grading.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-coronal2.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T8\",\n      \"significance\": \"T8 is the point of maximal lateral deviation of the thoracic curve, marking the peak of the scoliotic arc and the reference for curve direction and rotation.\",\n      \"severity\": \"Moderate thoracic deformity with visible vertebral rotation and rib asymmetry; likely a structural curve requiring Cobb angle confirmation for bracing vs. observation.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"L1\",\n      \"significance\": \"L1 serves as an apex for a thoracolumbar transition curve, representing the greatest lateral offset at the junction of thoracic and lumbar segments.\",\n      \"severity\": \"Moderate thoracolumbar prominence with segmental wedging; monitor for progression and consider bracing if Cobb >25--30° and skeletally immature.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L3\",\n      \"significance\": \"L3 marks the maximal deviation of the lumbar curve, guiding selection of end vertebrae and balance assessment.\",\n      \"severity\": \"Mild-to-moderate lumbar curvature with mild vertebral rotation; currently appears compensated, but assess Cobb angle and pelvic balance for management.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-20-Jul-2016-20 C AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nFind the peak points of spinal curvatures."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T4\",\n      \"significance\": \"T4 marks the point of greatest lateral deviation of the upper thoracic curve, where the vertebral body is farthest from the midline.\",\n      \"severity\": \"Mild; subtle wedging and lateral offset without marked rotation or rib prominence.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T9\",\n      \"significance\": \"T9 represents the maximal coronal deviation of the main thoracic curve and the center of the rib hump/rotational component.\",\n      \"severity\": \"Moderate; clear lateral translation with vertebral rotation and asymmetric rib spacing consistent with a structural thoracic curve.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L2\",\n      \"significance\": \"L2 is the peak of the compensatory lumbar curve balancing the thoracic deformity.\",\n      \"severity\": \"Mild-to-moderate; lateral deviation present with limited rotation, suggesting a flexible compensatory curve.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-28-Feb-2017-300 B AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T10\",\n      \"significance\": \"T10 is the point of maximal lateral deviation of the thoracic curve, representing the vertex around which the curve transitions from concavity to convexity.\",\n      \"severity\": \"Moderate thoracic scoliosis at the apex, with visible wedging and rib asymmetry; estimated Cobb angle likely in the 25--40° range--correlate with full-length standing films for exact measurement.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-30-Dec-2016-158 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T3\",\n      \"significance\": \"T3 is the point of maximal lateral deviation of the upper thoracic curve, indicating the peak of the convexity and the vertebra most displaced from the midline.\",\n      \"severity\": \"Mild-to-moderate deformity locally; instrumentation suggests prior corrective fusion with residual but controlled curvature at the apex.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"T10\",\n      \"significance\": \"T10 marks the maximal deviation of the main thoracic curve, serving as the center of the curve’s convexity and rotational stress.\",\n      \"severity\": \"Moderate deformity at the apex; hardware spans the region indicating surgical correction with remaining asymmetry but good coronal control.\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  {
+    "image": "images/sunhl-1th-26-Jul-2016-82 A AP.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\nIdentify the apex vertebrae of scoliotic curves."
+      },
+      {
+        "from": "gpt",
+        "value": "{\n  \"apex_vertebrae\": [\n    {\n      \"curve\": \"upper_thoracic\",\n      \"vertebra\": \"T4\",\n      \"significance\": \"T4 lies at the point of greatest lateral deviation for the proximal thoracic curve, representing the pivot where the rib cage begins to tilt and rotate.\",\n      \"severity\": \"Mild to moderate; visible lateral offset with subtle vertebral rotation, but no marked wedging or structural collapse.\"\n    },\n    {\n      \"curve\": \"thoracic\",\n      \"vertebra\": \"L1\",\n      \"significance\": \"L1 functions as the apex of the main thoracic-to-thoracolumbar curve, showing maximal coronal deviation and transition in tilt between thoracic and lumbar segments.\",\n      \"severity\": \"Moderate; notable coronal displacement with rotational component suggesting structural scoliosis at the thoracolumbar junction.\"\n    },\n    {\n      \"curve\": \"lumbar\",\n      \"vertebra\": \"L4\",\n      \"significance\": \"L4 marks the peak of the compensatory lumbar curve with greatest lateral translation and vertebral rotation relative to the sacrum.\",\n      \"severity\": \"Moderate to severe; pronounced lateral shift and rotation with degenerative changes likely contributing to segmental instability.\"\n    }\n  ]\n}"
+      }
+    ]
+  }
+]
