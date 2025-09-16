@@ -439,6 +439,8 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
             'image': sample_data['image'],
             'gt_count': len(gt_bboxes_training),
             'pred_count': len(pred_bboxes_training),
+            'gt_bboxes': gt_bboxes_training,
+            'pred_bboxes': pred_bboxes_training,
             'iou': iou,
             'response': response[:100] + "..." if len(response) > 100 else response
         }

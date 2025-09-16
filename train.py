@@ -26,8 +26,8 @@ LEARNING_RATE = 2e-7
 BATCH_SIZE = 4
 GRAD_ACCUM_STEPS = 4
 NUM_EPOCHS = 0.5
-MAX_PIXELS = 50176
-MIN_PIXELS = 784
+MAX_PIXELS = 14*14*4*1280  # 1,003,520 pixels (consistent with data generation)
+MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 
 # Hardware configuration
 USE_DEEPSPEED = True
@@ -91,6 +91,8 @@ def main():
         image_token_len=256,
         image_folder="./data/images",
         image_aspect_ratio='anyres_max_9',
+        max_pixels=MAX_PIXELS,
+        min_pixels=MIN_PIXELS,
         dataset_use="curve_detection_high,curve_detection_low,apex_vertebrae_high,apex_vertebrae_low,end_vertebrae_high,end_vertebrae_low",
         data_flatten=True
     )
