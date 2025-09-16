@@ -49,7 +49,7 @@ def smart_resize(height, width, factor=28, min_pixels=56*56, max_pixels=14*14*4*
     return h_bar, w_bar
 
 def get_task_prompt(task_name):
-    """Get appropriate prompt for each task - Experiment 003: Simplified Strategy"""
+    """Get appropriate prompt for each task - Experiment 004: Mixed Strategy Based on Task Success Patterns"""
     prompts = {
         "curve_detection": """Look at this spine X-ray and identify ALL curved sections of the spine (scoliotic curves).
 
@@ -59,21 +59,19 @@ Output in JSON format: {"curves": [{"bbox_2d": [x1, y1, x2, y2]}]}
 
 Make sure to detect every curve you can see - don't combine multiple curves into one box.""",
 
-        "apex_vertebrae": """In this spine X-ray, find the apex vertebrae - these are the most tilted/deviated vertebrae at the peak of each spinal curve.
+        "apex_vertebrae": """Find the apex vertebrae in this spine X-ray - these are the most deviated vertebrae at the peak of each spinal curve.
 
-Look for each curved section and identify its apex vertebra (the most deviated point).
+Typically there are 1-2 apex vertebrae per image. Look for the most tilted vertebrae at curve peaks.
 
 Output in JSON format: {"apex_vertebrae": [{"bbox_2d": [x1, y1, x2, y2]}]}
 
-Find the apex of each curve you can identify.""",
+Focus on the most obvious apex points - avoid over-detection.""",
 
-        "end_vertebrae": """Find the end vertebrae that mark the boundaries of spinal curves in this X-ray.
+        "end_vertebrae": """Identify ALL end vertebrae (the boundary vertebrae of scoliotic curves) in this spine X-ray image. For each curve, identify the upper and lower end vertebrae.
 
-For each curved section, identify the vertebrae at the top and bottom boundaries where the curve begins and ends.
+Output in JSON format: {"end_vertebrae": [{"curve_type": "primary", "lower": {"name": "vertebra_name", "bbox_2d": [x1, y1, x2, y2]}, "upper": {"name": "vertebra_name", "bbox_2d": [x1, y1, x2, y2]}}]}
 
-Output in JSON format: {"end_vertebrae": [{"bbox_2d": [x1, y1, x2, y2]}]}
-
-Focus on finding the boundary vertebrae of each curve."""
+For each curve, provide both upper and lower boundary vertebrae."""
     }
     return prompts[task_name]
 
@@ -87,22 +85,34 @@ def parse_model_response(response_text, task_name):
         try:
             data = json.loads(cleaned_text)
 
-            # Unified parsing logic for all tasks (simplified in Experiment 003)
-            key_mappings = {
-                "curve_detection": ["curves"],
-                "apex_vertebrae": ["apex_vertebrae", "curves"],
-                "end_vertebrae": ["end_vertebrae", "curves"]  # Simplified format
-            }
+            # Different parsing logic for different tasks (restored from Experiment 001)
+            if task_name == "end_vertebrae":
+                # Special handling for end_vertebrae nested structure
+                bboxes = []
+                if "end_vertebrae" in data:
+                    for curve in data["end_vertebrae"]:
+                        # Extract upper and lower end vertebrae bboxes
+                        if "lower" in curve and "bbox_2d" in curve["lower"]:
+                            bboxes.append(curve["lower"]["bbox_2d"])
+                        if "upper" in curve and "bbox_2d" in curve["upper"]:
+                            bboxes.append(curve["upper"]["bbox_2d"])
+                return bboxes
+            else:
+                # Standard parsing for curve_detection and apex_vertebrae
+                key_mappings = {
+                    "curve_detection": ["curves"],
+                    "apex_vertebrae": ["apex_vertebrae", "curves"]
+                }
 
-            for key in key_mappings[task_name]:
-                if key in data:
-                    bboxes = []
-                    for item in data[key]:
-                        if 'bbox_2d' in item:
-                            bboxes.append(item['bbox_2d'])
-                        elif 'bbox' in item:
-                            bboxes.append(item['bbox'])
-                    return bboxes
+                for key in key_mappings[task_name]:
+                    if key in data:
+                        bboxes = []
+                        for item in data[key]:
+                            if 'bbox_2d' in item:
+                                bboxes.append(item['bbox_2d'])
+                            elif 'bbox' in item:
+                                bboxes.append(item['bbox'])
+                        return bboxes
         except json.JSONDecodeError:
             pass
 
@@ -411,22 +421,22 @@ def main():
     total_time = time.time() - start_time
 
     # Generate experiment number and timestamp for file naming
-    experiment_num = "003"  # Experiment 003: Simplified Prompt Strategy
+    experiment_num = "004"  # Experiment 004: Mixed Strategy - Fix End Vertebrae Issue
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Save results with experiment number and timestamp
-    output_file = os.path.join(OUTPUT_DIR, f"experiment_{experiment_num}_{timestamp}_simplified_prompts.json")
+    output_file = os.path.join(OUTPUT_DIR, f"experiment_{experiment_num}_{timestamp}_mixed_strategy.json")
     final_results = {
         'experiment_info': {
             'experiment_number': experiment_num,
             'timestamp': timestamp,
-            'description': 'Simplified Prompt Strategy Based on Previous Experiments',
+            'description': 'Mixed Strategy - Targeted Fixes Based on Task Performance',
             'changes': [
-                'Removed overly complex IMPORTANT warnings and mathematical concepts',
-                'Simplified curve detection with natural language descriptions',
-                'Streamlined apex vertebrae prompt focusing on visual identification',
-                'Simplified end vertebrae to basic boundary detection format',
-                'Eliminated confusing nested JSON structure for end_vertebrae'
+                'Restored experiment 001 end_vertebrae nested JSON format and parsing',
+                'Kept experiment 003 successful curve detection prompt',
+                'Added soft constraints to apex_vertebrae (1-2 typical, avoid over-detection)',
+                'Different complexity levels for different tasks based on success patterns',
+                'Fixed parsing logic to handle nested end_vertebrae structure correctly'
             ]
         },
         'results': all_results,
