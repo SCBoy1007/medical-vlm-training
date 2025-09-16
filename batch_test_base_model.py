@@ -14,6 +14,7 @@ from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 from pathlib import Path
 import re
 import gc
+from datetime import datetime
 
 # Configuration
 MODEL_NAME = "./models/Qwen2.5-VL-7B-Instruct"
@@ -48,13 +49,39 @@ def smart_resize(height, width, factor=28, min_pixels=56*56, max_pixels=14*14*4*
     return h_bar, w_bar
 
 def get_task_prompt(task_name):
-    """Get appropriate prompt for each task"""
+    """Get appropriate prompt for each task - Improved version to reduce under-detection"""
     prompts = {
-        "curve_detection": "Identify ALL scoliotic curves in this spine X-ray image and provide their bounding box coordinates. There may be 1, 2, or more curves. Output in JSON format: {\"curves\": [{\"bbox_2d\": [x1, y1, x2, y2]}]}",
+        "curve_detection": """IMPORTANT: Most scoliosis cases have 2-3 curves. You must detect EVERY curve you see.
 
-        "apex_vertebrae": "Identify ALL apex vertebrae (the most deviated vertebrae) in the scoliotic curves of this spine X-ray image. There may be 1, 2, or more apex vertebrae. Output in JSON format: {\"apex_vertebrae\": [{\"bbox_2d\": [x1, y1, x2, y2]}]}",
+Look at this spine X-ray carefully and identify ALL scoliotic curves (curved sections of the spine).
+Common patterns: 1 main curve, 2 curves (S-shape), or 3 curves.
 
-        "end_vertebrae": "Identify ALL end vertebrae (the boundary vertebrae of scoliotic curves) in this spine X-ray image. For each curve, identify the upper and lower end vertebrae. Output in JSON format: {\"end_vertebrae\": [{\"curve_type\": \"primary/secondary\", \"lower\": {\"name\": \"vertebra_name\", \"bbox_2d\": [x1, y1, x2, y2]}, \"upper\": {\"name\": \"vertebra_name\", \"bbox_2d\": [x1, y1, x2, y2]}}]}"
+For EACH curve you see, provide its bounding box. Do NOT combine multiple curves into one box.
+
+Output in JSON format: {"curves": [{"bbox_2d": [x1, y1, x2, y2]}]}
+
+Remember: If you see 2 curves, output 2 bboxes. If you see 3 curves, output 3 bboxes.""",
+
+        "apex_vertebrae": """IMPORTANT: Each scoliotic curve has exactly one apex vertebra - the most laterally deviated vertebra.
+
+Count the number of curves in this spine X-ray, then identify the apex vertebra for EACH curve.
+If there are 2 curves, you should detect 2 apex vertebrae. If 3 curves, then 3 apex vertebrae.
+
+Output in JSON format: {"apex_vertebrae": [{"bbox_2d": [x1, y1, x2, y2]}]}
+
+Remember: Number of apex vertebrae = Number of curves. Do NOT miss any.""",
+
+        "end_vertebrae": """IMPORTANT: Each scoliotic curve has 2 end vertebrae (upper and lower boundaries).
+
+Identify ALL end vertebrae in this spine X-ray. For EACH curve, locate:
+- The upper end vertebra (top boundary)
+- The lower end vertebra (bottom boundary)
+
+Total end vertebrae = 2 × number of curves (e.g., 2 curves = 4 end vertebrae).
+
+Output format: {"end_vertebrae": [{"curve_type": "primary", "lower": {"bbox_2d": [x1, y1, x2, y2]}, "upper": {"bbox_2d": [x1, y1, x2, y2]}}]}
+
+Remember: Find PAIRS of end vertebrae for each curve."""
     }
     return prompts[task_name]
 
@@ -403,9 +430,24 @@ def main():
 
     total_time = time.time() - start_time
 
-    # Save results
-    output_file = os.path.join(OUTPUT_DIR, "base_model_test_results.json")
+    # Generate experiment number and timestamp for file naming
+    experiment_num = "002"  # Experiment 002: Improved Prompts to Reduce Under-detection
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # Save results with experiment number and timestamp
+    output_file = os.path.join(OUTPUT_DIR, f"experiment_{experiment_num}_{timestamp}_improved_prompts.json")
     final_results = {
+        'experiment_info': {
+            'experiment_number': experiment_num,
+            'timestamp': timestamp,
+            'description': 'Improved Prompts to Reduce Under-detection',
+            'changes': [
+                'Enhanced curve detection prompt with explicit count guidance',
+                'Added apex vertebrae detection with curve-count relationship',
+                'Improved end vertebrae prompt emphasizing pairs and boundaries',
+                'All prompts include IMPORTANT warnings and detailed instructions'
+            ]
+        },
         'results': all_results,
         'config': {
             'device': DEVICE,
