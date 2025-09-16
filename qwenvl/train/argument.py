@@ -47,11 +47,24 @@ class DataArguments:
 class TrainingArguments(transformers.TrainingArguments):
     cache_dir: Optional[str] = field(default=None)
     optim: str = field(default="adamw_torch")
+    remove_unused_columns: bool = field(default=False)
+    freeze_mm_mlp_adapter: bool = field(default=False)
+    mpt_attn_impl: str = field(default="triton")
     model_max_length: int = field(
-        default=512,
+        default=8192,
         metadata={
             "help": "Maximum sequence length. Sequences will be right padded (and possibly truncated)."
         },
     )
-    mm_projector_lr: Optional[float] = None
-    vision_tower_lr: Optional[float] = None
+    double_quant: bool = field(default=True)
+    quant_type: str = field(default="nf4")
+    bits: int = field(default=16)
+    lora_enable: bool = field(default=False)
+    lora_r: int = field(default=64)
+    lora_alpha: int = field(default=16)
+    lora_dropout: float = field(default=0.05)
+    lora_weight_path: str = field(default="")
+    lora_bias: str = field(default="none")
+    mm_projector_lr: Optional[float] = field(default=None)
+    vision_tower_lr: Optional[float] = field(default=None)
+    group_by_modality_length: bool = field(default=True)
