@@ -15,6 +15,9 @@ from pathlib import Path
 import re
 import gc
 from datetime import datetime
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import random
 
 # Configuration
 MODEL_NAME = "./models/Qwen2.5-VL-7B-Instruct"
@@ -185,6 +188,106 @@ def get_gpu_memory_info():
         reserved = torch.cuda.memory_reserved() / 1024**3   # GB
         return f"Allocated: {allocated:.2f}GB, Reserved: {reserved:.2f}GB"
     return "CUDA not available"
+
+def visualize_detection_result(image_path, gt_bboxes, pred_bboxes, task_name, sample_info, output_dir):
+    """可视化检测结果"""
+    try:
+        # 加载原始图像
+        orig_image = Image.open(image_path)
+        orig_width, orig_height = orig_image.size
+
+        # 计算训练时的图像尺寸（用于GT坐标）
+        train_height, train_width = smart_resize(orig_height, orig_width)
+
+        # 计算测试时的图像尺寸（用于预测坐标，考虑1000px限制）
+        max_edge = 1000
+        if max(orig_width, orig_height) > max_edge:
+            if orig_height > orig_width:
+                test_pre_height = max_edge
+                test_pre_width = int(orig_width * max_edge / orig_height)
+            else:
+                test_pre_width = max_edge
+                test_pre_height = int(orig_height * max_edge / orig_width)
+        else:
+            test_pre_width, test_pre_height = orig_width, orig_height
+
+        test_height, test_width = smart_resize(test_pre_height, test_pre_width)
+
+        # 转换GT坐标到原始图像坐标
+        gt_bboxes_original = []
+        if gt_bboxes:
+            scale_w = orig_width / train_width
+            scale_h = orig_height / train_height
+            for bbox in gt_bboxes:
+                x1, y1, x2, y2 = bbox
+                gt_bboxes_original.append([
+                    int(x1 * scale_w), int(y1 * scale_h),
+                    int(x2 * scale_w), int(y2 * scale_h)
+                ])
+
+        # 转换预测坐标到原始图像坐标
+        pred_bboxes_original = []
+        if pred_bboxes:
+            scale_w = orig_width / test_width
+            scale_h = orig_height / test_height
+            for bbox in pred_bboxes:
+                x1, y1, x2, y2 = bbox
+                pred_bboxes_original.append([
+                    int(x1 * scale_w), int(y1 * scale_h),
+                    int(x2 * scale_w), int(y2 * scale_h)
+                ])
+
+        # 创建可视化
+        fig, ax = plt.subplots(1, 1, figsize=(12, 16))
+        ax.imshow(orig_image)
+
+        # 绘制GT框（绿色）
+        for i, bbox in enumerate(gt_bboxes_original):
+            x1, y1, x2, y2 = bbox
+            rect = patches.Rectangle((x1, y1), x2-x1, y2-y1,
+                                   linewidth=3, edgecolor='green', facecolor='none', alpha=0.8)
+            ax.add_patch(rect)
+            ax.text(x1, y1-15, f'GT-{i+1}', color='green', fontsize=12, weight='bold',
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8))
+
+        # 绘制预测框（红色）
+        for i, bbox in enumerate(pred_bboxes_original):
+            x1, y1, x2, y2 = bbox
+            rect = patches.Rectangle((x1, y1), x2-x1, y2-y1,
+                                   linewidth=3, edgecolor='red', facecolor='none', alpha=0.8)
+            ax.add_patch(rect)
+            ax.text(x1, y1-40, f'Pred-{i+1}', color='red', fontsize=12, weight='bold',
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8))
+
+        # 添加标题和信息
+        task_display = {
+            "curve_detection": "Curve Detection",
+            "apex_vertebrae": "Apex Vertebrae Detection",
+            "end_vertebrae": "End Vertebrae Detection"
+        }
+
+        title = f'{task_display.get(task_name, task_name)}\n'
+        title += f'Image: {os.path.basename(image_path)}\n'
+        title += f'IoU: {sample_info.get("iou", 0):.3f} | '
+        title += f'GT: {len(gt_bboxes_original)} | Pred: {len(pred_bboxes_original)}'
+
+        ax.set_title(title, fontsize=14, weight='bold', pad=20)
+        ax.axis('off')
+
+        plt.tight_layout()
+
+        # 保存图像
+        os.makedirs(output_dir, exist_ok=True)
+        save_path = os.path.join(output_dir, f"{task_name}_visualization_{os.path.basename(image_path).replace('.jpg', '.png')}")
+        plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
+        plt.close()
+
+        print(f"Visualization saved: {save_path}")
+        return save_path
+
+    except Exception as e:
+        print(f"Error creating visualization: {e}")
+        return None
 
 def test_single_sample(model, processor, sample_data, image_path, task_name):
     """Test a single sample with enhanced memory management"""
@@ -466,6 +569,65 @@ def main():
 
         all_results[task_name] = task_results
 
+    # Generate visualizations for each task (one sample per task)
+    print(f"\n{'='*40}")
+    print("Generating Visualizations...")
+    print(f"{'='*40}")
+
+    visualization_dir = os.path.join(OUTPUT_DIR, "visualizations")
+    for task_name in TASKS:
+        print(f"\nCreating visualization for {task_name}...")
+
+        # Use high_quality data for visualization if available, otherwise use low_quality
+        quality_to_use = "high_quality" if "high_quality" in all_results[task_name] else "low_quality"
+        task_results = all_results[task_name][quality_to_use]['results']
+
+        if task_results:
+            # Find a sample with both GT and predictions for better visualization
+            best_sample = None
+            for sample in task_results:
+                if (sample.get('gt_bboxes') and
+                    sample.get('pred_bboxes') and
+                    sample.get('iou', 0) > 0):
+                    best_sample = sample
+                    break
+
+            # If no sample with both GT and pred, use the first sample with GT
+            if not best_sample:
+                for sample in task_results:
+                    if sample.get('gt_bboxes'):
+                        best_sample = sample
+                        break
+
+            # If still no sample, use the first one
+            if not best_sample and task_results:
+                best_sample = task_results[0]
+
+            if best_sample:
+                # Build image path
+                image_filename = best_sample['image'].replace('images/', '')
+                image_path = os.path.join(IMAGE_BASE_PATH, quality_to_use, image_filename)
+
+                if os.path.exists(image_path):
+                    try:
+                        gt_bboxes = best_sample.get('gt_bboxes', [])
+                        pred_bboxes = best_sample.get('pred_bboxes', [])
+
+                        visualize_detection_result(
+                            image_path=image_path,
+                            gt_bboxes=gt_bboxes,
+                            pred_bboxes=pred_bboxes,
+                            task_name=task_name,
+                            sample_info=best_sample,
+                            output_dir=visualization_dir
+                        )
+                    except Exception as e:
+                        print(f"Failed to create visualization for {task_name}: {e}")
+                else:
+                    print(f"Image not found for {task_name}: {image_path}")
+            else:
+                print(f"No suitable sample found for {task_name} visualization")
+
     total_time = time.time() - start_time
 
     # Generate experiment number and timestamp for file naming
@@ -491,7 +653,8 @@ def main():
         'config': {
             'device': DEVICE,
             'total_duration': total_time,
-            'model_name': MODEL_NAME
+            'model_name': MODEL_NAME,
+            'visualization_dir': visualization_dir
         }
     }
 
@@ -511,6 +674,7 @@ def main():
             print(f"  {quality}: IOU={metrics.get('avg_iou', 0):.4f}, Detection={metrics.get('detection_rate', 0):.2%}, Time={duration:.1f}s")
 
     print(f"\nResults saved to: {output_file}")
+    print(f"Visualizations saved to: {visualization_dir}")
     print("Testing completed!")
 
 if __name__ == "__main__":
