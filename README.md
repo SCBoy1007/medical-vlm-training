@@ -32,7 +32,7 @@ You could use follow version of packages:
 - `torchvision==0.21.0`
 - `transformers==4.50.0.dev0`
 - `deepspeed==0.16.4`
-- `flash_attn==2.7.4.post1`
+- `flash_attn==2.7.4.post1` (Optional, removed for server compatibility)
 - `triton==3.0.0`
 - `accelerate==1.4.0`
 - `torchcodec==0.2`
@@ -307,5 +307,5 @@ The script accepts arguments in three categories:
    - Training hyperparameters, the suggested learning rate is from 1e-6 to 2e-7
    - Training resolution is critical for the model performances, hence `--max_pixels` and `--min_pixels` should be properly set
    - Training with Qwen2.5-VL-32B model, you should have 8 80G GPU refering to `scripts/sft_32b.sh`
-   - `"_attn_implementation": "flash_attention_2",` could be add in the config.json of the model to use flash attention.
+   - `"_attn_implementation": "flash_attention_2",` could be add in the config.json of the model to use flash attention (currently disabled for compatibility).
 

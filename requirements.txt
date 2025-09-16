@@ -42,6 +42,6 @@ ipython>=8.12.0
 jupyter>=1.0.0
 rich>=13.4.0
 
-# Optional: Efficient Training
-flash-attn>=2.3.0
+# Optional: Efficient Training (flash-attn removed for compatibility)
+# flash-attn>=2.3.0  # Removed: GLIBC compatibility issues on older servers
 xformers>=0.0.22

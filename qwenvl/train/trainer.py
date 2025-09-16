@@ -101,7 +101,8 @@ def _flash_attention_forward(
         flash_kwargs["softcap"] = softcap
 
     if not FLASH_ATTN_AVAILABLE or flash_attn_varlen_func is None:
-        raise ImportError("Flash Attention not available - falling back to standard attention")
+        # Flash Attention not available - using standard attention instead
+        return None
 
     attn_output = flash_attn_varlen_func(
         query_states,
