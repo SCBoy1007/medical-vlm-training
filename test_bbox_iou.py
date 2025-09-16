@@ -307,10 +307,12 @@ def test_single_sample(model, processor, sample_data, image_base_path):
     print(f"Ground truth bboxes (training coords): {gt_bboxes_training}")
 
     # Convert GT bboxes from training coords to original coords for visualization
+    # GT coordinates are based on training smart_resize (orig -> smart_resize)
+    train_height, train_width = smart_resize(orig_height, orig_width)
     gt_bboxes_original = []
     if gt_bboxes_training:
-        scale_w = orig_width / new_width
-        scale_h = orig_height / new_height
+        scale_w = orig_width / train_width
+        scale_h = orig_height / train_height
         for bbox in gt_bboxes_training:
             x1, y1, x2, y2 = bbox
             x1_orig = int(x1 * scale_w)
@@ -318,6 +320,7 @@ def test_single_sample(model, processor, sample_data, image_base_path):
             x2_orig = int(x2 * scale_w)
             y2_orig = int(y2 * scale_h)
             gt_bboxes_original.append([x1_orig, y1_orig, x2_orig, y2_orig])
+        print(f"Training dimensions for GT: {train_width} x {train_height}")
         print(f"Ground truth bboxes (original coords): {gt_bboxes_original}")
 
     if not gt_bboxes_training:
@@ -396,9 +399,10 @@ If you see any curved sections of the spine, you MUST include them in your respo
             'model_response': response
         }
 
-    # Convert predicted bboxes from training coords to original coords for visualization
+    # Convert predicted bboxes from test coords to original coords for visualization
+    # Prediction coordinates are based on test smart_resize (orig -> 1000px -> smart_resize)
     pred_bboxes_original = []
-    scale_w = orig_width / new_width
+    scale_w = orig_width / new_width  # new_width/height are from test smart_resize
     scale_h = orig_height / new_height
     for bbox in pred_bboxes_training:
         x1, y1, x2, y2 = bbox
@@ -407,10 +411,13 @@ If you see any curved sections of the spine, you MUST include them in your respo
         x2_orig = int(x2 * scale_w)
         y2_orig = int(y2 * scale_h)
         pred_bboxes_original.append([x1_orig, y1_orig, x2_orig, y2_orig])
+    print(f"Test dimensions for predictions: {new_width} x {new_height}")
     print(f"Predicted bboxes (original coords): {pred_bboxes_original}")
 
-    # Calculate IOU using training coordinates (both GT and pred are in training coords)
-    iou = calculate_iou(pred_bboxes_training, gt_bboxes_training)
+    # Calculate IOU: Convert both to same coordinate system (use original coordinates)
+    # GT: training space -> original space (already calculated above)
+    # Pred: test space -> original space (already calculated above)
+    iou = calculate_iou(pred_bboxes_original, gt_bboxes_original)
     print(f"IOU: {iou:.4f}")
 
     # Visualize results using original coordinates

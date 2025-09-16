@@ -281,8 +281,56 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
         # Parse predicted bboxes
         pred_bboxes_training = parse_model_response(response, task_name)
 
-        # Calculate IOU
-        iou = calculate_iou(pred_bboxes_training, gt_bboxes_training)
+        # Calculate IOU: Convert both to same coordinate system (original image coordinates)
+        # GT coordinates are based on training smart_resize (orig -> smart_resize)
+        # Pred coordinates are based on test smart_resize (orig -> 1000px -> smart_resize)
+
+        # Get original image dimensions
+        orig_image = Image.open(image_path)
+        orig_width, orig_height = orig_image.size
+
+        # Calculate training dimensions for GT coordinates
+        train_height, train_width = smart_resize(orig_height, orig_width)
+
+        # Calculate test dimensions for prediction coordinates (after 1000px resize)
+        if max(orig_width, orig_height) > max_edge:
+            if orig_height > orig_width:
+                test_pre_height = max_edge
+                test_pre_width = int(orig_width * max_edge / orig_height)
+            else:
+                test_pre_width = max_edge
+                test_pre_height = int(orig_height * max_edge / orig_width)
+        else:
+            test_pre_width, test_pre_height = orig_width, orig_height
+
+        test_height, test_width = smart_resize(test_pre_height, test_pre_width)
+
+        # Convert GT bboxes to original coordinates
+        gt_bboxes_original = []
+        if gt_bboxes_training:
+            scale_w = orig_width / train_width
+            scale_h = orig_height / train_height
+            for bbox in gt_bboxes_training:
+                x1, y1, x2, y2 = bbox
+                gt_bboxes_original.append([
+                    int(x1 * scale_w), int(y1 * scale_h),
+                    int(x2 * scale_w), int(y2 * scale_h)
+                ])
+
+        # Convert predicted bboxes to original coordinates
+        pred_bboxes_original = []
+        if pred_bboxes_training:
+            scale_w = orig_width / test_width
+            scale_h = orig_height / test_height
+            for bbox in pred_bboxes_training:
+                x1, y1, x2, y2 = bbox
+                pred_bboxes_original.append([
+                    int(x1 * scale_w), int(y1 * scale_h),
+                    int(x2 * scale_w), int(y2 * scale_h)
+                ])
+
+        # Calculate IOU using original coordinates
+        iou = calculate_iou(pred_bboxes_original, gt_bboxes_original)
 
         result = {
             'image': sample_data['image'],
