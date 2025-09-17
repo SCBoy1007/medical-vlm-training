@@ -10,6 +10,8 @@ Modify the DATASET_TYPE variable to switch between experiments:
 import os
 import sys
 import torch
+import logging
+from datetime import datetime
 from pathlib import Path
 
 # ====== CONFIGURATION SECTION ======
@@ -34,7 +36,34 @@ USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
 # ===================================
 
+def setup_logging():
+    """Setup comprehensive logging to file and console"""
+    # Create logs directory
+    log_dir = Path("./logs")
+    log_dir.mkdir(exist_ok=True)
+
+    # Create log filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = log_dir / f"training_{DATASET_TYPE}_{timestamp}.log"
+
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file, mode='w'),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.info(f"Logging initialized. Log file: {log_file}")
+    return logger
+
 def main():
+    # Setup logging first
+    logger = setup_logging()
+
     # Set up paths
     project_root = Path(__file__).parent
     sys.path.append(str(project_root))
@@ -51,9 +80,25 @@ def main():
         Trainer
     )
 
-    print(f"Starting training with dataset: {DATASET_TYPE}")
-    print(f"Model: {MODEL_NAME}")
-    print(f"Output directory: {OUTPUT_DIR}")
+    logger.info("="*60)
+    logger.info("MEDICAL VLM TRAINING STARTED")
+    logger.info("="*60)
+    logger.info(f"Training dataset type: {DATASET_TYPE}")
+    logger.info(f"Model path: {MODEL_NAME}")
+    logger.info(f"Output directory: {OUTPUT_DIR}")
+    logger.info(f"Learning rate: {LEARNING_RATE}")
+    logger.info(f"Batch size: {BATCH_SIZE}")
+    logger.info(f"Gradient accumulation steps: {GRAD_ACCUM_STEPS}")
+    logger.info(f"Number of epochs: {NUM_EPOCHS}")
+    logger.info(f"Max pixels: {MAX_PIXELS}")
+    logger.info(f"Min pixels: {MIN_PIXELS}")
+    logger.info(f"DeepSpeed enabled: {USE_DEEPSPEED}")
+    logger.info(f"CUDA available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        logger.info(f"GPU count: {torch.cuda.device_count()}")
+        logger.info(f"Current GPU: {torch.cuda.current_device()}")
+        logger.info(f"GPU name: {torch.cuda.get_device_name()}")
+    logger.info("="*60)
 
     # Dataset mapping
     dataset_mapping = {
@@ -63,9 +108,12 @@ def main():
     }
 
     if DATASET_TYPE not in dataset_mapping:
-        raise ValueError(f"Invalid DATASET_TYPE: {DATASET_TYPE}. Must be one of {list(dataset_mapping.keys())}")
+        error_msg = f"Invalid DATASET_TYPE: {DATASET_TYPE}. Must be one of {list(dataset_mapping.keys())}"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     dataset_name = dataset_mapping[DATASET_TYPE]
+    logger.info(f"Selected dataset: {dataset_name}")
 
     # Create arguments
     model_args = ModelArguments(
@@ -150,24 +198,32 @@ def main():
     replace_qwen2_vl_attention_class()
 
     # Load model and tokenizer
-    print("Loading model and tokenizer...")
-    model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-        MODEL_NAME,
-        cache_dir=training_args.cache_dir,
-        attn_implementation="sdpa",  # 使用PyTorch原生注意力替代Flash Attention
-        torch_dtype=torch.bfloat16,
-    )
+    logger.info("Loading model and tokenizer...")
+    try:
+        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            MODEL_NAME,
+            cache_dir=training_args.cache_dir,
+            attn_implementation="sdpa",  # 使用PyTorch原生注意力替代Flash Attention
+            torch_dtype=torch.bfloat16,
+        )
+        logger.info("✓ Model loaded successfully")
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        MODEL_NAME,
-        cache_dir=training_args.cache_dir,
-        model_max_length=training_args.model_max_length,
-        padding_side="right",
-        use_fast=False,
-    )
+        tokenizer = AutoTokenizer.from_pretrained(
+            MODEL_NAME,
+            cache_dir=training_args.cache_dir,
+            model_max_length=training_args.model_max_length,
+            padding_side="right",
+            use_fast=False,
+        )
+        logger.info("✓ Tokenizer loaded successfully")
 
-    # Load processor
-    processor = AutoProcessor.from_pretrained(MODEL_NAME)
+        # Load processor
+        processor = AutoProcessor.from_pretrained(MODEL_NAME)
+        logger.info("✓ Processor loaded successfully")
+
+    except Exception as e:
+        logger.error(f"Failed to load model/tokenizer: {e}")
+        raise
 
     # Set image processor in data_args
     data_args.image_processor = processor.image_processor
@@ -176,33 +232,64 @@ def main():
     data_args.model_type = "qwen2.5vl"
 
     # Create data module
-    print(f"Loading dataset: {dataset_name}")
-    data_module = make_supervised_data_module(
-        tokenizer=tokenizer,
-        data_args=data_args
-    )
+    logger.info(f"Loading dataset: {dataset_name}")
+    try:
+        data_module = make_supervised_data_module(
+            tokenizer=tokenizer,
+            data_args=data_args
+        )
+        train_dataset = data_module.get('train_dataset')
+        if train_dataset:
+            logger.info(f"✓ Dataset loaded successfully. Size: {len(train_dataset)}")
+        else:
+            logger.warning("No training dataset found in data module")
+    except Exception as e:
+        logger.error(f"Failed to load dataset: {e}")
+        raise
 
     # Create trainer
-    print("Creating trainer...")
-    trainer = Trainer(
-        model=model,
-        tokenizer=tokenizer,
-        args=training_args,
-        **data_module
-    )
+    logger.info("Creating trainer...")
+    try:
+        trainer = Trainer(
+            model=model,
+            tokenizer=tokenizer,
+            args=training_args,
+            **data_module
+        )
+        logger.info("✓ Trainer created successfully")
+    except Exception as e:
+        logger.error(f"Failed to create trainer: {e}")
+        raise
 
     # Check for existing checkpoints
-    if list(Path(OUTPUT_DIR).glob("checkpoint-*")):
-        print("Found existing checkpoints, resuming training...")
-        trainer.train(resume_from_checkpoint=True)
-    else:
-        print("Starting training from scratch...")
-        trainer.train()
+    checkpoint_dir = Path(OUTPUT_DIR)
+    existing_checkpoints = list(checkpoint_dir.glob("checkpoint-*"))
 
-    # Save final model
-    print("Saving final model...")
-    trainer.save_state()
-    trainer.save_model(output_dir=OUTPUT_DIR)
+    try:
+        if existing_checkpoints:
+            logger.info(f"Found {len(existing_checkpoints)} existing checkpoints, resuming training...")
+            trainer.train(resume_from_checkpoint=True)
+        else:
+            logger.info("Starting training from scratch...")
+            trainer.train()
+
+        logger.info("✓ Training completed successfully")
+
+        # Save final model
+        logger.info("Saving final model...")
+        trainer.save_state()
+        trainer.save_model(output_dir=OUTPUT_DIR)
+        logger.info(f"✓ Model saved to {OUTPUT_DIR}")
+
+    except Exception as e:
+        logger.error(f"Training failed: {e}")
+        logger.error("Full traceback:", exc_info=True)
+        raise
+
+    finally:
+        logger.info("="*60)
+        logger.info("TRAINING SESSION ENDED")
+        logger.info("="*60)
 
 if __name__ == "__main__":
     main()
