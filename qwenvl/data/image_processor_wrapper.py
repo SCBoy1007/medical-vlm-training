@@ -246,23 +246,27 @@ class CompatibleImageProcessor:
                             new_w = max(1, target_hw // new_h)
 
                         # Ensure grid_thw has correct shape and valid values
-                        if grid_thw.dim() == 1:
-                            grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
-                        else:
-                            grid_thw[0] = torch.tensor([t, new_h, new_w], dtype=grid_thw.dtype)
+                        grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
 
                         new_tokens = needed_patches // (self.merge_size ** 2)
                         logger.warning(f"FORCED: Updated grid_thw to {grid_thw}, new tokens: {new_tokens}")
 
                 all_pixel_values.append(pixel_values)
-                all_grid_thw.append(grid_thw.unsqueeze(0))
+                # Ensure grid_thw is 2D for consistency: [[t, h, w]]
+                if grid_thw.dim() == 1:
+                    grid_thw = grid_thw.unsqueeze(0)
+                all_grid_thw.append(grid_thw)
 
             except Exception as e:
                 logger.error(f"Failed to process image with compatibility wrapper: {e}")
                 # Fallback to original processor
                 fallback_result = self.original_processor(images=image, **kwargs)
                 all_pixel_values.append(fallback_result["pixel_values"][0] if isinstance(fallback_result["pixel_values"], list) else fallback_result["pixel_values"])
-                all_grid_thw.append(fallback_result["image_grid_thw"][0].unsqueeze(0))
+                # Ensure consistent 2D shape for fallback grid_thw
+                fallback_grid_thw = fallback_result["image_grid_thw"][0]
+                if fallback_grid_thw.dim() == 1:
+                    fallback_grid_thw = fallback_grid_thw.unsqueeze(0)
+                all_grid_thw.append(fallback_grid_thw)
 
         # Combine results
         combined_result = {
