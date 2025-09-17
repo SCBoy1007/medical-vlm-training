@@ -204,7 +204,9 @@ class CompatibleImageProcessor:
                     pixel_values = pixel_values[0]
 
                 # Verify compatibility and fix if still incompatible
-                t, h, w = grid_thw.tolist()
+                if grid_thw.dim() == 1:
+                    grid_thw = grid_thw.unsqueeze(0)  # Ensure 2D shape
+                t, h, w = grid_thw[0].tolist()
                 total_patches = t * h * w
                 tokens_after_merge = total_patches // (self.merge_size ** 2)
 
@@ -232,12 +234,22 @@ class CompatibleImageProcessor:
                         # Calculate new h,w that gives us needed_patches
                         target_hw = needed_patches // t
                         # Try to keep aspect ratio roughly the same
-                        aspect_ratio = w / h
-                        new_h = int((target_hw / aspect_ratio) ** 0.5)
-                        new_w = target_hw // new_h
-                        if new_h * new_w != target_hw:
-                            new_w = target_hw // new_h
-                        grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
+                        if h > 0 and w > 0:
+                            aspect_ratio = w / h
+                            new_h = max(1, int((target_hw / aspect_ratio) ** 0.5))
+                            new_w = max(1, target_hw // new_h)
+                            if new_h * new_w != target_hw:
+                                new_w = max(1, target_hw // new_h)
+                        else:
+                            # Fallback if dimensions are invalid
+                            new_h = max(1, int(target_hw ** 0.5))
+                            new_w = max(1, target_hw // new_h)
+
+                        # Ensure grid_thw has correct shape and valid values
+                        if grid_thw.dim() == 1:
+                            grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
+                        else:
+                            grid_thw[0] = torch.tensor([t, new_h, new_w], dtype=grid_thw.dtype)
 
                         new_tokens = needed_patches // (self.merge_size ** 2)
                         logger.warning(f"FORCED: Updated grid_thw to {grid_thw}, new tokens: {new_tokens}")
