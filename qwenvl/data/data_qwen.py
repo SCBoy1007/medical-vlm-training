@@ -28,6 +28,14 @@ from . import data_list
 from .rope2d import get_rope_index_25, get_rope_index_2
 from .image_processor_wrapper import wrap_image_processor
 
+# Setup logger for padding debug info
+padding_logger = logging.getLogger('padding_debug')
+padding_logger.setLevel(logging.DEBUG)
+if not padding_logger.handlers:
+    handler = logging.FileHandler('./logs/padding_debug.log', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    padding_logger.addHandler(handler)
+
 IGNORE_INDEX = -100
 IMAGE_TOKEN_INDEX = 151655
 VIDEO_TOKEN_INDEX = 151656
@@ -257,14 +265,14 @@ class LazySupervisedDataset(Dataset):
         new_height = ((height + 27) // 28) * 28
 
         if new_width == width and new_height == height:
-            print(f"Image {width}x{height} already 28-multiple, no padding needed")
+            padding_logger.info(f"Image {width}x{height} already 28-multiple, no padding needed")
             return image  # 已经是28倍数，无需padding
 
         # 创建黑色背景的新图像
         padded_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
         padded_image.paste(image, (0, 0))  # 粘贴到左上角
 
-        print(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
+        padding_logger.info(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
         return padded_image
 
     def process_image_unified(self, image_file):
@@ -273,11 +281,12 @@ class LazySupervisedDataset(Dataset):
         image = Image.open(image_file).convert("RGB")
 
         # Apply padding for Qwen2.5-VL to ensure 28-multiple dimensions
-        print(f"DEBUG: model_type={self.model_type}, applying padding check...")
+        padding_logger.info(f"DEBUG: model_type={self.model_type}, processing image {image_file}")
         if self.model_type == "qwen2.5vl":
+            padding_logger.info("DEBUG: Applying padding check for qwen2.5vl")
             image = self._pad_image_to_28_multiple(image)
         else:
-            print(f"DEBUG: Skipping padding - model_type is {self.model_type}, not qwen2.5vl")
+            padding_logger.info(f"DEBUG: Skipping padding - model_type is {self.model_type}, not qwen2.5vl")
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":

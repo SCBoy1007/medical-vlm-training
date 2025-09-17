@@ -247,6 +247,10 @@ def main():
 
     # Create data module
     logger.info(f"Loading dataset: {dataset_name}")
+
+    # Setup padding debug log
+    Path("./logs").mkdir(exist_ok=True)
+    logger.info("Created logs directory and initialized padding debug logging")
     try:
         data_module = make_supervised_data_module(
             tokenizer=tokenizer,
