@@ -203,13 +203,44 @@ class CompatibleImageProcessor:
                 if isinstance(pixel_values, list):
                     pixel_values = pixel_values[0]
 
-                # Verify compatibility
+                # Verify compatibility and fix if still incompatible
                 t, h, w = grid_thw.tolist()
                 total_patches = t * h * w
                 tokens_after_merge = total_patches // (self.merge_size ** 2)
 
                 if tokens_after_merge % self.spatial_merge_unit != 0:
-                    logger.warning(f"Compatibility check failed: {tokens_after_merge} tokens not divisible by {self.spatial_merge_unit}")
+                    logger.error(f"CRITICAL: Compatibility check failed after adjustment: {tokens_after_merge} tokens not divisible by {self.spatial_merge_unit}")
+                    logger.error(f"Original image: {original_width}x{original_height}, Adjusted: {compatible_width}x{compatible_height}")
+                    logger.error(f"Processor output: grid_thw={grid_thw}, patches={total_patches}, tokens={tokens_after_merge}")
+
+                    # Force patch tensor manipulation as last resort
+                    needed_patches = ((tokens_after_merge // self.spatial_merge_unit) + 1) * self.spatial_merge_unit * (self.merge_size ** 2)
+                    if needed_patches <= pixel_values.shape[0] + 100:  # Only if reasonable adjustment
+                        # Pad or trim the pixel_values tensor to achieve compatibility
+                        current_patches = pixel_values.shape[0]
+                        if needed_patches > current_patches:
+                            # Pad with zeros
+                            padding = torch.zeros(needed_patches - current_patches, pixel_values.shape[1])
+                            pixel_values = torch.cat([pixel_values, padding], dim=0)
+                            logger.warning(f"FORCED: Padded pixel_values from {current_patches} to {needed_patches} patches")
+                        elif needed_patches < current_patches:
+                            # Trim
+                            pixel_values = pixel_values[:needed_patches]
+                            logger.warning(f"FORCED: Trimmed pixel_values from {current_patches} to {needed_patches} patches")
+
+                        # Update grid_thw to match
+                        # Calculate new h,w that gives us needed_patches
+                        target_hw = needed_patches // t
+                        # Try to keep aspect ratio roughly the same
+                        aspect_ratio = w / h
+                        new_h = int((target_hw / aspect_ratio) ** 0.5)
+                        new_w = target_hw // new_h
+                        if new_h * new_w != target_hw:
+                            new_w = target_hw // new_h
+                        grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
+
+                        new_tokens = needed_patches // (self.merge_size ** 2)
+                        logger.warning(f"FORCED: Updated grid_thw to {grid_thw}, new tokens: {new_tokens}")
 
                 all_pixel_values.append(pixel_values)
                 all_grid_thw.append(grid_thw.unsqueeze(0))
