@@ -193,8 +193,11 @@ class LazySupervisedDataset(Dataset):
         self.data_args = data_args
         self.data_args.image_processor.max_pixels = data_args.max_pixels
         self.data_args.image_processor.min_pixels = data_args.min_pixels
-        self.data_args.image_processor.size["longest_edge"] = data_args.max_pixels
-        self.data_args.image_processor.size["shortest_edge"] = data_args.min_pixels
+
+        # Only set size attributes for Qwen2-VL, not for Qwen2.5-VL
+        if data_args.model_type != "qwen2.5vl" and hasattr(self.data_args.image_processor, 'size'):
+            self.data_args.image_processor.size["longest_edge"] = data_args.max_pixels
+            self.data_args.image_processor.size["shortest_edge"] = data_args.min_pixels
 
     def __len__(self):
         return len(self.list_data_dict)
@@ -315,8 +318,11 @@ class LazySupervisedDataset(Dataset):
         processor = copy.deepcopy(self.data_args.image_processor)
         processor.max_pixels = self.data_args.video_max_frame_pixels
         processor.min_pixels = self.data_args.video_min_frame_pixels
-        processor.size["longest_edge"] = processor.max_pixels
-        processor.size["shortest_edge"] = processor.min_pixels
+
+        # Only set size attributes for Qwen2-VL, not for Qwen2.5-VL
+        if self.data_args.model_type != "qwen2.5vl" and hasattr(processor, 'size'):
+            processor.size["longest_edge"] = processor.max_pixels
+            processor.size["shortest_edge"] = processor.min_pixels
         video_processed = processor.preprocess(
             images=None, videos=video, return_tensors="pt"
         )
