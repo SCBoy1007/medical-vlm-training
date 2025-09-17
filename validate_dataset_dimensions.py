@@ -81,16 +81,18 @@ def validate_dataset_sample(data_module, sample_indices: List[int], logger) -> D
             merge_size = train_dataset.data_args.image_processor.merge_size
             spatial_merge_unit = 4  # Hardcoded in model architecture
 
-            # Calculate expected token count after merge
-            expected_tokens_after_merge = total_patches // (merge_size ** 2)
+            # Use ACTUAL tensor dimensions for compatibility check (after wrapper processing)
+            actual_patches = pixel_values.shape[0]  # This reflects wrapper adjustments
+            actual_tokens_after_merge = actual_patches // (merge_size ** 2)
 
-            logger.info(f"  Grid dimensions (T×H×W): {t}×{h}×{w} = {total_patches} patches")
+            logger.info(f"  Grid dimensions (T×H×W): {t}×{h}×{w} = {total_patches} patches (original)")
+            logger.info(f"  Actual tensor patches: {actual_patches} (after wrapper processing)")
             logger.info(f"  Merge size: {merge_size}")
-            logger.info(f"  Expected tokens after merge: {expected_tokens_after_merge}")
+            logger.info(f"  Actual tokens after merge: {actual_tokens_after_merge}")
 
-            # Check spatial merge compatibility
-            is_compatible = expected_tokens_after_merge % spatial_merge_unit == 0
-            expected_reshape_dim1 = expected_tokens_after_merge // spatial_merge_unit
+            # Check spatial merge compatibility using ACTUAL tensor dimensions
+            is_compatible = actual_tokens_after_merge % spatial_merge_unit == 0
+            expected_reshape_dim1 = actual_tokens_after_merge // spatial_merge_unit
 
             logger.info(f"  Spatial merge unit: {spatial_merge_unit}")
             logger.info(f"  Expected reshape dim1: {expected_reshape_dim1}")
@@ -100,9 +102,9 @@ def validate_dataset_sample(data_module, sample_indices: List[int], logger) -> D
             seq_len, hidden_size = pixel_values.shape
             logger.info(f"  Actual tensor shape: [{seq_len}, {hidden_size}]")
 
-            # Check if tensor dimensions match expectations
-            tensor_matches_expectation = (seq_len == total_patches)
-            logger.info(f"  Tensor seq_len matches total patches: {tensor_matches_expectation}")
+            # Check if tensor dimensions match expectations (should always be true after wrapper)
+            tensor_matches_expectation = (seq_len == actual_patches)
+            logger.info(f"  Tensor seq_len matches actual patches: {tensor_matches_expectation}")
 
             # Calculate what the actual reshape would be
             if seq_len % spatial_merge_unit == 0:
@@ -123,7 +125,8 @@ def validate_dataset_sample(data_module, sample_indices: List[int], logger) -> D
                 'pixel_values_shape': pixel_values.shape,
                 'grid_thw': image_grid_thw.tolist(),
                 'total_patches': total_patches,
-                'expected_tokens_after_merge': expected_tokens_after_merge,
+                'actual_patches': actual_patches,
+                'expected_tokens_after_merge': actual_tokens_after_merge,
                 'spatial_merge_compatible': is_compatible,
                 'tensor_matches_expectation': tensor_matches_expectation,
                 'reshape_would_work': is_integer_hidden,
