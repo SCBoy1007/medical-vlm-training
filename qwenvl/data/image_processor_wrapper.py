@@ -258,9 +258,27 @@ class CompatibleImageProcessor:
                         if calculated_patches != needed_patches:
                             logger.error(f"CRITICAL: grid_thw calculation error! Expected {needed_patches}, got {calculated_patches}")
                             logger.error(f"t={t}, new_h={new_h}, new_w={new_w}")
-                            # Force to exact dimensions
-                            new_h = 1
-                            new_w = needed_patches // t
+                            # Find reasonable dimensions that maintain aspect ratio constraints
+                            # Ensure neither dimension is too extreme (min 4, max 512)
+                            min_dim, max_dim = 4, 512
+
+                            # Try to find balanced dimensions
+                            best_h, best_w = 1, needed_patches // t
+                            min_diff = float('inf')
+
+                            # Search for reasonable h,w combinations
+                            for test_h in range(min_dim, min(max_dim, needed_patches // t) + 1):
+                                if (needed_patches // t) % test_h == 0:
+                                    test_w = (needed_patches // t) // test_h
+                                    if min_dim <= test_w <= max_dim:
+                                        # Prefer dimensions closer to square
+                                        diff = abs(test_h - test_w)
+                                        if diff < min_diff:
+                                            min_diff = diff
+                                            best_h, best_w = test_h, test_w
+
+                            new_h, new_w = best_h, best_w
+                            logger.warning(f"FALLBACK: Using reasonable dimensions h={new_h}, w={new_w} (aspect ratio: {new_w/new_h:.2f})")
 
                         # Ensure grid_thw has correct shape and valid values
                         if grid_thw.dim() == 1:
