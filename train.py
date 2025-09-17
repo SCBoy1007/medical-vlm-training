@@ -34,6 +34,9 @@ MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 # Hardware configuration
 USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
+
+# Compatibility configuration
+ENABLE_SPATIAL_MERGE_COMPATIBILITY = True  # Enable fix for spatial merge tensor dimension issues
 # ===================================
 
 def setup_logging():
@@ -93,6 +96,7 @@ def main():
     logger.info(f"Max pixels: {MAX_PIXELS}")
     logger.info(f"Min pixels: {MIN_PIXELS}")
     logger.info(f"DeepSpeed enabled: {USE_DEEPSPEED}")
+    logger.info(f"Spatial merge compatibility: {ENABLE_SPATIAL_MERGE_COMPATIBILITY}")
     logger.info(f"CUDA available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():
         logger.info(f"GPU count: {torch.cuda.device_count()}")
@@ -144,6 +148,9 @@ def main():
         dataset_use="curve_detection_high,curve_detection_low,apex_vertebrae_high,apex_vertebrae_low,end_vertebrae_high,end_vertebrae_low",
         data_flatten=False
     )
+
+    # Add compatibility configuration
+    data_args.enable_spatial_merge_compatibility = ENABLE_SPATIAL_MERGE_COMPATIBILITY
 
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
@@ -241,6 +248,21 @@ def main():
         train_dataset = data_module.get('train_dataset')
         if train_dataset:
             logger.info(f"✓ Dataset loaded successfully. Size: {len(train_dataset)}")
+
+            # Report compatibility statistics if enabled
+            if ENABLE_SPATIAL_MERGE_COMPATIBILITY and hasattr(train_dataset.data_args.image_processor, 'get_stats'):
+                try:
+                    # Process a few samples to get initial statistics
+                    for i in range(min(10, len(train_dataset))):
+                        _ = train_dataset[i]  # This will trigger image processing
+
+                    stats = train_dataset.data_args.image_processor.get_stats()
+                    if stats['total_processed'] > 0:
+                        logger.info(f"Compatibility mode stats: {stats['adjusted_images']}/{stats['total_processed']} images adjusted ({stats['adjustment_rate_percent']:.1f}%)")
+                        if stats['adjusted_images'] > 0:
+                            logger.info(f"✓ Spatial merge compatibility fix is working - adjusted {stats['adjusted_images']} images")
+                except Exception as e:
+                    logger.warning(f"Could not get compatibility statistics: {e}")
         else:
             logger.warning("No training dataset found in data module")
     except Exception as e:

@@ -266,6 +266,10 @@ def main():
         data_args.model_type = "qwen2.5vl"
         data_args.data_flatten = False
 
+        # ENABLE COMPATIBILITY MODE FOR TESTING THE FIX
+        data_args.enable_spatial_merge_compatibility = True
+        logger.info("🔧 Testing with spatial merge compatibility mode ENABLED")
+
         # Create data module
         logger.info("Creating data module...")
         data_module = make_supervised_data_module(tokenizer=tokenizer, data_args=data_args)
@@ -314,19 +318,28 @@ def main():
 
         # Final recommendations
         logger.info("\n" + "="*60)
-        logger.info("RECOMMENDATIONS")
+        logger.info("FIX EFFECTIVENESS REPORT")
         logger.info("="*60)
 
         incompatible_count = len(validation_results['incompatible_samples'])
         if incompatible_count == 0:
-            logger.info("✅ All samples are compatible! The issue might be in batch processing or model loading.")
+            logger.info("🎉 SUCCESS! All samples are now compatible with spatial merge!")
+            logger.info("✅ The compatibility fix has resolved the tensor dimension issues.")
+            logger.info("✅ Training should now proceed without spatial merge errors.")
+
+            # Report compatibility statistics
+            if hasattr(train_dataset.data_args.image_processor, 'get_stats'):
+                stats = train_dataset.data_args.image_processor.get_stats()
+                if stats['total_processed'] > 0:
+                    logger.info(f"📊 Compatibility statistics: {stats['adjusted_images']}/{stats['total_processed']} images required adjustment ({stats['adjustment_rate_percent']:.1f}%)")
+                    if stats['adjustment_rate_percent'] > 0:
+                        logger.info("ℹ️ Some images were automatically resized to ensure spatial merge compatibility.")
         else:
-            logger.info(f"❌ Found {incompatible_count} incompatible samples.")
-            logger.info("Recommended actions:")
-            logger.info("1. Check image preprocessing pipeline for edge cases")
-            logger.info("2. Consider adding padding to ensure spatial merge compatibility")
-            logger.info("3. Verify grid_thw calculation logic")
-            logger.info("4. Test with smaller batch sizes to isolate problematic samples")
+            logger.info(f"⚠️ Found {incompatible_count} incompatible samples despite compatibility mode.")
+            logger.info("This suggests the fix may need refinement. Details:")
+            logger.info("1. Check wrapper implementation for edge cases")
+            logger.info("2. Verify smart_resize_compatible function logic")
+            logger.info("3. Consider more aggressive dimension adjustment")
 
     except Exception as e:
         logger.error(f"Validation failed: {e}")
