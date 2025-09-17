@@ -642,14 +642,44 @@ class FlattenedDataCollatorForSupervisedDataset(DataCollatorForSupervisedDataset
             for key in ("input_ids", "labels", "position_ids", "attention_mask")
         )
         # Convert list format to tensor format for flattened collator
-        input_ids = [
-            ids if isinstance(ids, torch.Tensor) else torch.tensor(ids, dtype=torch.long).unsqueeze(0)
-            for ids in input_ids
-        ]
-        labels = [
-            lbls if isinstance(lbls, torch.Tensor) else torch.tensor(lbls, dtype=torch.long).unsqueeze(0)
-            for lbls in labels
-        ]
+        # Ensure consistent tensor shapes for concatenation
+        processed_input_ids = []
+        processed_labels = []
+
+        for ids in input_ids:
+            if isinstance(ids, torch.Tensor):
+                # Already tensor, ensure 2D shape (batch_size, seq_len)
+                if ids.dim() == 1:
+                    ids = ids.unsqueeze(0)
+                processed_input_ids.append(ids)
+            else:
+                # List format, convert to tensor with shape (1, seq_len)
+                tensor_ids = torch.tensor(ids, dtype=torch.long)
+                if tensor_ids.dim() == 2:
+                    # Already has batch dimension from list of lists
+                    processed_input_ids.append(tensor_ids)
+                else:
+                    # Single sequence, add batch dimension
+                    processed_input_ids.append(tensor_ids.unsqueeze(0))
+
+        for lbls in labels:
+            if isinstance(lbls, torch.Tensor):
+                # Already tensor, ensure 2D shape (batch_size, seq_len)
+                if lbls.dim() == 1:
+                    lbls = lbls.unsqueeze(0)
+                processed_labels.append(lbls)
+            else:
+                # List format, convert to tensor with shape (1, seq_len)
+                tensor_lbls = torch.tensor(lbls, dtype=torch.long)
+                if tensor_lbls.dim() == 2:
+                    # Already has batch dimension from list of lists
+                    processed_labels.append(tensor_lbls)
+                else:
+                    # Single sequence, add batch dimension
+                    processed_labels.append(tensor_lbls.unsqueeze(0))
+
+        input_ids = processed_input_ids
+        labels = processed_labels
         attention_mask = list(
             itertools.chain(
                 *(
