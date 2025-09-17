@@ -384,20 +384,46 @@ class LazySupervisedDataset(Dataset):
         if "image" in sources[0]:
             image_folder = self.list_data_dict[i]["data_path"]
             image_file = self.list_data_dict[i]["image"]
+
+            # Smart path resolution: handle "images/filename.jpg" format
+            def resolve_image_path(img_path, base_folder):
+                if img_path.startswith("images/"):
+                    # Remove "images/" prefix and find actual file location
+                    filename = img_path[7:]  # Remove "images/" prefix
+
+                    # Try different possible locations
+                    possible_paths = [
+                        os.path.join(base_folder, "train", "high_quality", filename),
+                        os.path.join(base_folder, "train", "low_quality", filename),
+                        os.path.join(base_folder, "val", "high_quality", filename),
+                        os.path.join(base_folder, "val", "low_quality", filename),
+                        os.path.join(base_folder, "test", "high_quality", filename),
+                        os.path.join(base_folder, "test", "low_quality", filename),
+                    ]
+
+                    # Find the first existing file
+                    for path in possible_paths:
+                        if os.path.exists(path):
+                            return path
+
+                    # Fallback to original path if none found
+                    return os.path.join(base_folder, img_path)
+                else:
+                    return os.path.join(base_folder, img_path)
             if isinstance(image_file, List):
                 if len(image_file) > 1:
                     image_file = [
-                        os.path.join(image_folder, file) for file in image_file
+                        resolve_image_path(file, image_folder) for file in image_file
                     ]
                     results = [self.process_image_unified(file) for file in image_file]
                     image, grid_thw = zip(*results)
                 else:
                     image_file = image_file[0]
-                    image_file = os.path.join(image_folder, image_file)
+                    image_file = resolve_image_path(image_file, image_folder)
                     image, grid_thw = self.process_image_unified(image_file)
                     image = [image]
             else:
-                image_file = os.path.join(image_folder, image_file)
+                image_file = resolve_image_path(image_file, image_folder)
                 image, grid_thw = self.process_image_unified(image_file)
                 image = [image]
             grid_thw_merged = copy.deepcopy(grid_thw)
