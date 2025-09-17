@@ -419,7 +419,7 @@ class LazySupervisedDataset(Dataset):
                 grid_thw_merged = [grid_thw_merged]
                 grid_thw = [grid_thw]
             grid_thw_merged = [
-                merged_thw.prod() // self.data_args.image_processor.merge_size**2
+                merged_thw.prod() // (self.data_args.image_processor.merge_size**2 * 4)  # Account for spatial_merge_unit=4
                 for merged_thw in grid_thw_merged
             ]
         if "video" in sources[0]:
@@ -450,7 +450,7 @@ class LazySupervisedDataset(Dataset):
                 video_grid_thw_merged = [video_grid_thw_merged]
                 video_grid_thw = [video_grid_thw]
             video_grid_thw_merged = [
-                merged_thw.prod() // self.data_args.image_processor.merge_size**2
+                merged_thw.prod() // (self.data_args.image_processor.merge_size**2 * 4)  # Account for spatial_merge_unit=4
                 for merged_thw in video_grid_thw_merged
             ]
         chat_sources = copy.deepcopy([e["conversations"] for e in sources])
@@ -461,7 +461,7 @@ class LazySupervisedDataset(Dataset):
             grid_thw_video=video_grid_thw_merged if video_grid_thw_merged else None,
         )
         position_ids, _ = self.get_rope_index(
-            self.data_args.image_processor.merge_size,
+            4,  # Use spatial_merge_unit=4 for correct RoPE calculation
             data_dict["input_ids"],
             image_grid_thw=torch.stack(grid_thw, dim=0) if grid_thw else None,
             video_grid_thw=(
