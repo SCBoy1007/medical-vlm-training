@@ -52,7 +52,8 @@ def test_padding_vs_processor():
         try:
             # 创建一个小的测试图像
             test_img = Image.new('RGB', (224, 224), (128, 128, 128))
-            quick_result = processor(images=[test_img], return_tensors="pt")
+            # Qwen2VL processor需要text参数
+            quick_result = processor(text="<image>What is this?", images=[test_img], return_tensors="pt")
             logger.info(f"✅ Quick test passed. Keys: {list(quick_result.keys())}")
             if "pixel_values" in quick_result:
                 logger.info(f"✅ pixel_values shape: {quick_result['pixel_values'].shape}")
@@ -106,8 +107,8 @@ def test_padding_vs_processor():
         # === STEP 2: 应用processor到原始图像 ===
         logger.info("\n🏭 STEP 2: Processor on ORIGINAL image...")
         try:
-            # 使用正确的processor调用方式
-            result_orig = processor(images=[original_image], return_tensors="pt")
+            # 使用正确的processor调用方式 - 需要text参数
+            result_orig = processor(text="<image>Analyze this medical image", images=[original_image], return_tensors="pt")
             pixel_values_orig = result_orig["pixel_values"]
             grid_thw_orig = result_orig["image_grid_thw"][0]
 
@@ -133,8 +134,8 @@ def test_padding_vs_processor():
         # === STEP 3: 应用processor到padded图像 ===
         logger.info("\n🏭 STEP 3: Processor on PADDED image...")
         try:
-            # 使用正确的processor调用方式
-            result_pad = processor(images=[padded_image], return_tensors="pt")
+            # 使用正确的processor调用方式 - 需要text参数
+            result_pad = processor(text="<image>Analyze this medical image", images=[padded_image], return_tensors="pt")
             pixel_values_pad = result_pad["pixel_values"]
             grid_thw_pad = result_pad["image_grid_thw"][0]
 
