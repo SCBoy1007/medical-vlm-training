@@ -257,22 +257,57 @@ class LazySupervisedDataset(Dataset):
 
     def _pad_image_to_28_multiple(self, image):
         """
-        简单的padding方案：将图像右下方padding到28的倍数
-        保持左上角(0,0)坐标不变，所有bbox坐标无需调整
+        Spatial merge compatible padding方案：
+        确保 (h*w // 4) % 4 == 0，即 h*w % 16 == 0
+        同时保持28的倍数（patch size要求）
         """
         width, height = image.size
-        new_width = ((width + 27) // 28) * 28  # 向上取整到28的倍数
+
+        # 首先确保28的倍数
+        new_width = ((width + 27) // 28) * 28
         new_height = ((height + 27) // 28) * 28
 
+        # 计算patch数量
+        h_patches = new_height // 28
+        w_patches = new_width // 28
+        total_patches = h_patches * w_patches
+
+        # 检查spatial merge compatibility: (total_patches // 4) % 4 == 0
+        # 即要求 total_patches % 16 == 0
+        if total_patches % 16 != 0:
+            # 调整到最近的16的倍数
+            target_patches = ((total_patches + 15) // 16) * 16
+
+            # 优先增加较小的维度以保持纵横比
+            if h_patches <= w_patches:
+                # 增加高度
+                needed_patches = target_patches - total_patches
+                additional_h_patches = (needed_patches + w_patches - 1) // w_patches
+                new_height = (h_patches + additional_h_patches) * 28
+            else:
+                # 增加宽度
+                needed_patches = target_patches - total_patches
+                additional_w_patches = (needed_patches + h_patches - 1) // h_patches
+                new_width = (w_patches + additional_w_patches) * 28
+
         if new_width == width and new_height == height:
-            padding_logger.info(f"Image {width}x{height} already 28-multiple, no padding needed")
-            return image  # 已经是28倍数，无需padding
+            padding_logger.info(f"Image {width}x{height} already compatible, no padding needed")
+            return image
 
         # 创建黑色背景的新图像
         padded_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
         padded_image.paste(image, (0, 0))  # 粘贴到左上角
 
+        # 验证结果
+        final_h_patches = new_height // 28
+        final_w_patches = new_width // 28
+        final_total_patches = final_h_patches * final_w_patches
+        is_compatible = final_total_patches % 16 == 0
+
         padding_logger.info(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
+        padding_logger.info(f"  Patches: {h_patches}x{w_patches}={total_patches} → {final_h_patches}x{final_w_patches}={final_total_patches}")
+        padding_logger.info(f"  Spatial merge compatible: {is_compatible} (patches % 16 = {final_total_patches % 16})")
+
         return padded_image
 
     def process_image_unified(self, image_file):
