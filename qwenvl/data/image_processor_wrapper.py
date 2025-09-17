@@ -238,12 +238,29 @@ class CompatibleImageProcessor:
                             aspect_ratio = w / h
                             new_h = max(1, int((target_hw / aspect_ratio) ** 0.5))
                             new_w = max(1, target_hw // new_h)
+                            # Ensure exact match: adjust new_w to make new_h * new_w == target_hw
                             if new_h * new_w != target_hw:
-                                new_w = max(1, target_hw // new_h)
+                                new_w = target_hw // new_h
+                                # If still not exact, adjust new_h
+                                if new_h * new_w != target_hw:
+                                    new_h = max(1, target_hw // new_w)
+                                    if new_h * new_w != target_hw:
+                                        # Force exact dimensions - prioritize exact patch count
+                                        new_h = max(1, int(target_hw ** 0.5))
+                                        new_w = target_hw // new_h
                         else:
                             # Fallback if dimensions are invalid
                             new_h = max(1, int(target_hw ** 0.5))
-                            new_w = max(1, target_hw // new_h)
+                            new_w = target_hw // new_h
+
+                        # Verify grid_thw calculation is exact
+                        calculated_patches = t * new_h * new_w
+                        if calculated_patches != needed_patches:
+                            logger.error(f"CRITICAL: grid_thw calculation error! Expected {needed_patches}, got {calculated_patches}")
+                            logger.error(f"t={t}, new_h={new_h}, new_w={new_w}")
+                            # Force to exact dimensions
+                            new_h = 1
+                            new_w = needed_patches // t
 
                         # Ensure grid_thw has correct shape and valid values
                         if grid_thw.dim() == 1:
@@ -253,6 +270,7 @@ class CompatibleImageProcessor:
 
                         new_tokens = needed_patches // (self.merge_size ** 2)
                         logger.warning(f"FORCED: Updated grid_thw to {grid_thw}, new tokens: {new_tokens}")
+                        logger.warning(f"VERIFICATION: pixel_values.shape[0]={needed_patches}, grid_thw_patches={t*new_h*new_w}")
 
                 all_pixel_values.append(pixel_values)
                 # Ensure grid_thw is 2D for consistency: [[t, h, w]]
