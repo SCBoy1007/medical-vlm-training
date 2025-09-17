@@ -339,6 +339,70 @@ class LazySupervisedDataset(Dataset):
 
         return padded_image
 
+    def _post_processor_spatial_fix(self, pixel_values, grid_thw, image_file):
+        """
+        POST-PROCESSOR修复：确保spatial merge兼容性
+        基于测试结果的精确修复策略
+        """
+        import torch
+        import math
+
+        num_patches, hidden_dim = pixel_values.shape
+        spatial_merge_unit = 4  # Qwen2.5-VL spatial merge unit
+
+        padding_logger.info(f"POST-PROCESSOR CHECK: {image_file}")
+        padding_logger.info(f"  Input tensor: [{num_patches}, {hidden_dim}]")
+        padding_logger.info(f"  Grid THW: {grid_thw}")
+
+        # 计算seq_len用于spatial merge
+        seq_len = num_patches // spatial_merge_unit
+        remainder = num_patches % spatial_merge_unit
+
+        padding_logger.info(f"  Calculated seq_len: {seq_len}")
+        padding_logger.info(f"  Patches % spatial_merge_unit: {remainder}")
+
+        if remainder != 0:
+            # 需要修复：补齐到4的倍数
+            target_patches = ((num_patches + spatial_merge_unit - 1) // spatial_merge_unit) * spatial_merge_unit
+            pad_patches = target_patches - num_patches
+
+            padding_logger.info(f"  🔧 FIXING: need to add {pad_patches} patches")
+            padding_logger.info(f"  Target patches: {target_patches}")
+
+            # 在tensor末尾添加零填充
+            padding_tensor = torch.zeros(pad_patches, hidden_dim, dtype=pixel_values.dtype, device=pixel_values.device)
+            pixel_values = torch.cat([pixel_values, padding_tensor], dim=0)
+
+            # 更新grid_thw以匹配新的patch数量
+            # 策略：增加高度维度以保持宽度不变
+            t, h, w = grid_thw
+            new_h = target_patches // w
+            if target_patches % w != 0:
+                # 如果不能整除，调整宽度
+                new_w = w
+                while target_patches % new_w != 0:
+                    new_w += 1
+                new_h = target_patches // new_w
+            else:
+                new_w = w
+
+            grid_thw = torch.tensor([t, new_h, new_w], dtype=grid_thw.dtype, device=grid_thw.device)
+
+            # 验证修复结果
+            final_patches = pixel_values.shape[0]
+            final_seq_len = final_patches // spatial_merge_unit
+            final_remainder = final_patches % spatial_merge_unit
+
+            padding_logger.info(f"  ✅ FIXED tensor: [{final_patches}, {hidden_dim}]")
+            padding_logger.info(f"  ✅ Updated Grid THW: {grid_thw}")
+            padding_logger.info(f"  ✅ Final seq_len: {final_seq_len}")
+            padding_logger.info(f"  ✅ Spatial merge compatible: {final_remainder == 0}")
+
+        else:
+            padding_logger.info(f"  ✅ Already compatible, no fix needed")
+
+        return pixel_values, grid_thw
+
     def process_image_unified(self, image_file):
         processor = self.data_args.image_processor
         image = Image.open(image_file).convert("RGB")
@@ -353,8 +417,8 @@ class LazySupervisedDataset(Dataset):
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":
-            # For Qwen2.5-VL, use the image processor directly
-            visual_processed = processor(images=image, return_tensors="pt")
+            # For Qwen2.5-VL, use the image processor with text (required for training)
+            visual_processed = processor(images=image, text="<image>", return_tensors="pt")
         else:
             # For Qwen2-VL, use preprocess method
             visual_processed = processor.preprocess(image, return_tensors="pt")
@@ -364,7 +428,9 @@ class LazySupervisedDataset(Dataset):
             image_tensor = image_tensor[0]
         grid_thw = visual_processed["image_grid_thw"][0]
 
-        # Image processing completed - using spatial merge compatible padding
+        # 🔧 POST-PROCESSOR SPATIAL MERGE FIX
+        if self.model_type == "qwen2.5vl":
+            image_tensor, grid_thw = self._post_processor_spatial_fix(image_tensor, grid_thw, image_file)
 
         return image_tensor, grid_thw
 
