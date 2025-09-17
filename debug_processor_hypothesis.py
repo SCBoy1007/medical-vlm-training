@@ -42,6 +42,28 @@ def test_padding_vs_processor():
         processor.image_processor.max_pixels = 802816  # 1024*28*28
         processor.image_processor.min_pixels = 3136    # 56*56
 
+        # 调试processor配置
+        logger.info(f"🔧 Processor max_pixels: {processor.image_processor.max_pixels}")
+        logger.info(f"🔧 Processor min_pixels: {processor.image_processor.min_pixels}")
+        logger.info(f"🔧 Processor type: {type(processor.image_processor)}")
+
+        # 简单测试processor是否工作
+        logger.info("🧪 Quick processor test...")
+        try:
+            # 创建一个小的测试图像
+            test_img = Image.new('RGB', (224, 224), (128, 128, 128))
+            quick_result = processor(images=[test_img], return_tensors="pt")
+            logger.info(f"✅ Quick test passed. Keys: {list(quick_result.keys())}")
+            if "pixel_values" in quick_result:
+                logger.info(f"✅ pixel_values shape: {quick_result['pixel_values'].shape}")
+            if "image_grid_thw" in quick_result:
+                logger.info(f"✅ image_grid_thw: {quick_result['image_grid_thw']}")
+        except Exception as e:
+            logger.error(f"❌ Quick test failed: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+            return
+
         # 获取一个训练样本图像
         test_image_path = "./data/images/train/high_quality/sunhl-1th-10-Jan-2017-230 B AP.jpg"
 
@@ -84,7 +106,8 @@ def test_padding_vs_processor():
         # === STEP 2: 应用processor到原始图像 ===
         logger.info("\n🏭 STEP 2: Processor on ORIGINAL image...")
         try:
-            result_orig = processor(images=original_image, return_tensors="pt")
+            # 使用正确的processor调用方式
+            result_orig = processor(images=[original_image], return_tensors="pt")
             pixel_values_orig = result_orig["pixel_values"]
             grid_thw_orig = result_orig["image_grid_thw"][0]
 
@@ -104,11 +127,14 @@ def test_padding_vs_processor():
 
         except Exception as e:
             logger.error(f"❌ Processor failed on original image: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
 
         # === STEP 3: 应用processor到padded图像 ===
         logger.info("\n🏭 STEP 3: Processor on PADDED image...")
         try:
-            result_pad = processor(images=padded_image, return_tensors="pt")
+            # 使用正确的processor调用方式
+            result_pad = processor(images=[padded_image], return_tensors="pt")
             pixel_values_pad = result_pad["pixel_values"]
             grid_thw_pad = result_pad["image_grid_thw"][0]
 
@@ -128,6 +154,8 @@ def test_padding_vs_processor():
 
         except Exception as e:
             logger.error(f"❌ Processor failed on padded image: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
 
         # === STEP 4: 验证维度匹配性 ===
         logger.info("\n🔬 STEP 4: Dimension compatibility analysis...")
