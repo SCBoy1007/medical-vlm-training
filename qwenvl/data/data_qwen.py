@@ -26,7 +26,7 @@ import transformers
 
 from . import data_list
 from .rope2d import get_rope_index_25, get_rope_index_2
-from .image_processor_wrapper import wrap_image_processor
+# Removed image_processor_wrapper - using direct processor with spatial merge compatible padding
 
 # Setup logger for padding debug info
 padding_logger = logging.getLogger('padding_debug')
@@ -207,17 +207,9 @@ class LazySupervisedDataset(Dataset):
             self.data_args.image_processor.size["longest_edge"] = data_args.max_pixels
             self.data_args.image_processor.size["shortest_edge"] = data_args.min_pixels
 
-        # Complex compatibility wrapper is disabled - using simple padding approach instead
-        # The simple padding method in process_image_unified is much more reliable
-        enable_compatibility = False  # Disabled: using padding method instead
-        if data_args.model_type == "qwen2.5vl" and enable_compatibility:
-            rank0_print("Enabling spatial merge compatibility mode for Qwen2.5-VL")
-            self.data_args.image_processor = wrap_image_processor(
-                self.data_args.image_processor,
-                enable_compatibility=True
-            )
-        else:
-            rank0_print("Using simple padding approach for Qwen2.5-VL spatial merge compatibility")
+        # Using spatial merge compatible padding approach for all models
+        if data_args.model_type == "qwen2.5vl":
+            rank0_print("Using spatial merge compatible padding for Qwen2.5-VL")
 
     def __len__(self):
         return len(self.list_data_dict)
@@ -311,7 +303,6 @@ class LazySupervisedDataset(Dataset):
         return padded_image
 
     def process_image_unified(self, image_file):
-        # Avoid deepcopy of wrapped processor to prevent recursion issues
         processor = self.data_args.image_processor
         image = Image.open(image_file).convert("RGB")
 
@@ -325,7 +316,7 @@ class LazySupervisedDataset(Dataset):
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":
-            # For Qwen2.5-VL, use the image processor directly (no complex compatibility wrapper needed)
+            # For Qwen2.5-VL, use the image processor directly
             visual_processed = processor(images=image, return_tensors="pt")
         else:
             # For Qwen2-VL, use preprocess method
@@ -336,11 +327,7 @@ class LazySupervisedDataset(Dataset):
             image_tensor = image_tensor[0]
         grid_thw = visual_processed["image_grid_thw"][0]
 
-        # Log compatibility statistics for Qwen2.5-VL with wrapper
-        if self.model_type == "qwen2.5vl" and hasattr(processor, 'get_stats'):
-            stats = processor.get_stats()
-            if stats['total_processed'] > 0 and stats['total_processed'] % 100 == 0:
-                rank0_print(f"Compatibility stats: {stats['adjusted_images']}/{stats['total_processed']} images adjusted ({stats['adjustment_rate_percent']:.1f}%)")
+        # Image processing completed - using spatial merge compatible padding
 
         return image_tensor, grid_thw
 
