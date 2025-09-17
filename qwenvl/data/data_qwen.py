@@ -245,7 +245,8 @@ class LazySupervisedDataset(Dataset):
             return np.array([1] * len(self.list_data_dict))
 
     def process_image_unified(self, image_file):
-        processor = copy.deepcopy(self.data_args.image_processor)
+        # Avoid deepcopy of wrapped processor to prevent recursion issues
+        processor = self.data_args.image_processor
         image = Image.open(image_file).convert("RGB")
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL

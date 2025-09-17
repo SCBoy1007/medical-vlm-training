@@ -217,7 +217,15 @@ class CompatibleImageProcessor:
 
     def __getattr__(self, name):
         """Delegate attribute access to original processor"""
+        # Avoid infinite recursion for certain attributes
+        if name in ['original_processor', 'enable_compatibility', 'merge_size', 'spatial_merge_unit', 'stats']:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
         return getattr(self.original_processor, name)
+
+    def __deepcopy__(self, memo):
+        """Custom deepcopy to avoid recursion issues"""
+        # Return self instead of creating a deep copy to prevent recursion
+        return self
 
 
 def wrap_image_processor(processor, enable_compatibility: bool = True):
