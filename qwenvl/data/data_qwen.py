@@ -536,6 +536,14 @@ class LazySupervisedDataset(Dataset):
                 [thw.unsqueeze(0) for thw in video_grid_thw], dim=0
             )
 
+        # Fix data structure for DataCollator compatibility
+        # Convert nested list structure to flat structure expected by DataCollator
+        if isinstance(data_dict["input_ids"], list) and len(data_dict["input_ids"]) == 1:
+            data_dict["input_ids"] = data_dict["input_ids"][0]  # Flatten from [[tokens]] to [tokens]
+
+        if isinstance(data_dict["labels"], list) and len(data_dict["labels"]) == 1:
+            data_dict["labels"] = data_dict["labels"][0]  # Flatten from [[labels]] to [labels]
+
         return data_dict
 
 
