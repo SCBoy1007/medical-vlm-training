@@ -243,7 +243,14 @@ class LazySupervisedDataset(Dataset):
         processor = copy.deepcopy(self.data_args.image_processor)
         image = Image.open(image_file).convert("RGB")
 
-        visual_processed = processor.preprocess(image, return_tensors="pt")
+        # Different processing for Qwen2.5-VL vs Qwen2-VL
+        if self.model_type == "qwen2.5vl":
+            # For Qwen2.5-VL, use the processor directly
+            visual_processed = processor(images=image, return_tensors="pt")
+        else:
+            # For Qwen2-VL, use preprocess method
+            visual_processed = processor.preprocess(image, return_tensors="pt")
+
         image_tensor = visual_processed["pixel_values"]
         if isinstance(image_tensor, List):
             image_tensor = image_tensor[0]
@@ -328,9 +335,16 @@ class LazySupervisedDataset(Dataset):
         if self.data_args.model_type != "qwen2.5vl" and hasattr(processor, 'size'):
             processor.size["longest_edge"] = processor.max_pixels
             processor.size["shortest_edge"] = processor.min_pixels
-        video_processed = processor.preprocess(
-            images=None, videos=video, return_tensors="pt"
-        )
+
+        # Different processing for Qwen2.5-VL vs Qwen2-VL
+        if self.data_args.model_type == "qwen2.5vl":
+            # For Qwen2.5-VL, use the processor directly
+            video_processed = processor(images=None, videos=video, return_tensors="pt")
+        else:
+            # For Qwen2-VL, use preprocess method
+            video_processed = processor.preprocess(
+                images=None, videos=video, return_tensors="pt"
+            )
         video_tensor = video_processed["pixel_values_videos"]
         grid_thw = video_processed["video_grid_thw"][0]
         second_per_grid_ts = [
