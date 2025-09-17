@@ -246,7 +246,10 @@ class CompatibleImageProcessor:
                             new_w = max(1, target_hw // new_h)
 
                         # Ensure grid_thw has correct shape and valid values
-                        grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
+                        if grid_thw.dim() == 1:
+                            grid_thw = torch.tensor([[t, new_h, new_w]], dtype=grid_thw.dtype)
+                        else:
+                            grid_thw[0] = torch.tensor([t, new_h, new_w], dtype=grid_thw.dtype)
 
                         new_tokens = needed_patches // (self.merge_size ** 2)
                         logger.warning(f"FORCED: Updated grid_thw to {grid_thw}, new tokens: {new_tokens}")
