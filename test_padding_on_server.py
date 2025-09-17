@@ -96,7 +96,7 @@ def test_individual_image_processing():
         # 测试原始图像处理（可能失败）
         logger.info("\n--- 测试原始图像处理 ---")
         try:
-            result_orig = processor(images=original_image, return_tensors="pt")
+            result_orig = processor.image_processor(images=original_image, return_tensors="pt")
             pixel_values_orig = result_orig["pixel_values"]
             grid_thw_orig = result_orig["image_grid_thw"][0]
 
@@ -121,7 +121,7 @@ def test_individual_image_processing():
         # 测试padding后图像处理
         logger.info("\n--- 测试Padding后图像处理 ---")
         try:
-            result_padded = processor(images=padded_image, return_tensors="pt")
+            result_padded = processor.image_processor(images=padded_image, return_tensors="pt")
             pixel_values_padded = result_padded["pixel_values"]
             grid_thw_padded = result_padded["image_grid_thw"][0]
 
