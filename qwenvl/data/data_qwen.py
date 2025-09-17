@@ -417,8 +417,8 @@ class LazySupervisedDataset(Dataset):
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":
-            # For Qwen2.5-VL, use the image processor with text (required for training)
-            visual_processed = processor(images=image, text="<image>", return_tensors="pt")
+            # For Qwen2.5-VL, use the image processor (no text parameter for image-only processing)
+            visual_processed = processor(images=image, return_tensors="pt")
         else:
             # For Qwen2-VL, use preprocess method
             visual_processed = processor.preprocess(image, return_tensors="pt")
