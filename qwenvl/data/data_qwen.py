@@ -485,9 +485,14 @@ class LazySupervisedDataset(Dataset):
             grid_thw_image=grid_thw_merged if grid_thw_merged else None,
             grid_thw_video=video_grid_thw_merged if video_grid_thw_merged else None,
         )
+        # Convert input_ids to tensor for rope index calculation
+        input_ids_tensor = (
+            data_dict["input_ids"] if isinstance(data_dict["input_ids"], torch.Tensor)
+            else torch.tensor(data_dict["input_ids"], dtype=torch.long)
+        )
         position_ids, _ = self.get_rope_index(
             self.data_args.image_processor.merge_size,
-            data_dict["input_ids"],
+            input_ids_tensor,
             image_grid_thw=torch.stack(grid_thw, dim=0) if grid_thw else None,
             video_grid_thw=(
                 torch.stack(video_grid_thw, dim=0) if video_grid_thw else None
@@ -500,15 +505,24 @@ class LazySupervisedDataset(Dataset):
             data_dict = preprocess_qwen_2_visual(
                 sources, self.tokenizer, grid_thw=grid_thw_merged
             )
+            # Handle both tensor and list formats for text-only samples
+            input_ids_for_pos = (
+                data_dict["input_ids"] if isinstance(data_dict["input_ids"], torch.Tensor)
+                else torch.tensor(data_dict["input_ids"], dtype=torch.long)
+            )
             position_ids = (
-                torch.arange(0, data_dict["input_ids"].size(1))
+                torch.arange(0, input_ids_for_pos.size(1))
                 .view(1, -1)
                 .unsqueeze(0)
                 .expand(3, -1, -1)
             )
 
         data_dict["position_ids"] = position_ids
-        data_dict["attention_mask"] = [data_dict["input_ids"][0].size(0)]
+        # Handle attention mask calculation for both tensor and list formats
+        if isinstance(data_dict["input_ids"], torch.Tensor):
+            data_dict["attention_mask"] = [data_dict["input_ids"][0].size(0)]
+        else:
+            data_dict["attention_mask"] = [len(data_dict["input_ids"][0])]
 
         if "image" in self.list_data_dict[i]:
             data_dict["pixel_values"] = torch.cat(image, dim=0)
