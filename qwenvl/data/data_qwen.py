@@ -266,38 +266,58 @@ class LazySupervisedDataset(Dataset):
 
         # 检查spatial merge compatibility: total_patches % 16 == 0
         if total_patches % 16 != 0:
-            # 计算需要的最小patch总数（向上取整到16的倍数）
-            target_patches = ((total_patches + 15) // 16) * 16
-            needed_patches = target_patches - total_patches
+            # 使用搜索算法找到满足条件的最小padding方案
+            best_solution = None
+            min_extra_patches = float('inf')
 
-            # 智能分配额外的patches到高度和宽度
-            # 尽量保持纵横比，优先增加较小的维度
+            # 限制搜索范围：每个维度最多增加6个patches（168像素）
+            # 这个范围已经足够覆盖大部分情况
+            for extra_h in range(7):  # 0到6
+                for extra_w in range(7):  # 0到6
+                    candidate_h = h_patches + extra_h
+                    candidate_w = w_patches + extra_w
+                    candidate_total = candidate_h * candidate_w
 
-            # 方法：尝试不同的h和w组合，找到最接近原始纵横比的
-            original_ratio = new_height / new_width
-            best_h_patches = h_patches
-            best_w_patches = w_patches
-            best_ratio_diff = float('inf')
+                    # 检查是否满足spatial merge条件
+                    if candidate_total % 16 == 0:
+                        extra_patches = candidate_total - total_patches
 
-            # 尝试增加高度、宽度或两者
-            for extra_h in range(needed_patches + 1):
-                extra_w = needed_patches - extra_h
-                candidate_h = h_patches + extra_h
-                candidate_w = w_patches + extra_w
+                        # 寻找增加patches最少的方案
+                        if extra_patches < min_extra_patches:
+                            min_extra_patches = extra_patches
+                            best_solution = (candidate_h, candidate_w)
 
-                if candidate_h * candidate_w == target_patches:
-                    candidate_height = candidate_h * 28
-                    candidate_width = candidate_w * 28
-                    candidate_ratio = candidate_height / candidate_width
-                    ratio_diff = abs(candidate_ratio - original_ratio)
+            # 应用找到的最优解
+            if best_solution is not None:
+                new_height = best_solution[0] * 28
+                new_width = best_solution[1] * 28
+                padding_logger.info(f"Found solution: {h_patches}x{w_patches}={total_patches} → {best_solution[0]}x{best_solution[1]}={best_solution[0]*best_solution[1]} (added {min_extra_patches} patches)")
+            else:
+                # 如果搜索范围内没找到解，使用更激进的方案
+                # 直接增加到下一个16的倍数所需的最小patches
+                target_patches = ((total_patches + 15) // 16) * 16
 
-                    if ratio_diff < best_ratio_diff:
-                        best_ratio_diff = ratio_diff
-                        best_h_patches = candidate_h
-                        best_w_patches = candidate_w
+                # 简单策略：优先增加较小的维度以保持纵横比
+                if h_patches <= w_patches:
+                    # 增加高度到能满足条件的值
+                    for extra_h in range(1, 16):  # 最多增加15个高度patches
+                        candidate_h = h_patches + extra_h
+                        needed_w_patches = (target_patches + candidate_h - 1) // candidate_h  # 向上取整
+                        if needed_w_patches >= w_patches and (candidate_h * needed_w_patches) % 16 == 0:
+                            new_height = candidate_h * 28
+                            new_width = needed_w_patches * 28
+                            break
+                else:
+                    # 增加宽度到能满足条件的值
+                    for extra_w in range(1, 16):
+                        candidate_w = w_patches + extra_w
+                        needed_h_patches = (target_patches + candidate_w - 1) // candidate_w
+                        if needed_h_patches >= h_patches and (needed_h_patches * candidate_w) % 16 == 0:
+                            new_height = needed_h_patches * 28
+                            new_width = candidate_w * 28
+                            break
 
-            new_height = best_h_patches * 28
-            new_width = best_w_patches * 28
+                padding_logger.info(f"Used fallback solution: target_patches={target_patches}")
 
         if new_width == width and new_height == height:
             padding_logger.info(f"Image {width}x{height} already compatible, no padding needed")
