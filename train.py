@@ -30,7 +30,7 @@ MAX_PIXELS = 14*14*4*1280  # 1,003,520 pixels (consistent with data generation)
 MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 
 # Hardware configuration
-USE_DEEPSPEED = False  # Disabled due to MPI dependency issues
+USE_DEEPSPEED = True  # Re-enabled since mpi4py is available
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
 # ===================================
 
@@ -169,13 +169,14 @@ def main():
     # Load processor
     processor = AutoProcessor.from_pretrained(MODEL_NAME)
 
+    # Set image processor in data_args
+    data_args.image_processor = processor
+
     # Create data module
     print(f"Loading dataset: {dataset_name}")
     data_module = make_supervised_data_module(
         tokenizer=tokenizer,
-        processor=processor,
-        data_args=data_args,
-        training_args=training_args
+        data_args=data_args
     )
 
     # Create trainer
