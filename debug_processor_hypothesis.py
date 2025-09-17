@@ -115,16 +115,19 @@ def test_padding_vs_processor():
             logger.info(f"📊 Processor result (original): pixel_values shape = {pixel_values_orig.shape}")
             logger.info(f"📊 Grid THW (original): {grid_thw_orig}")
 
-            # 计算实际的seq_len
-            _, channels, proc_height_orig, proc_width_orig = pixel_values_orig.shape
-            proc_patches_h_orig = proc_height_orig // 28
-            proc_patches_w_orig = proc_width_orig // 28
-            total_patches_proc_orig = proc_patches_h_orig * proc_patches_w_orig
-            seq_len_orig = total_patches_proc_orig // 4  # spatial_merge_unit = 4
+            # pixel_values是2D的 [num_patches, hidden_dim]
+            num_patches_orig, hidden_dim = pixel_values_orig.shape
+            seq_len_orig = num_patches_orig // 4  # spatial_merge_unit = 4
 
-            logger.info(f"📦 Processor patches (original): {proc_patches_h_orig}x{proc_patches_w_orig} = {total_patches_proc_orig}")
+            # 从grid_thw获取实际patch维度
+            _, h_patches_orig, w_patches_orig = grid_thw_orig
+            total_patches_calc = h_patches_orig * w_patches_orig
+
+            logger.info(f"📦 Processor patches (original): {h_patches_orig}x{w_patches_orig} = {total_patches_calc}")
             logger.info(f"🎯 Calculated seq_len (original): {seq_len_orig}")
             logger.info(f"🔍 Is this the problematic 988? {seq_len_orig == 988}")
+            logger.info(f"🚨 Spatial merge compatible: {seq_len_orig % 4 == 0} (seq_len % 4 = {seq_len_orig % 4})")
+            logger.info(f"🚨 Total patches divisible by 16: {num_patches_orig % 16 == 0} (patches % 16 = {num_patches_orig % 16})")
 
         except Exception as e:
             logger.error(f"❌ Processor failed on original image: {e}")
@@ -142,16 +145,18 @@ def test_padding_vs_processor():
             logger.info(f"📊 Processor result (padded): pixel_values shape = {pixel_values_pad.shape}")
             logger.info(f"📊 Grid THW (padded): {grid_thw_pad}")
 
-            # 计算实际的seq_len
-            _, channels, proc_height_pad, proc_width_pad = pixel_values_pad.shape
-            proc_patches_h_pad = proc_height_pad // 28
-            proc_patches_w_pad = proc_width_pad // 28
-            total_patches_proc_pad = proc_patches_h_pad * proc_patches_w_pad
-            seq_len_pad = total_patches_proc_pad // 4  # spatial_merge_unit = 4
+            # pixel_values是2D的 [num_patches, hidden_dim]
+            num_patches_pad, hidden_dim_pad = pixel_values_pad.shape
+            seq_len_pad = num_patches_pad // 4  # spatial_merge_unit = 4
 
-            logger.info(f"📦 Processor patches (padded): {proc_patches_h_pad}x{proc_patches_w_pad} = {total_patches_proc_pad}")
+            # 从grid_thw获取实际patch维度
+            _, h_patches_pad, w_patches_pad = grid_thw_pad
+            total_patches_calc_pad = h_patches_pad * w_patches_pad
+
+            logger.info(f"📦 Processor patches (padded): {h_patches_pad}x{w_patches_pad} = {total_patches_calc_pad}")
             logger.info(f"🎯 Calculated seq_len (padded): {seq_len_pad}")
-            logger.info(f"✅ Spatial merge compatible: {total_patches_proc_pad % 16 == 0} (remainder: {total_patches_proc_pad % 16})")
+            logger.info(f"🚨 Spatial merge compatible: {seq_len_pad % 4 == 0} (seq_len % 4 = {seq_len_pad % 4})")
+            logger.info(f"🚨 Total patches divisible by 16: {num_patches_pad % 16 == 0} (patches % 16 = {num_patches_pad % 16})")
 
         except Exception as e:
             logger.error(f"❌ Processor failed on padded image: {e}")
@@ -162,23 +167,23 @@ def test_padding_vs_processor():
         logger.info("\n🔬 STEP 4: Dimension compatibility analysis...")
 
         if 'pixel_values_orig' in locals():
-            # 模拟spatial merge reshape
+            # 模拟spatial merge reshape - 基于2D tensor
             try:
-                batch, channels, height, width = pixel_values_orig.shape
-                total_elements = batch * channels * height * width
+                num_patches, hidden_dim = pixel_values_orig.shape
                 spatial_merge_unit = 4
 
-                logger.info(f"📊 Original tensor total elements: {total_elements}")
+                logger.info(f"📊 Original tensor: [{num_patches}, {hidden_dim}]")
                 logger.info(f"🎯 Attempting reshape: [{seq_len_orig}, {spatial_merge_unit}, -1]")
 
-                if total_elements % (seq_len_orig * spatial_merge_unit) == 0:
-                    hidden_dim = total_elements // (seq_len_orig * spatial_merge_unit)
-                    logger.info(f"✅ Reshape would succeed: [{seq_len_orig}, {spatial_merge_unit}, {hidden_dim}]")
+                # 检查reshape可行性
+                if num_patches % spatial_merge_unit == 0:
+                    expected_hidden = hidden_dim  # 隐藏维度保持不变
+                    logger.info(f"✅ Reshape would succeed: [{seq_len_orig}, {spatial_merge_unit}, {expected_hidden}]")
                 else:
-                    logger.error(f"❌ Reshape would FAIL - not evenly divisible")
-                    logger.error(f"   Expected: {seq_len_orig * spatial_merge_unit} divisor")
-                    logger.error(f"   Actual: {total_elements} elements")
-                    logger.error(f"   Remainder: {total_elements % (seq_len_orig * spatial_merge_unit)}")
+                    logger.error(f"❌ Reshape would FAIL - patches not divisible by spatial_merge_unit")
+                    logger.error(f"   num_patches: {num_patches}")
+                    logger.error(f"   spatial_merge_unit: {spatial_merge_unit}")
+                    logger.error(f"   Remainder: {num_patches % spatial_merge_unit}")
 
             except Exception as e:
                 logger.error(f"❌ Reshape simulation failed: {e}")
