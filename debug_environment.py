@@ -266,6 +266,75 @@ def test_dataset_loading():
         print(f"Dataset loading test failed: {e}")
         traceback.print_exc()
 
+def test_data_collator():
+    print_section("DATA COLLATOR TEST")
+    try:
+        sys.path.append('.')
+        from qwenvl.data.data_qwen import LazySupervisedDataset, DataCollatorForSupervisedDataset
+        from transformers import AutoTokenizer, AutoProcessor
+        from types import SimpleNamespace
+
+        # Setup
+        tokenizer = AutoTokenizer.from_pretrained(
+            './models/Qwen2.5-VL-7B-Instruct',
+            model_max_length=8192,
+            padding_side='right',
+            use_fast=False
+        )
+        processor = AutoProcessor.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+
+        # Create data_args
+        data_args = SimpleNamespace()
+        data_args.dataset_use = 'curve_detection_high'
+        data_args.lazy_preprocess = True
+        data_args.is_multimodal = True
+        data_args.sep_image_conv_front = False
+        data_args.image_token_len = 256
+        data_args.image_folder = './data/images'
+        data_args.image_aspect_ratio = 'anyres_max_9'
+        data_args.max_pixels = 1003520
+        data_args.min_pixels = 3136
+        data_args.data_flatten = False
+        data_args.image_processor = processor.image_processor
+        data_args.model_type = 'qwen2.5vl'
+
+        print("Creating dataset and collator...")
+        dataset = LazySupervisedDataset(tokenizer=tokenizer, data_args=data_args)
+        collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
+
+        print("Testing batch creation...")
+        # Get a few samples
+        samples = [dataset[i] for i in range(min(2, len(dataset)))]
+
+        print(f"Raw samples info:")
+        for i, sample in enumerate(samples):
+            input_ids = sample['input_ids']
+            print(f"  Sample {i} input_ids type: {type(input_ids)}")
+            if isinstance(input_ids, list):
+                print(f"  Sample {i} input_ids length: {len(input_ids)}")
+            elif hasattr(input_ids, 'shape'):
+                print(f"  Sample {i} input_ids shape: {input_ids.shape}")
+
+        # Test collation
+        print("Attempting batch collation...")
+        batch = collator(samples)
+
+        print(f"✓ Batch creation successful!")
+        print(f"Batch keys: {list(batch.keys())}")
+        print(f"input_ids shape: {batch['input_ids'].shape}")
+        print(f"labels shape: {batch['labels'].shape}")
+        print(f"attention_mask shape: {batch['attention_mask'].shape}")
+
+        # Verify tensor properties
+        input_ids = batch['input_ids']
+        print(f"input_ids dtype: {input_ids.dtype}")
+        print(f"input_ids device: {input_ids.device}")
+        print(f"input_ids min/max: {input_ids.min().item()}/{input_ids.max().item()}")
+
+    except Exception as e:
+        print(f"Data collator test failed: {e}")
+        traceback.print_exc()
+
 def main():
     print("MEDICAL VLM TRAINING DEBUG SCRIPT")
     print("=" * 60)
@@ -276,6 +345,7 @@ def main():
     test_image_processor()
     test_data_preprocessing()
     test_dataset_loading()
+    test_data_collator()  # Add the new test
 
     print_section("DEBUG COMPLETE")
     print("Please review the output above for any errors or issues.")
