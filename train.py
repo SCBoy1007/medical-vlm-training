@@ -94,7 +94,7 @@ def main():
         max_pixels=MAX_PIXELS,
         min_pixels=MIN_PIXELS,
         dataset_use="curve_detection_high,curve_detection_low,apex_vertebrae_high,apex_vertebrae_low,end_vertebrae_high,end_vertebrae_low",
-        data_flatten=True
+        data_flatten=False
     )
 
     training_args = TrainingArguments(
