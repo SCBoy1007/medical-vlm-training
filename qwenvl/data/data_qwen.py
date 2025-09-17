@@ -249,9 +249,10 @@ class LazySupervisedDataset(Dataset):
 
     def _pad_image_to_28_multiple(self, image):
         """
-        Spatial merge compatible padding方案：
-        确保 (h*w // 4) % 4 == 0，即 h*w % 16 == 0
-        同时保持28的倍数（patch size要求）
+        强化的spatial merge compatible padding方案：
+        1. 确保28的倍数（patch size要求）
+        2. 确保 total_patches % 16 == 0（spatial merge要求）
+        3. 一次性解决，避免processor后续破坏
         """
         width, height = image.size
 
@@ -293,31 +294,24 @@ class LazySupervisedDataset(Dataset):
                 new_width = best_solution[1] * 28
                 padding_logger.info(f"Found solution: {h_patches}x{w_patches}={total_patches} → {best_solution[0]}x{best_solution[1]}={best_solution[0]*best_solution[1]} (added {min_extra_patches} patches)")
             else:
-                # 如果搜索范围内没找到解，使用更激进的方案
-                # 直接增加到下一个16的倍数所需的最小patches
+                # 搜索范围内没找到解，使用保证兼容的方案
+                # 方法：将patches数直接增加到下一个16的倍数
                 target_patches = ((total_patches + 15) // 16) * 16
 
-                # 简单策略：优先增加较小的维度以保持纵横比
-                if h_patches <= w_patches:
-                    # 增加高度到能满足条件的值
-                    for extra_h in range(1, 16):  # 最多增加15个高度patches
-                        candidate_h = h_patches + extra_h
-                        needed_w_patches = (target_patches + candidate_h - 1) // candidate_h  # 向上取整
-                        if needed_w_patches >= w_patches and (candidate_h * needed_w_patches) % 16 == 0:
-                            new_height = candidate_h * 28
-                            new_width = needed_w_patches * 28
-                            break
+                # 简单直接的策略：找到能容纳target_patches的最小矩形
+                # 保持原有宽度，调整高度
+                new_h_patches = (target_patches + w_patches - 1) // w_patches  # 向上取整
+                if new_h_patches * w_patches >= target_patches:
+                    new_height = new_h_patches * 28
+                    # new_width保持不变
                 else:
-                    # 增加宽度到能满足条件的值
-                    for extra_w in range(1, 16):
-                        candidate_w = w_patches + extra_w
-                        needed_h_patches = (target_patches + candidate_w - 1) // candidate_w
-                        if needed_h_patches >= h_patches and (needed_h_patches * candidate_w) % 16 == 0:
-                            new_height = needed_h_patches * 28
-                            new_width = candidate_w * 28
-                            break
+                    # 如果还是不够，增加宽度
+                    new_w_patches = w_patches + 1
+                    new_h_patches = (target_patches + new_w_patches - 1) // new_w_patches
+                    new_height = new_h_patches * 28
+                    new_width = new_w_patches * 28
 
-                padding_logger.info(f"Used fallback solution: target_patches={target_patches}")
+                padding_logger.info(f"Fallback solution: target_patches={target_patches}, final={new_h_patches}x{new_w_patches}={new_h_patches*new_w_patches}")
 
         if new_width == width and new_height == height:
             padding_logger.info(f"Image {width}x{height} already compatible, no padding needed")
@@ -428,9 +422,7 @@ class LazySupervisedDataset(Dataset):
             image_tensor = image_tensor[0]
         grid_thw = visual_processed["image_grid_thw"][0]
 
-        # 🔧 POST-PROCESSOR SPATIAL MERGE FIX
-        if self.model_type == "qwen2.5vl":
-            image_tensor, grid_thw = self._post_processor_spatial_fix(image_tensor, grid_thw, image_file)
+        # Note: Relying on pre-padding only for spatial merge compatibility
 
         return image_tensor, grid_thw
 
