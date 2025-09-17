@@ -35,8 +35,8 @@ MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
 
-# Compatibility configuration
-ENABLE_SPATIAL_MERGE_COMPATIBILITY = True  # Enable fix for spatial merge tensor dimension issues
+# Compatibility configuration - DISABLED: Using simple padding approach instead
+ENABLE_SPATIAL_MERGE_COMPATIBILITY = False  # Disabled: simple padding is more reliable
 # ===================================
 
 def setup_logging():

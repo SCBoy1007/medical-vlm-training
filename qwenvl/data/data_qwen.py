@@ -199,14 +199,17 @@ class LazySupervisedDataset(Dataset):
             self.data_args.image_processor.size["longest_edge"] = data_args.max_pixels
             self.data_args.image_processor.size["shortest_edge"] = data_args.min_pixels
 
-        # Wrap image processor with compatibility layer for Qwen2.5-VL
-        enable_compatibility = getattr(data_args, 'enable_spatial_merge_compatibility', True)
+        # Complex compatibility wrapper is disabled - using simple padding approach instead
+        # The simple padding method in process_image_unified is much more reliable
+        enable_compatibility = False  # Disabled: using padding method instead
         if data_args.model_type == "qwen2.5vl" and enable_compatibility:
             rank0_print("Enabling spatial merge compatibility mode for Qwen2.5-VL")
             self.data_args.image_processor = wrap_image_processor(
                 self.data_args.image_processor,
                 enable_compatibility=True
             )
+        else:
+            rank0_print("Using simple padding approach for Qwen2.5-VL spatial merge compatibility")
 
     def __len__(self):
         return len(self.list_data_dict)
@@ -244,14 +247,37 @@ class LazySupervisedDataset(Dataset):
             print("No pre-calculated length available.")
             return np.array([1] * len(self.list_data_dict))
 
+    def _pad_image_to_28_multiple(self, image):
+        """
+        简单的padding方案：将图像右下方padding到28的倍数
+        保持左上角(0,0)坐标不变，所有bbox坐标无需调整
+        """
+        width, height = image.size
+        new_width = ((width + 27) // 28) * 28  # 向上取整到28的倍数
+        new_height = ((height + 27) // 28) * 28
+
+        if new_width == width and new_height == height:
+            return image  # 已经是28倍数，无需padding
+
+        # 创建黑色背景的新图像
+        padded_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
+        padded_image.paste(image, (0, 0))  # 粘贴到左上角
+
+        rank0_print(f"Padded image: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
+        return padded_image
+
     def process_image_unified(self, image_file):
         # Avoid deepcopy of wrapped processor to prevent recursion issues
         processor = self.data_args.image_processor
         image = Image.open(image_file).convert("RGB")
 
+        # Apply padding for Qwen2.5-VL to ensure 28-multiple dimensions
+        if self.model_type == "qwen2.5vl":
+            image = self._pad_image_to_28_multiple(image)
+
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":
-            # For Qwen2.5-VL, use the image processor directly (now wrapped with compatibility)
+            # For Qwen2.5-VL, use the image processor directly (no complex compatibility wrapper needed)
             visual_processed = processor(images=image, return_tensors="pt")
         else:
             # For Qwen2-VL, use preprocess method
