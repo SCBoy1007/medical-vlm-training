@@ -13,15 +13,15 @@ import torch
 logger = logging.getLogger(__name__)
 
 
-def smart_resize_compatible(height: int, width: int, factor: int = 28,
-                          min_pixels: int = 56*56, max_pixels: int = 14*14*4*1280,
+def smart_resize_compatible(height: int, width: int, factor: int = 14,
+                          min_pixels: int = 3136, max_pixels: int = 12845056,
                           merge_size: int = 2, spatial_merge_unit: int = 4) -> Tuple[int, int]:
     """
     Enhanced smart_resize that ensures spatial merge compatibility
 
     Args:
         height, width: Original image dimensions
-        factor: Patch size factor (typically 28 for Qwen2.5-VL)
+        factor: Patch size factor (14 for Qwen2.5-VL, confirmed by debug)
         min_pixels, max_pixels: Size constraints
         merge_size: Vision encoder merge size (2 for Qwen2.5-VL)
         spatial_merge_unit: Spatial merge unit (4 for Qwen2.5-VL)
@@ -177,9 +177,9 @@ class CompatibleImageProcessor:
             try:
                 compatible_height, compatible_width = smart_resize_compatible(
                     original_height, original_width,
-                    factor=getattr(self.original_processor, 'patch_size', 28),
-                    min_pixels=getattr(self.original_processor, 'min_pixels', 56*56),
-                    max_pixels=getattr(self.original_processor, 'max_pixels', 14*14*4*1280),
+                    factor=getattr(self.original_processor, 'patch_size', 14),
+                    min_pixels=getattr(self.original_processor, 'min_pixels', 3136),
+                    max_pixels=getattr(self.original_processor, 'max_pixels', 12845056),
                     merge_size=self.merge_size,
                     spatial_merge_unit=self.spatial_merge_unit
                 )
