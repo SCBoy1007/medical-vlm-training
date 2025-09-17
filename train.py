@@ -67,6 +67,10 @@ def main():
     # Setup logging first
     logger = setup_logging()
 
+    # 设置环境变量禁用wandb
+    os.environ["WANDB_DISABLED"] = "true"
+    os.environ["WANDB_MODE"] = "disabled"
+
     # Set up paths
     project_root = Path(__file__).parent
     sys.path.append(str(project_root))
@@ -187,6 +191,11 @@ def main():
         weight_decay=0.,
         warmup_ratio=0.03,
         lr_scheduler_type="cosine",
+
+        # 禁用外部日志避免wandb配置问题
+        report_to=[],  # 禁用wandb等所有报告
+        logging_dir=None,  # 禁用tensorboard
+        run_name=RUN_NAME,  # 设置运行名称
         logging_steps=1,
         tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
