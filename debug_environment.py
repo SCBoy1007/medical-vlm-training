@@ -335,6 +335,173 @@ def test_data_collator():
         print(f"Data collator test failed: {e}")
         traceback.print_exc()
 
+def test_model_config():
+    """Test model configuration parameters"""
+    print_section("MODEL CONFIGURATION TEST")
+
+    try:
+        from transformers import AutoConfig
+        config = AutoConfig.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+
+        print(f"Model type: {config.model_type}")
+        print(f"Vision config: {getattr(config, 'vision_config', 'Not found')}")
+
+        # Check vision config details
+        if hasattr(config, 'vision_config'):
+            vision_config = config.vision_config
+            print(f"Vision model type: {getattr(vision_config, 'model_type', 'Not found')}")
+            print(f"Spatial merge size: {getattr(vision_config, 'spatial_merge_size', 'Not found')}")
+            print(f"Spatial merge unit: {getattr(vision_config, 'spatial_merge_unit', 'Not found')}")
+            print(f"Hidden size: {getattr(vision_config, 'hidden_size', 'Not found')}")
+
+        print(f"✓ Model config loaded successfully")
+
+    except Exception as e:
+        print(f"Model config test failed: {e}")
+        traceback.print_exc()
+
+def test_merge_size_values():
+    """Test actual merge_size values from processor"""
+    print_section("MERGE SIZE VALUES TEST")
+
+    try:
+        from transformers import AutoProcessor
+        processor = AutoProcessor.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+
+        # Check image processor
+        img_proc = processor.image_processor
+        print(f"Image processor type: {type(img_proc)}")
+        print(f"Image processor config: {img_proc.__dict__.keys()}")
+
+        # Check specific attributes
+        merge_size = getattr(img_proc, 'merge_size', None)
+        spatial_merge_size = getattr(img_proc, 'spatial_merge_size', None)
+
+        print(f"merge_size: {merge_size}")
+        print(f"spatial_merge_size: {spatial_merge_size}")
+
+        # Check other relevant attributes
+        for attr in ['patch_size', 'spatial_patch_size', 'temporal_patch_size']:
+            value = getattr(img_proc, attr, None)
+            print(f"{attr}: {value}")
+
+        print(f"✓ Merge size values checked")
+
+    except Exception as e:
+        print(f"Merge size test failed: {e}")
+        traceback.print_exc()
+
+def test_tensor_shapes_pipeline():
+    """Test tensor shapes throughout the preprocessing pipeline"""
+    print_section("TENSOR SHAPES PIPELINE TEST")
+
+    try:
+        from transformers import AutoTokenizer, AutoProcessor
+        from PIL import Image
+        import torch
+
+        # Load components
+        tokenizer = AutoTokenizer.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+        processor = AutoProcessor.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+
+        # Create test image
+        test_image = Image.new('RGB', (512, 512), color='red')
+
+        # Process image
+        print("1. Image processing:")
+        img_result = processor.image_processor(images=test_image, return_tensors='pt')
+        pixel_values = img_result['pixel_values']
+        image_grid_thw = img_result.get('image_grid_thw', None)
+
+        print(f"   pixel_values shape: {pixel_values.shape}")
+        print(f"   image_grid_thw: {image_grid_thw}")
+        if image_grid_thw is not None:
+            print(f"   image_grid_thw shape: {image_grid_thw.shape}")
+            print(f"   THW values: {image_grid_thw}")
+
+        # Calculate expected sequence length
+        if image_grid_thw is not None:
+            thw = image_grid_thw[0]  # First (and only) image
+            total_patches = thw.prod().item()
+            merge_size = getattr(processor.image_processor, 'merge_size', 2)
+            spatial_merge_unit = 4  # What we're using in the fix
+
+            print(f"2. Sequence length calculation:")
+            print(f"   Total patches (T*H*W): {total_patches}")
+            print(f"   Processor merge_size: {merge_size}")
+            print(f"   Our spatial_merge_unit: {spatial_merge_unit}")
+
+            # Calculate both ways
+            seq_len_processor = total_patches // (merge_size ** 2)
+            seq_len_our_fix = total_patches // (spatial_merge_unit ** 2)
+
+            print(f"   Seq len with processor merge_size: {seq_len_processor}")
+            print(f"   Seq len with our spatial_merge_unit: {seq_len_our_fix}")
+
+            # Check divisibility
+            print(f"   Total patches % (merge_size²): {total_patches % (merge_size ** 2)}")
+            print(f"   Total patches % (spatial_merge_unit²): {total_patches % (spatial_merge_unit ** 2)}")
+
+        print(f"✓ Tensor shapes pipeline tested")
+
+    except Exception as e:
+        print(f"Tensor shapes pipeline test failed: {e}")
+        traceback.print_exc()
+
+def test_simple_forward_pass():
+    """Test a simple forward pass to see where it fails"""
+    print_section("SIMPLE FORWARD PASS TEST")
+
+    try:
+        import torch
+        from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+        from PIL import Image
+
+        print("Loading model (this may take a moment)...")
+        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            './models/Qwen2.5-VL-7B-Instruct',
+            torch_dtype=torch.float16,
+            device_map='cpu'  # Use CPU to avoid CUDA issues
+        )
+
+        processor = AutoProcessor.from_pretrained('./models/Qwen2.5-VL-7B-Instruct')
+
+        # Create minimal test input
+        test_image = Image.new('RGB', (224, 224), color='red')
+        text = "<image>What is in this image?"
+
+        print("Processing inputs...")
+        inputs = processor(text=text, images=test_image, return_tensors='pt')
+
+        print("Input shapes:")
+        for key, value in inputs.items():
+            if torch.is_tensor(value):
+                print(f"   {key}: {value.shape}")
+            else:
+                print(f"   {key}: {value}")
+
+        print("Attempting forward pass...")
+        with torch.no_grad():
+            # Try just the vision part first
+            if 'pixel_values' in inputs:
+                print("Testing vision encoder...")
+                pixel_values = inputs['pixel_values']
+                image_grid_thw = inputs.get('image_grid_thw', None)
+
+                # This should fail at the problematic line
+                try:
+                    image_embeds = model.visual(pixel_values, grid_thw=image_grid_thw)
+                    print(f"   ✓ Vision encoder succeeded, output shape: {image_embeds.shape}")
+                except Exception as vision_error:
+                    print(f"   ✗ Vision encoder failed: {vision_error}")
+                    print(f"   This confirms where the error occurs in the pipeline")
+
+        print(f"✓ Forward pass test completed")
+
+    except Exception as e:
+        print(f"Forward pass test failed: {e}")
+        traceback.print_exc()
+
 def main():
     print("MEDICAL VLM TRAINING DEBUG SCRIPT")
     print("=" * 60)
@@ -343,9 +510,13 @@ def main():
     check_data_files()
     test_tokenizer()
     test_image_processor()
+    test_model_config()           # NEW
+    test_merge_size_values()      # NEW
+    test_tensor_shapes_pipeline() # NEW
     test_data_preprocessing()
     test_dataset_loading()
-    test_data_collator()  # Add the new test
+    test_data_collator()
+    test_simple_forward_pass()    # NEW
 
     print_section("DEBUG COMPLETE")
     print("Please review the output above for any errors or issues.")
