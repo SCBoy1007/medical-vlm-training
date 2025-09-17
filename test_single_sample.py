@@ -108,7 +108,8 @@ def test_single_sample():
         }
 
         if 'image_grid_thw' in sample:
-            model_inputs['image_grid_thw'] = sample['image_grid_thw'].unsqueeze(0)
+            # Remove batch dimension that was added - vision encoder expects [num_images, 3]
+            model_inputs['image_grid_thw'] = sample['image_grid_thw']  # Keep original shape
 
         print("Model input shapes:")
         for key, value in model_inputs.items():
