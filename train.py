@@ -170,7 +170,7 @@ def main():
     processor = AutoProcessor.from_pretrained(MODEL_NAME)
 
     # Set image processor in data_args
-    data_args.image_processor = processor
+    data_args.image_processor = processor.image_processor
 
     # Set model type for Qwen2.5-VL
     data_args.model_type = "qwen2.5vl"
