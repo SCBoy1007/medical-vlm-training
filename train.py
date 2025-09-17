@@ -205,9 +205,7 @@ def main():
         # DeepSpeed
         deepspeed=DEEPSPEED_CONFIG if USE_DEEPSPEED else None,
 
-        # Logging
-        run_name=RUN_NAME,
-        report_to=["wandb"] if "WANDB_API_KEY" in os.environ else []
+        # Logging (already configured above to disable wandb)
     )
 
     # Replace attention class for better memory efficiency (disabled due to GLIBC issues)
