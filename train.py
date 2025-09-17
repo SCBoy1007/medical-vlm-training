@@ -26,7 +26,7 @@ LEARNING_RATE = 2e-7
 BATCH_SIZE = 4
 GRAD_ACCUM_STEPS = 4
 NUM_EPOCHS = 0.5
-MAX_PIXELS = 14*14*4*1280  # 1,003,520 pixels (consistent with data generation)
+MAX_PIXELS = 1024*28*28    # 802,816 pixels (safe value that's multiple of 28 for spatial_merge_unit)
 MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 
 # Hardware configuration
