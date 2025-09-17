@@ -61,9 +61,9 @@ def smart_resize_compatible(height: int, width: int, factor: int = 28,
     best_h, best_w = h_bar, w_bar
     min_adjustment = float('inf')
 
-    # Try small adjustments around the current dimensions
-    for dh in range(-2*factor, 3*factor, factor):  # Try ±2 factors
-        for dw in range(-2*factor, 3*factor, factor):
+    # Try larger adjustments around the current dimensions to ensure compatibility
+    for dh in range(-4*factor, 5*factor, factor):  # Try ±4 factors for more coverage
+        for dw in range(-4*factor, 5*factor, factor):
             test_h = h_bar + dh
             test_w = w_bar + dw
 
@@ -85,6 +85,36 @@ def smart_resize_compatible(height: int, width: int, factor: int = 28,
                 if adjustment < min_adjustment:
                     min_adjustment = adjustment
                     best_h, best_w = test_h, test_w
+
+    # If no compatible size found, force to nearest multiple that works
+    if best_h == h_bar and best_w == w_bar and tokens_after_merge % spatial_merge_unit != 0:
+        logger.warning(f"Could not find compatible dimensions around {width}x{height}, forcing adjustment...")
+
+        # Calculate how many tokens we need to add/remove to make it divisible by 4
+        remainder = tokens_after_merge % spatial_merge_unit
+        if remainder != 0:
+            # We need to adjust to make tokens divisible by 4
+            needed_adjustment = spatial_merge_unit - remainder
+            target_tokens = tokens_after_merge + needed_adjustment
+            target_patches = target_tokens * (merge_size ** 2)
+
+            # Try to adjust width first (typically easier)
+            current_h_patches = h_bar // factor
+            target_w_patches = target_patches // current_h_patches
+            target_w = target_w_patches * factor
+
+            if target_w > 0 and target_w <= max_pixels // h_bar:
+                best_h, best_w = h_bar, target_w
+                logger.info(f"Force adjusted width: {width}x{height} → {best_w}x{best_h}")
+            else:
+                # Try adjusting height instead
+                current_w_patches = w_bar // factor
+                target_h_patches = target_patches // current_w_patches
+                target_h = target_h_patches * factor
+
+                if target_h > 0 and target_h <= max_pixels // w_bar:
+                    best_h, best_w = target_h, w_bar
+                    logger.info(f"Force adjusted height: {width}x{height} → {best_w}x{best_h}")
 
     # Log the adjustment made
     if best_h != h_bar or best_w != w_bar:
