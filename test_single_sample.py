@@ -35,7 +35,7 @@ def test_single_sample():
 
         print("2. Creating data arguments...")
         data_args = DataArguments()
-        data_args.dataset_use = 'datasets_grounding'
+        data_args.dataset_use = 'curve_detection_high'  # Use correct dataset name
         data_args.lazy_preprocess = True
         data_args.is_multimodal = True
         data_args.image_aspect_ratio = 'anyres_max_9'
