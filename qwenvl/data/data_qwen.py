@@ -257,14 +257,14 @@ class LazySupervisedDataset(Dataset):
         new_height = ((height + 27) // 28) * 28
 
         if new_width == width and new_height == height:
-            rank0_print(f"Image {width}x{height} already 28-multiple, no padding needed")
+            print(f"Image {width}x{height} already 28-multiple, no padding needed")
             return image  # 已经是28倍数，无需padding
 
         # 创建黑色背景的新图像
         padded_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
         padded_image.paste(image, (0, 0))  # 粘贴到左上角
 
-        rank0_print(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
+        print(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
         return padded_image
 
     def process_image_unified(self, image_file):
@@ -273,11 +273,11 @@ class LazySupervisedDataset(Dataset):
         image = Image.open(image_file).convert("RGB")
 
         # Apply padding for Qwen2.5-VL to ensure 28-multiple dimensions
-        rank0_print(f"DEBUG: model_type={self.model_type}, applying padding check...")
+        print(f"DEBUG: model_type={self.model_type}, applying padding check...")
         if self.model_type == "qwen2.5vl":
             image = self._pad_image_to_28_multiple(image)
         else:
-            rank0_print(f"DEBUG: Skipping padding - model_type is {self.model_type}, not qwen2.5vl")
+            print(f"DEBUG: Skipping padding - model_type is {self.model_type}, not qwen2.5vl")
 
         # Different processing for Qwen2.5-VL vs Qwen2-VL
         if self.model_type == "qwen2.5vl":
