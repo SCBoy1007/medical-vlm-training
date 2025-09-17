@@ -23,7 +23,7 @@ RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}"
 
 # Training hyperparameters
 LEARNING_RATE = 2e-7
-BATCH_SIZE = 4
+BATCH_SIZE = 1  # Simplified for debugging CUDA index issues
 GRAD_ACCUM_STEPS = 4
 NUM_EPOCHS = 0.5
 MAX_PIXELS = 1024*28*28    # 802,816 pixels (safe value that's multiple of 28 for spatial_merge_unit)

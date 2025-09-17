@@ -418,11 +418,8 @@ class LazySupervisedDataset(Dataset):
             if not isinstance(grid_thw, Sequence):
                 grid_thw_merged = [grid_thw_merged]
                 grid_thw = [grid_thw]
-            # Calculate image_pad token count: patches // merge_size**2
-            # Use ceiling to handle non-divisible cases from variable image sizes
-            import math
             grid_thw_merged = [
-                math.ceil(merged_thw.prod() / (self.data_args.image_processor.merge_size**2))
+                merged_thw.prod() // self.data_args.image_processor.merge_size**2
                 for merged_thw in grid_thw_merged
             ]
         if "video" in sources[0]:
@@ -452,10 +449,8 @@ class LazySupervisedDataset(Dataset):
             if not isinstance(video_grid_thw, Sequence):
                 video_grid_thw_merged = [video_grid_thw_merged]
                 video_grid_thw = [video_grid_thw]
-            # Calculate video_pad token count: patches // merge_size**2
-            # Use ceiling to handle non-divisible cases from variable video sizes
             video_grid_thw_merged = [
-                math.ceil(merged_thw.prod() / (self.data_args.image_processor.merge_size**2))
+                merged_thw.prod() // self.data_args.image_processor.merge_size**2
                 for merged_thw in video_grid_thw_merged
             ]
         chat_sources = copy.deepcopy([e["conversations"] for e in sources])
