@@ -55,10 +55,26 @@ def validate_dataset_sample(data_module, sample_indices: List[int], logger) -> D
             logger.info(f"Sample {idx} basic info:")
             logger.info(f"  pixel_values shape: {pixel_values.shape}")
             logger.info(f"  image_grid_thw: {image_grid_thw}")
+            logger.info(f"  image_grid_thw shape: {image_grid_thw.shape}")
+            logger.info(f"  image_grid_thw dtype: {image_grid_thw.dtype}")
             logger.info(f"  input_ids length: {len(input_ids)}")
 
-            # Calculate expected dimensions
-            t, h, w = image_grid_thw[0].tolist()  # Extract T, H, W
+            # Calculate expected dimensions - handle different tensor shapes
+            if image_grid_thw.dim() == 1:
+                # 1D tensor: [t, h, w]
+                t, h, w = image_grid_thw.tolist()
+            elif image_grid_thw.dim() == 2:
+                # 2D tensor: [[t, h, w]]
+                t, h, w = image_grid_thw[0].tolist()
+            else:
+                # Handle unexpected shapes
+                logger.error(f"Unexpected image_grid_thw shape: {image_grid_thw.shape}")
+                # Flatten and take first 3 elements
+                flat_thw = image_grid_thw.flatten()
+                if len(flat_thw) >= 3:
+                    t, h, w = flat_thw[:3].tolist()
+                else:
+                    raise ValueError(f"Invalid image_grid_thw shape: {image_grid_thw.shape}")
             total_patches = t * h * w
 
             # Get merge_size from processor (should be 2 for Qwen2.5-VL)
