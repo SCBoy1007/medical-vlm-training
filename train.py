@@ -133,7 +133,7 @@ def main():
         warmup_ratio=0.03,
         lr_scheduler_type="cosine",
         logging_steps=1,
-        tf32=True,
+        tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
         gradient_checkpointing=True,
         max_grad_norm=1.0,
