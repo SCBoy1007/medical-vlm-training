@@ -264,23 +264,40 @@ class LazySupervisedDataset(Dataset):
         w_patches = new_width // 28
         total_patches = h_patches * w_patches
 
-        # 检查spatial merge compatibility: (total_patches // 4) % 4 == 0
-        # 即要求 total_patches % 16 == 0
+        # 检查spatial merge compatibility: total_patches % 16 == 0
         if total_patches % 16 != 0:
-            # 调整到最近的16的倍数
+            # 计算需要的最小patch总数（向上取整到16的倍数）
             target_patches = ((total_patches + 15) // 16) * 16
+            needed_patches = target_patches - total_patches
 
-            # 优先增加较小的维度以保持纵横比
-            if h_patches <= w_patches:
-                # 增加高度
-                needed_patches = target_patches - total_patches
-                additional_h_patches = (needed_patches + w_patches - 1) // w_patches
-                new_height = (h_patches + additional_h_patches) * 28
-            else:
-                # 增加宽度
-                needed_patches = target_patches - total_patches
-                additional_w_patches = (needed_patches + h_patches - 1) // h_patches
-                new_width = (w_patches + additional_w_patches) * 28
+            # 智能分配额外的patches到高度和宽度
+            # 尽量保持纵横比，优先增加较小的维度
+
+            # 方法：尝试不同的h和w组合，找到最接近原始纵横比的
+            original_ratio = new_height / new_width
+            best_h_patches = h_patches
+            best_w_patches = w_patches
+            best_ratio_diff = float('inf')
+
+            # 尝试增加高度、宽度或两者
+            for extra_h in range(needed_patches + 1):
+                extra_w = needed_patches - extra_h
+                candidate_h = h_patches + extra_h
+                candidate_w = w_patches + extra_w
+
+                if candidate_h * candidate_w == target_patches:
+                    candidate_height = candidate_h * 28
+                    candidate_width = candidate_w * 28
+                    candidate_ratio = candidate_height / candidate_width
+                    ratio_diff = abs(candidate_ratio - original_ratio)
+
+                    if ratio_diff < best_ratio_diff:
+                        best_ratio_diff = ratio_diff
+                        best_h_patches = candidate_h
+                        best_w_patches = candidate_w
+
+            new_height = best_h_patches * 28
+            new_width = best_w_patches * 28
 
         if new_width == width and new_height == height:
             padding_logger.info(f"Image {width}x{height} already compatible, no padding needed")
