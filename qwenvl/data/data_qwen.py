@@ -133,9 +133,8 @@ def preprocess_qwen_2_visual(
         input_ids.append(input_id)
         targets.append(target)
 
-    input_ids = torch.tensor(input_ids, dtype=torch.long)
-    targets = torch.tensor(targets, dtype=torch.long)
-
+    # Don't convert to tensor here - let DataCollator handle padding
+    # This prevents issues with variable-length sequences
     return dict(
         input_ids=input_ids,
         labels=targets,
@@ -551,8 +550,15 @@ class DataCollatorForSupervisedDataset(object):
             [instance[key] for instance in instances]
             for key in ("input_ids", "labels", "position_ids")
         )
-        input_ids = [ids.squeeze(0) for ids in input_ids]
-        labels = [ids.squeeze(0) for ids in labels]
+        # Handle both tensor and list formats for input_ids and labels
+        input_ids = [
+            ids.squeeze(0) if isinstance(ids, torch.Tensor) else torch.tensor(ids, dtype=torch.long)
+            for ids in input_ids
+        ]
+        labels = [
+            lbls.squeeze(0) if isinstance(lbls, torch.Tensor) else torch.tensor(lbls, dtype=torch.long)
+            for lbls in labels
+        ]
         input_ids = torch.nn.utils.rnn.pad_sequence(
             input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id
         )
@@ -621,6 +627,15 @@ class FlattenedDataCollatorForSupervisedDataset(DataCollatorForSupervisedDataset
             [instance[key] for instance in instances]
             for key in ("input_ids", "labels", "position_ids", "attention_mask")
         )
+        # Convert list format to tensor format for flattened collator
+        input_ids = [
+            ids if isinstance(ids, torch.Tensor) else torch.tensor(ids, dtype=torch.long).unsqueeze(0)
+            for ids in input_ids
+        ]
+        labels = [
+            lbls if isinstance(lbls, torch.Tensor) else torch.tensor(lbls, dtype=torch.long).unsqueeze(0)
+            for lbls in labels
+        ]
         attention_mask = list(
             itertools.chain(
                 *(
