@@ -30,7 +30,7 @@ MAX_PIXELS = 14*14*4*1280  # 1,003,520 pixels (consistent with data generation)
 MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
 
 # Hardware configuration
-USE_DEEPSPEED = True
+USE_DEEPSPEED = False  # Disabled due to MPI dependency issues
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
 # ===================================
 
