@@ -172,6 +172,9 @@ def main():
     # Set image processor in data_args
     data_args.image_processor = processor
 
+    # Set model type for Qwen2.5-VL
+    data_args.model_type = "qwen2.5vl"
+
     # Create data module
     print(f"Loading dataset: {dataset_name}")
     data_module = make_supervised_data_module(

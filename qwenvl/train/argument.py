@@ -41,6 +41,7 @@ class DataArguments:
     min_pixels: int = field(default=56*56)         # Updated for consistency with data generation
     video_max_frame_pixels: int = field(default=32 * 28 * 28)
     video_min_frame_pixels: int = field(default=4 * 28 * 28)
+    model_type: str = field(default="qwen2.5vl")
 
 
 @dataclass
