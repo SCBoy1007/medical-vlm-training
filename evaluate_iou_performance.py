@@ -532,6 +532,74 @@ def calculate_metrics(results):
         'samples_with_predictions': samples_with_pred
     }
 
+def calculate_overall_performance(all_results):
+    """Calculate overall performance across all tasks and qualities"""
+    all_samples = []
+    task_performances = {}
+    quality_performances = {'high_quality': [], 'low_quality': []}
+
+    # Collect all samples and organize by task/quality
+    for task_name in all_results:
+        task_samples = []
+        task_performances[task_name] = {}
+
+        for quality in all_results[task_name]:
+            results = all_results[task_name][quality]['results']
+            metrics = all_results[task_name][quality]['metrics']
+
+            # Add to overall collection
+            all_samples.extend(results)
+
+            # Add to quality collection
+            quality_performances[quality].extend(results)
+
+            # Add to task collection
+            task_samples.extend(results)
+            task_performances[task_name][quality] = metrics.get('avg_iou', 0)
+
+        # Calculate task overall performance
+        if task_samples:
+            task_performances[task_name]['overall'] = np.mean([r['iou'] for r in task_samples])
+
+    # Calculate overall statistics
+    if not all_samples:
+        return {}
+
+    total_samples = len(all_samples)
+    overall_avg_iou = np.mean([r['iou'] for r in all_samples])
+    overall_detection_rate = sum(1 for r in all_samples if r['pred_count'] > 0) / total_samples
+
+    # Calculate quality comparison
+    quality_comparison = {}
+    for quality in quality_performances:
+        if quality_performances[quality]:
+            quality_comparison[quality] = {
+                'avg_iou': np.mean([r['iou'] for r in quality_performances[quality]]),
+                'detection_rate': sum(1 for r in quality_performances[quality] if r['pred_count'] > 0) / len(quality_performances[quality]),
+                'samples': len(quality_performances[quality])
+            }
+
+    # Rank tasks by performance
+    task_ranking = []
+    for task_name in task_performances:
+        if 'overall' in task_performances[task_name]:
+            task_ranking.append({
+                'task': task_name,
+                'avg_iou': task_performances[task_name]['overall']
+            })
+    task_ranking.sort(key=lambda x: x['avg_iou'], reverse=True)
+
+    return {
+        'overall_avg_iou': overall_avg_iou,
+        'overall_detection_rate': overall_detection_rate,
+        'total_samples': total_samples,
+        'task_performances': task_performances,
+        'task_ranking': task_ranking,
+        'quality_comparison': quality_comparison,
+        'best_performing_task': task_ranking[0]['task'] if task_ranking else None,
+        'worst_performing_task': task_ranking[-1]['task'] if task_ranking else None
+    }
+
 def load_model(model_path, lora_path=None):
     """Load base model and optionally apply LoRA adapter"""
     print(f"Loading base model from: {model_path}")
@@ -685,25 +753,17 @@ def main():
 
     total_time = time.time() - start_time
 
-    # Generate experiment number and timestamp for file naming
-    experiment_num = "004"  # Experiment 004: Mixed Strategy - Fix End Vertebrae Issue
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Calculate overall performance summary
+    overall_performance = calculate_overall_performance(all_results)
 
-    # Save results with experiment number and timestamp
-    output_file = os.path.join(OUTPUT_DIR, f"experiment_{experiment_num}_{timestamp}_mixed_strategy.json")
+    # Generate timestamp for file naming
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_prefix = "lora" if USE_LORA else "base"
+
+    # Save results with model type and timestamp
+    output_file = os.path.join(OUTPUT_DIR, f"{model_prefix}_model_iou_results_{timestamp}.json")
     final_results = {
-        'experiment_info': {
-            'experiment_number': experiment_num,
-            'timestamp': timestamp,
-            'description': 'Mixed Strategy - Targeted Fixes Based on Task Performance',
-            'changes': [
-                'Restored experiment 001 end_vertebrae nested JSON format and parsing',
-                'Kept experiment 003 successful curve detection prompt',
-                'Added soft constraints to apex_vertebrae (1-2 typical, avoid over-detection)',
-                'Different complexity levels for different tasks based on success patterns',
-                'Fixed parsing logic to handle nested end_vertebrae structure correctly'
-            ]
-        },
+        'overall_performance': overall_performance,
         'results': all_results,
         'config': {
             'device': DEVICE,
@@ -712,7 +772,8 @@ def main():
             'use_lora': USE_LORA,
             'lora_path': lora_path,
             'model_type': model_type,
-            'visualization_dir': visualization_dir
+            'visualization_dir': visualization_dir,
+            'timestamp': timestamp
         }
     }
 
@@ -720,10 +781,29 @@ def main():
         json.dump(final_results, f, indent=2, ensure_ascii=False)
 
     print(f"\n{'='*60}")
-    print("OVERALL SUMMARY")
+    print("OVERALL PERFORMANCE SUMMARY")
     print(f"{'='*60}")
-    print(f"Total testing time: {total_time:.1f}s ({total_time/60:.1f}m)")
+    print(f"Model Type: {model_type}")
+    print(f"Total Samples: {overall_performance.get('total_samples', 0)}")
+    print(f"Overall Average IoU: {overall_performance.get('overall_avg_iou', 0):.4f}")
+    print(f"Overall Detection Rate: {overall_performance.get('overall_detection_rate', 0):.2%}")
+    print(f"Total Testing Time: {total_time:.1f}s ({total_time/60:.1f}m)")
 
+    # Task ranking
+    task_ranking = overall_performance.get('task_ranking', [])
+    if task_ranking:
+        print(f"\nTask Performance Ranking:")
+        for i, task_info in enumerate(task_ranking, 1):
+            print(f"  {i}. {task_info['task']}: IoU={task_info['avg_iou']:.4f}")
+
+    # Quality comparison
+    quality_comparison = overall_performance.get('quality_comparison', {})
+    if quality_comparison:
+        print(f"\nQuality Comparison:")
+        for quality, metrics in quality_comparison.items():
+            print(f"  {quality}: IoU={metrics['avg_iou']:.4f}, Detection={metrics['detection_rate']:.2%}, Samples={metrics['samples']}")
+
+    print(f"\nDetailed Results by Task:")
     for task_name in TASKS:
         print(f"\n{task_name.upper()}:")
         for quality in QUALITIES:
