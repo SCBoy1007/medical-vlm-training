@@ -45,6 +45,74 @@ DEEPSPEED_CONFIG = "./scripts/zero3.json"
 # Simplified: No longer needed with 700x1400 resized images
 # ===================================
 
+class TrainingMonitorCallback(TrainerCallback):
+    """自定义训练监控回调，提供清晰的训练进度信息"""
+
+    def __init__(self, logger):
+        self.logger = logger
+        self.start_time = None
+        self.last_log_time = None
+
+    def on_train_begin(self, args, state, control, **kwargs):
+        import time
+        self.start_time = time.time()
+        self.last_log_time = self.start_time
+        self.logger.info("🚀 Training started...")
+
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        if logs is None:
+            return
+
+        import time
+        current_time = time.time()
+
+        # Calculate progress
+        current_step = state.global_step
+        max_steps = state.max_steps
+        progress = (current_step / max_steps) * 100 if max_steps > 0 else 0
+
+        # Calculate time estimates
+        elapsed_time = current_time - self.start_time
+        time_per_step = elapsed_time / current_step if current_step > 0 else 0
+        remaining_steps = max_steps - current_step
+        eta = remaining_steps * time_per_step
+
+        # Format time
+        def format_time(seconds):
+            hours = int(seconds // 3600)
+            minutes = int((seconds % 3600) // 60)
+            seconds = int(seconds % 60)
+            if hours > 0:
+                return f"{hours}h{minutes}m{seconds}s"
+            elif minutes > 0:
+                return f"{minutes}m{seconds}s"
+            else:
+                return f"{seconds}s"
+
+        # Extract key metrics
+        loss = logs.get('train_loss', logs.get('loss', 'N/A'))
+        lr = logs.get('learning_rate', 'N/A')
+
+        # Log training progress
+        progress_bar = "█" * int(progress // 5) + "░" * (20 - int(progress // 5))
+
+        self.logger.info(
+            f"Step {current_step:4d}/{max_steps} [{progress_bar}] {progress:5.1f}% | "
+            f"Loss: {loss:.4f} | LR: {lr:.2e} | "
+            f"Elapsed: {format_time(elapsed_time)} | ETA: {format_time(eta)}"
+        )
+
+        # GPU memory update (less frequent to avoid spam)
+        if current_step % 50 == 0:
+            if torch.cuda.is_available():
+                allocated = torch.cuda.memory_allocated() / (1024**3)
+                self.logger.info(f"GPU Memory: {allocated:.1f}GB")
+
+    def on_train_end(self, args, state, control, **kwargs):
+        import time
+        total_time = time.time() - self.start_time
+        self.logger.info(f"✅ Training completed in {total_time/60:.1f} minutes")
+
 def print_gpu_memory_usage(logger, stage=""):
     """打印详细的GPU显存使用情况"""
     if torch.cuda.is_available():
@@ -108,32 +176,16 @@ def main():
         Qwen2_5_VLForConditionalGeneration,
         AutoTokenizer,
         AutoProcessor,
-        Trainer
+        Trainer,
+        TrainerCallback
     )
 
     logger.info("="*60)
     logger.info("MEDICAL VLM TRAINING STARTED")
     logger.info("="*60)
-    logger.info(f"Training dataset type: {DATASET_TYPE}")
-    logger.info(f"Model path: {MODEL_NAME}")
-    logger.info(f"Output directory: {OUTPUT_DIR}")
-    logger.info(f"Learning rate: {LEARNING_RATE}")
-    logger.info(f"Batch size: {BATCH_SIZE}")
-    logger.info(f"Gradient accumulation steps: {GRAD_ACCUM_STEPS}")
-    logger.info(f"Number of epochs: {NUM_EPOCHS}")
-    logger.info(f"Max pixels: {MAX_PIXELS}")
-    logger.info(f"Min pixels: {MIN_PIXELS}")
-    logger.info(f"DeepSpeed enabled: {USE_DEEPSPEED}")
-    logger.info("Using simplified image processing (no custom padding)")
-    logger.info("TRAINING MODE: LoRA Fine-tuning")
-    logger.info(f"LoRA rank: 32")
-    logger.info(f"LoRA alpha: 16")
-    logger.info(f"Expected memory usage: ~12GB (LoRA r=32 + reduced resolution)")
-    logger.info(f"CUDA available: {torch.cuda.is_available()}")
-    if torch.cuda.is_available():
-        logger.info(f"GPU count: {torch.cuda.device_count()}")
-        logger.info(f"Current GPU: {torch.cuda.current_device()}")
-        logger.info(f"GPU name: {torch.cuda.get_device_name()}")
+    logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-7B | Mode: LoRA Fine-tuning")
+    logger.info(f"Learning Rate: {LEARNING_RATE} | Batch Size: {BATCH_SIZE} | Epochs: {NUM_EPOCHS}")
+    logger.info(f"LoRA Config: r={32}, alpha={16} | GPU: {torch.cuda.get_device_name() if torch.cuda.is_available() else 'CPU'}")
     print_gpu_memory_usage(logger, "Initial State")
     logger.info("="*60)
 
@@ -227,7 +279,7 @@ def main():
         report_to=[],  # 禁用wandb等所有报告
         logging_dir=None,  # 禁用tensorboard
         run_name=RUN_NAME,  # 设置运行名称
-        logging_steps=1,
+        logging_steps=10,  # Log every 10 steps for reasonable frequency
         tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
         gradient_checkpointing=True,
@@ -260,16 +312,12 @@ def main():
 
         # Configure model components (ONLY for full parameter training, NOT LoRA)
         if not training_args.lora_enable:
-            logger.info("🔧 Configuring model component training states (Full Parameter Mode)...")
-            logger.info(f"   tune_mm_llm: {model_args.tune_mm_llm}")
-            logger.info(f"   tune_mm_vision: {model_args.tune_mm_vision}")
-            logger.info(f"   tune_mm_mlp: {model_args.tune_mm_mlp}")
-
+            logger.info("Configuring model for full parameter training...")
             from qwenvl.train.train_qwen import set_model
             set_model(model_args, model)
-            logger.info("✓ Model component states configured successfully")
+            logger.info("✓ Model configured successfully")
         else:
-            logger.info("🎯 LoRA Mode: Skipping set_model() - PEFT will handle parameter states")
+            logger.info("LoRA Mode: Using PEFT for parameter-efficient training")
 
         # Apply LoRA if enabled
         if training_args.lora_enable:
@@ -277,13 +325,10 @@ def main():
             try:
                 from peft import LoraConfig, get_peft_model, TaskType
 
-                # CRITICAL: Enable embedding gradients for LoRA (from official Qwen code)
-                logger.info("🔗 Enabling embedding layer gradients for LoRA compatibility...")
+                # Enable embedding gradients for LoRA compatibility
                 def make_inputs_require_grad(module, input, output):
                     output.requires_grad_(True)
-
                 model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-                logger.info("✓ Embedding gradient hook registered")
 
                 # Create LoRA configuration
                 lora_config = LoraConfig(
@@ -297,101 +342,59 @@ def main():
 
                 # Apply LoRA to model
                 model = get_peft_model(model, lora_config)
-
-                # Set training mode (PEFT handles parameter freezing correctly)
                 model.train()
 
-                logger.info("✅ LoRA applied successfully!")
-                logger.info(f"   LoRA rank: {training_args.lora_r}")
-                logger.info(f"   LoRA alpha: {training_args.lora_alpha}")
-                logger.info(f"   Target modules: {lora_config.target_modules}")
-
-                # Use PEFT's built-in method for accurate parameter statistics
-                logger.info("   PEFT Parameter Statistics:")
+                logger.info("✓ LoRA applied successfully")
+                # Use PEFT's built-in method for parameter statistics
                 model.print_trainable_parameters()
 
-                # Additional debug: Check if LoRA parameters actually require gradients
-                logger.info("🔍 LoRA Parameter Gradient Debug:")
-                lora_params_with_grad = 0
-                lora_params_total = 0
-                for name, param in model.named_parameters():
-                    if 'lora' in name.lower():
-                        lora_params_total += 1
-                        if param.requires_grad:
-                            lora_params_with_grad += 1
-                        logger.info(f"   {name}: requires_grad={param.requires_grad}")
+                # Verify LoRA parameters have gradients
+                lora_params_with_grad = sum(1 for name, param in model.named_parameters()
+                                          if 'lora' in name.lower() and param.requires_grad)
+                lora_params_total = sum(1 for name, param in model.named_parameters()
+                                      if 'lora' in name.lower())
 
-                logger.info(f"   LoRA parameters with gradient: {lora_params_with_grad}/{lora_params_total}")
                 if lora_params_with_grad == 0:
                     logger.warning("⚠️  WARNING: No LoRA parameters have gradients enabled!")
                 else:
-                    logger.info(f"✅ {lora_params_with_grad} LoRA parameters ready for training")
+                    logger.info(f"✓ {lora_params_with_grad}/{lora_params_total} LoRA parameters ready for training")
 
-                # CRITICAL: In LoRA mode, freeze lm_head to prevent gradient conflicts
-                logger.info("🔒 Freezing lm_head for LoRA compatibility...")
+                # Freeze lm_head for LoRA compatibility
                 model.lm_head.requires_grad = False
-                logger.info(f"   lm_head.requires_grad: {model.lm_head.requires_grad}")
 
-                # CRITICAL: Freeze Vision LoRA parameters if tune_mm_vision=False
+                # Freeze Vision LoRA parameters if tune_mm_vision=False
                 if not model_args.tune_mm_vision:
-                    logger.info("🔒 Freezing Vision LoRA parameters (tune_mm_vision=False)...")
                     vision_lora_frozen = 0
                     for name, param in model.named_parameters():
                         if 'visual' in name and 'lora' in name.lower():
                             param.requires_grad = False
                             vision_lora_frozen += 1
-                    logger.info(f"   Frozen {vision_lora_frozen} Vision LoRA parameters")
+                    if vision_lora_frozen > 0:
+                        logger.info(f"Frozen {vision_lora_frozen} Vision LoRA parameters")
 
-                # Similarly, freeze MLP LoRA parameters if tune_mm_mlp=False
+                # Freeze MLP LoRA parameters if tune_mm_mlp=False
                 if not model_args.tune_mm_mlp:
-                    logger.info("🔒 Freezing MLP LoRA parameters (tune_mm_mlp=False)...")
                     mlp_lora_frozen = 0
                     for name, param in model.named_parameters():
                         if 'merger' in name and 'lora' in name.lower():
                             param.requires_grad = False
                             mlp_lora_frozen += 1
-                    logger.info(f"   Frozen {mlp_lora_frozen} MLP LoRA parameters")
+                    if mlp_lora_frozen > 0:
+                        logger.info(f"Frozen {mlp_lora_frozen} MLP LoRA parameters")
 
-                # Double-check: ensure only LoRA parameters have gradients
-                non_lora_trainable = []
-                for name, param in model.named_parameters():
-                    if param.requires_grad and 'lora' not in name.lower():
-                        non_lora_trainable.append(name)
+                # Verify only LoRA parameters are trainable
+                non_lora_trainable = [name for name, param in model.named_parameters()
+                                    if param.requires_grad and 'lora' not in name.lower()]
 
                 if non_lora_trainable:
-                    logger.warning(f"⚠️  WARNING: Found {len(non_lora_trainable)} non-LoRA trainable parameters:")
-                    for name in non_lora_trainable[:5]:  # Show first 5
-                        logger.warning(f"     {name}")
-                    if len(non_lora_trainable) > 5:
-                        logger.warning(f"     ... and {len(non_lora_trainable) - 5} more")
+                    logger.warning(f"⚠️  WARNING: {len(non_lora_trainable)} non-LoRA parameters are trainable")
                 else:
-                    logger.info("✅ All trainable parameters are LoRA parameters")
+                    logger.info("✓ All trainable parameters are LoRA parameters")
 
-                # Deep tensor debugging: Check specific parameter grad states
-                logger.info("🔬 Deep Parameter State Analysis:")
-                embedding_params = []
-                lm_head_params = []
-                other_params = []
-
-                for name, param in model.named_parameters():
-                    if 'embed' in name.lower():
-                        embedding_params.append((name, param.requires_grad, param.grad_fn is not None))
-                    elif 'lm_head' in name.lower():
-                        lm_head_params.append((name, param.requires_grad, param.grad_fn is not None))
-                    elif param.requires_grad and 'lora' not in name.lower():
-                        other_params.append((name, param.requires_grad, param.grad_fn is not None))
-
-                logger.info(f"   Embedding parameters: {len(embedding_params)}")
-                for name, req_grad, has_grad_fn in embedding_params[:3]:
-                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
-
-                logger.info(f"   LM Head parameters: {len(lm_head_params)}")
-                for name, req_grad, has_grad_fn in lm_head_params[:3]:
-                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
-
-                logger.info(f"   Other non-LoRA trainable parameters: {len(other_params)}")
-                for name, req_grad, has_grad_fn in other_params[:3]:
-                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
+                # Parameter state verification (detailed logging commented out for cleaner output)
+                # embedding_params = [name for name, param in model.named_parameters() if 'embed' in name.lower()]
+                # lm_head_params = [name for name, param in model.named_parameters() if 'lm_head' in name.lower()]
+                # logger.info(f"Embedding parameters: {len(embedding_params)}, LM Head parameters: {len(lm_head_params)}")
 
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
@@ -440,56 +443,33 @@ def main():
         logger.error(f"Failed to load dataset: {e}")
         raise
 
-    # Create trainer
+    # Create trainer with custom monitoring callback
     logger.info("Creating trainer...")
     try:
         trainer = Trainer(
             model=model,
             tokenizer=tokenizer,
             args=training_args,
+            callbacks=[TrainingMonitorCallback(logger)],
             **data_module
         )
         logger.info("✓ Trainer created successfully")
 
-        # Verify final LoRA configuration with PEFT's method
-        logger.info("Final LoRA Parameter Verification:")
+        # Final parameter verification
         if hasattr(model, 'print_trainable_parameters'):
             model.print_trainable_parameters()
         else:
-            # Fallback for non-PEFT models
             trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             total_params = sum(p.numel() for p in model.parameters())
-            logger.info(f"  Trainable parameters: {trainable_params:,}")
-            logger.info(f"  Total parameters: {total_params:,}")
-            logger.info(f"  Trainable ratio: {trainable_params/total_params*100:.2f}%")
+            logger.info(f"Trainable: {trainable_params:,}/{total_params:,} ({trainable_params/total_params*100:.2f}%)")
 
-        # Add debugging hook for first forward pass
-        first_forward_done = [False]
-
-        def debug_forward_hook(module, input, output):
-            if not first_forward_done[0]:
-                logger.info("🧪 First Forward Pass Debug:")
-                logger.info(f"   Module: {module.__class__.__name__}")
-
-                # Check input tensors
-                if isinstance(input, (tuple, list)):
-                    for i, inp in enumerate(input[:3]):  # Check first 3 inputs
-                        if isinstance(inp, torch.Tensor):
-                            logger.info(f"   Input[{i}]: shape={inp.shape}, requires_grad={inp.requires_grad}, grad_fn={inp.grad_fn is not None}")
-
-                # Check output tensors
-                if isinstance(output, torch.Tensor):
-                    logger.info(f"   Output: shape={output.shape}, requires_grad={output.requires_grad}, grad_fn={output.grad_fn is not None}")
-                elif isinstance(output, (tuple, list)):
-                    for i, out in enumerate(output[:2]):  # Check first 2 outputs
-                        if isinstance(out, torch.Tensor):
-                            logger.info(f"   Output[{i}]: shape={out.shape}, requires_grad={out.requires_grad}, grad_fn={out.grad_fn is not None}")
-
-                first_forward_done[0] = True
-
-        # Register hook on the main model
-        model.register_forward_hook(debug_forward_hook)
-        logger.info("🔍 Registered forward pass debugging hook")
+        # Forward pass debugging (commented out for cleaner logs)
+        # first_forward_done = [False]
+        # def debug_forward_hook(module, input, output):
+        #     if not first_forward_done[0]:
+        #         logger.info(f"First forward pass: {module.__class__.__name__}")
+        #         first_forward_done[0] = True
+        # model.register_forward_hook(debug_forward_hook)
 
         print_gpu_memory_usage(logger, "After Trainer Creation")
     except Exception as e:
