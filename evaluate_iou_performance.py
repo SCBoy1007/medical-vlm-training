@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """
-通用模型性能评估脚本
-支持测试基础模型和LoRA微调后的模型在三个任务上的表现
+IoU性能评估脚本
+测试基础模型或LoRA微调后的模型在三个bbox任务上的IoU表现
 测试 curve_detection, apex_vertebrae, end_vertebrae 的所有 test 数据
+
+使用方法：
+1. 测试基础模型：设置 USE_LORA = False
+2. 测试LoRA模型：设置 USE_LORA = True，并指定 LORA_PATH
 """
 
 import os
@@ -19,15 +23,29 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import random
-import argparse
 
-# Configuration
+# ====== 配置区域 - 直接修改这里的配置 ======
+#
+# 基础模型路径
 BASE_MODEL_PATH = "./models/Qwen2.5-VL-7B-Instruct"
-DEFAULT_LORA_PATH = "./output_grounding"  # Default LoRA adapter path
+
+# LoRA配置 - 修改这里来切换测试模型
+USE_LORA = False  # 改为True来测试LoRA微调模型
+LORA_PATH = "./output_grounding"  # LoRA适配器路径，训练完成后会保存在这里
+
+# 数据和输出路径
 DATA_BASE_PATH = "./data/datasets_grounding"
 IMAGE_BASE_PATH = "./data/images/test"
+OUTPUT_DIR = "./iou_evaluation_results"  # 结果保存目录
+
+# 系统配置
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-OUTPUT_DIR = "./evaluation_results"
+
+# 快速切换示例：
+# 1. 测试基础模型： USE_LORA = False
+# 2. 测试LoRA模型： USE_LORA = True, LORA_PATH = "./output_grounding"
+# 3. 对比结果查看： ./iou_evaluation_results/ 目录下的json文件
+# ========================================
 
 # Task configurations
 TASKS = ["curve_detection", "apex_vertebrae", "end_vertebrae"]
@@ -547,40 +565,26 @@ def load_model(model_path, lora_path=None):
         return None, None, None
 
 def main():
-    """Main function - supports both base model and LoRA fine-tuned model evaluation"""
-    parser = argparse.ArgumentParser(description="Evaluate model performance on medical VLM tasks")
-    parser.add_argument("--base_model", default=BASE_MODEL_PATH,
-                       help="Path to base model (default: ./models/Qwen2.5-VL-7B-Instruct)")
-    parser.add_argument("--lora_path", default=None,
-                       help="Path to LoRA adapter (optional, for testing fine-tuned model)")
-    parser.add_argument("--output_dir", default=OUTPUT_DIR,
-                       help="Output directory for results")
-    parser.add_argument("--use_default_lora", action="store_true",
-                       help="Use default LoRA path (./output_grounding)")
-
-    args = parser.parse_args()
-
-    # Set LoRA path
-    lora_path = args.lora_path
-    if args.use_default_lora and not lora_path:
-        lora_path = DEFAULT_LORA_PATH
+    """Main function - IoU performance evaluation for medical VLM tasks"""
+    # 根据配置设置LoRA路径
+    lora_path = LORA_PATH if USE_LORA else None
 
     print("=" * 60)
-    print("模型性能评估")
+    print("IoU性能评估")
     print("=" * 60)
-    print(f"Base Model: {args.base_model}")
-    print(f"LoRA Path: {lora_path if lora_path else 'None (Base model only)'}")
-    print(f"Output Dir: {args.output_dir}")
+    print(f"Base Model: {BASE_MODEL_PATH}")
+    print(f"Use LoRA: {USE_LORA}")
+    if USE_LORA:
+        print(f"LoRA Path: {LORA_PATH}")
+    print(f"Output Dir: {OUTPUT_DIR}")
     print(f"Device: {DEVICE}")
     print("=" * 60)
 
     # Create output directory
-    os.makedirs(args.output_dir, exist_ok=True)
-    global OUTPUT_DIR
-    OUTPUT_DIR = args.output_dir
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     # Load model
-    model, processor, model_type = load_model(args.base_model, lora_path)
+    model, processor, model_type = load_model(BASE_MODEL_PATH, lora_path)
     if model is None:
         return
 
@@ -704,7 +708,8 @@ def main():
         'config': {
             'device': DEVICE,
             'total_duration': total_time,
-            'base_model': args.base_model,
+            'base_model': BASE_MODEL_PATH,
+            'use_lora': USE_LORA,
             'lora_path': lora_path,
             'model_type': model_type,
             'visualization_dir': visualization_dir
