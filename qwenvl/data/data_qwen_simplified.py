@@ -8,6 +8,7 @@ import os
 import copy
 import json
 import logging
+from dataclasses import dataclass
 from typing import Dict, Optional, Sequence, List
 from PIL import Image
 
