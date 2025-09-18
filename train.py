@@ -133,7 +133,7 @@ def main():
     model_args = ModelArguments(
         model_name_or_path=MODEL_NAME,
         version="qwen",
-        freeze_backbone=False,
+        freeze_backbone=True,  # 冻结backbone节省显存
         tune_mm_mlp_adapter=True,
         vision_tower=None,
         mm_vision_select_layer=-2,
