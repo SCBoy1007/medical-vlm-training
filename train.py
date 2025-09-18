@@ -27,8 +27,21 @@ DATASET_TYPE = "grounding"  # Options: "grounding", "text", "text_grounding"
 
 # Model configuration
 MODEL_NAME = "./models/Qwen2.5-VL-7B-Instruct"
-OUTPUT_DIR = f"./output_{DATASET_TYPE}"
-RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}"
+
+# LoRA configuration
+LORA_R = 32          # LoRA rank: 16 (faster), 32 (balanced), 64 (better quality)
+LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
+LORA_METHOD = "lora" # Training method identifier for output directory
+
+# Examples for different configurations:
+# - Small/Fast:     LORA_R=16,  LORA_ALPHA=8,  OUTPUT: ./output_grounding_lora_r16_alpha8
+# - Balanced:       LORA_R=32,  LORA_ALPHA=16, OUTPUT: ./output_grounding_lora_r32_alpha16
+# - High Quality:   LORA_R=64,  LORA_ALPHA=32, OUTPUT: ./output_grounding_lora_r64_alpha32
+# - Linear Probing: LORA_R=0,   METHOD="linear", OUTPUT: ./output_grounding_linear_r0_alpha0
+
+# Dynamic output directory based on training method
+OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}"
+RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}"
 
 # Training hyperparameters
 LEARNING_RATE = 2e-7
@@ -183,9 +196,10 @@ def main():
     logger.info("="*60)
     logger.info("MEDICAL VLM TRAINING STARTED")
     logger.info("="*60)
-    logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-7B | Mode: LoRA Fine-tuning")
+    logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-7B | Mode: {LORA_METHOD.upper()} Fine-tuning")
     logger.info(f"Learning Rate: {LEARNING_RATE} | Batch Size: {BATCH_SIZE} | Epochs: {NUM_EPOCHS}")
-    logger.info(f"LoRA Config: r={32}, alpha={16} | GPU: {torch.cuda.get_device_name() if torch.cuda.is_available() else 'CPU'}")
+    logger.info(f"LoRA Config: r={LORA_R}, alpha={LORA_ALPHA} | GPU: {torch.cuda.get_device_name() if torch.cuda.is_available() else 'CPU'}")
+    logger.info(f"Output Directory: {OUTPUT_DIR}")
     print_gpu_memory_usage(logger, "Initial State")
     logger.info("="*60)
 
@@ -251,8 +265,8 @@ def main():
         quant_type="nf4",
         bits=16,
         lora_enable=True,   # 启用LoRA微调
-        lora_r=32,          # LoRA rank=32 (平衡效果和显存)
-        lora_alpha=16,      # LoRA alpha参数
+        lora_r=LORA_R,      # LoRA rank (configurable)
+        lora_alpha=LORA_ALPHA,  # LoRA alpha参数 (configurable)
         lora_dropout=0.05,
         lora_weight_path="",
         lora_bias="none",
@@ -333,8 +347,8 @@ def main():
                 # Create LoRA configuration
                 lora_config = LoraConfig(
                     task_type=TaskType.CAUSAL_LM,
-                    r=training_args.lora_r,
-                    lora_alpha=training_args.lora_alpha,
+                    r=LORA_R,
+                    lora_alpha=LORA_ALPHA,
                     lora_dropout=training_args.lora_dropout,
                     target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Common attention and MLP layers
                     bias=training_args.lora_bias,
