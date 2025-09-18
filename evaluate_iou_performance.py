@@ -220,19 +220,8 @@ def visualize_detection_result(image_path, gt_bboxes, pred_bboxes, task_name, sa
         # 计算训练时的图像尺寸（用于GT坐标）
         train_height, train_width = smart_resize(orig_height, orig_width)
 
-        # 计算测试时的图像尺寸（用于预测坐标，考虑1000px限制）
-        max_edge = 1000
-        if max(orig_width, orig_height) > max_edge:
-            if orig_height > orig_width:
-                test_pre_height = max_edge
-                test_pre_width = int(orig_width * max_edge / orig_height)
-            else:
-                test_pre_width = max_edge
-                test_pre_height = int(orig_height * max_edge / orig_width)
-        else:
-            test_pre_width, test_pre_height = orig_width, orig_height
-
-        test_height, test_width = smart_resize(test_pre_height, test_pre_width)
+        # 测试时不进行resize，直接使用原始尺寸进行smart_resize
+        test_height, test_width = smart_resize(orig_height, orig_width)
 
         # 转换GT坐标到原始图像坐标
         gt_bboxes_original = []
@@ -329,17 +318,7 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
         orig_size = f"{image.width}x{image.height}"
         print(f"Processing {sample_data['image']} (original: {orig_size}) - {get_gpu_memory_info()}")
 
-        # Apply aggressive resize for memory management
-        max_edge = 1000  # More aggressive than 1200
-        if max(image.width, image.height) > max_edge:
-            if image.height > image.width:
-                new_height = max_edge
-                new_width = int(image.width * max_edge / image.height)
-            else:
-                new_width = max_edge
-                new_height = int(image.height * max_edge / image.width)
-            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-            print(f"Resized for memory: {orig_size} -> {image.width}x{image.height}")
+        # 不进行resize，直接使用原始图像尺寸（所有图像都是700x1400）
 
         # Get task-specific prompt
         prompt = get_task_prompt(task_name)
@@ -406,34 +385,26 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
         pred_bboxes_training = parse_model_response(response, task_name)
 
         # Calculate IOU: Convert both to same coordinate system (original image coordinates)
-        # GT coordinates are based on training smart_resize (orig -> smart_resize)
-        # Pred coordinates are based on test smart_resize (orig -> 1000px -> smart_resize)
+        # Both GT and prediction coordinates are based on same smart_resize (orig -> smart_resize)
 
         # Get original image dimensions
         orig_image = Image.open(image_path)
         orig_width, orig_height = orig_image.size
 
-        # Calculate training dimensions for GT coordinates
+        # Calculate dimensions for both GT and prediction coordinates (same process)
         train_height, train_width = smart_resize(orig_height, orig_width)
+        test_height, test_width = train_height, train_width  # 现在训练和测试使用相同的尺寸
 
-        # Calculate test dimensions for prediction coordinates (after 1000px resize)
-        if max(orig_width, orig_height) > max_edge:
-            if orig_height > orig_width:
-                test_pre_height = max_edge
-                test_pre_width = int(orig_width * max_edge / orig_height)
-            else:
-                test_pre_width = max_edge
-                test_pre_height = int(orig_height * max_edge / orig_width)
-        else:
-            test_pre_width, test_pre_height = orig_width, orig_height
+        # 由于训练和测试使用相同的smart_resize处理，可以直接在训练坐标系下计算IoU
+        # 这样避免了不必要的坐标转换，提高精度
+        iou = calculate_iou(pred_bboxes_training, gt_bboxes_training)
 
-        test_height, test_width = smart_resize(test_pre_height, test_pre_width)
+        # 为了可视化，仍然需要转换到原始坐标系
+        scale_w = orig_width / train_width
+        scale_h = orig_height / train_height
 
-        # Convert GT bboxes to original coordinates
         gt_bboxes_original = []
         if gt_bboxes_training:
-            scale_w = orig_width / train_width
-            scale_h = orig_height / train_height
             for bbox in gt_bboxes_training:
                 x1, y1, x2, y2 = bbox
                 gt_bboxes_original.append([
@@ -441,20 +412,14 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
                     int(x2 * scale_w), int(y2 * scale_h)
                 ])
 
-        # Convert predicted bboxes to original coordinates
         pred_bboxes_original = []
         if pred_bboxes_training:
-            scale_w = orig_width / test_width
-            scale_h = orig_height / test_height
             for bbox in pred_bboxes_training:
                 x1, y1, x2, y2 = bbox
                 pred_bboxes_original.append([
                     int(x1 * scale_w), int(y1 * scale_h),
                     int(x2 * scale_w), int(y2 * scale_h)
                 ])
-
-        # Calculate IOU using original coordinates
-        iou = calculate_iou(pred_bboxes_original, gt_bboxes_original)
 
         result = {
             'image': sample_data['image'],
