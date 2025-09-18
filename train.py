@@ -33,6 +33,12 @@ LORA_R = 32          # LoRA rank: 16 (faster), 32 (balanced), 64 (better quality
 LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
 LORA_METHOD = "lora" # Training method identifier for output directory
 
+# Training hyperparameters
+LEARNING_RATE = 2e-7
+BATCH_SIZE = 1  # Single GPU batch size
+GRAD_ACCUM_STEPS = 4  # Restore original gradient accumulation
+NUM_EPOCHS = 0.5
+
 # Examples for different configurations:
 # Current (r=32, lr=2e-7, ep=0.5, bs=4): ./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4
 # - Small/Fast:     LORA_R=16,  LR=1e-6,  EP=0.5, BS=8  -> output_grounding_lora_r16_alpha8_lr1e-6_ep0p5_bs8
@@ -41,19 +47,13 @@ LORA_METHOD = "lora" # Training method identifier for output directory
 # - Linear Probing: METHOD="linear", LR=1e-5, EP=1.0     -> output_grounding_linear_r0_alpha0_lr1e-5_ep1p0_bs4
 
 # Dynamic output directory based on training configuration
-# Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}x{grad_accum}
+# Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}
 lr_str = f"{LEARNING_RATE:.0e}".replace('e-0', 'e-').replace('e+0', 'e+')  # Clean format: 2e-7
 ep_str = f"{NUM_EPOCHS}".replace('.', 'p')  # Replace . with p: 0.5 -> 0p5
 effective_batch_size = BATCH_SIZE * GRAD_ACCUM_STEPS
 
 OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}_lr{lr_str}_ep{ep_str}_bs{effective_batch_size}"
 RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}-lr{lr_str}-bs{effective_batch_size}"
-
-# Training hyperparameters
-LEARNING_RATE = 2e-7
-BATCH_SIZE = 1  # Single GPU batch size
-GRAD_ACCUM_STEPS = 4  # Restore original gradient accumulation
-NUM_EPOCHS = 0.5
 MAX_PIXELS = 256*28*28     # 200,704 pixels (reduced from 451,584 for memory efficiency)
 MIN_PIXELS = 16*28*28      # 12,544 pixels (keep same)
 
