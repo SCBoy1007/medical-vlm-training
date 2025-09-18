@@ -43,9 +43,8 @@ checkpoints/*/
 # Data and logs
 *.log
 logs/
-# Exclude data files but keep code in qwenvl/data/
-data/
-!qwenvl/data/*.py
+# Only ignore root data directory, not qwenvl/data/ (which contains code)
+/data/
 
 # Video files
 *.mp4
