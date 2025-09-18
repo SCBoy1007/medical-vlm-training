@@ -43,10 +43,8 @@ checkpoints/*/
 # Data and logs
 *.log
 logs/
-# Include all JSON dataset files (public datasets)
-# data/datasets_* are now included
-# Only exclude large image directories
-data/images/
+# Exclude entire data directory (large files, processed locally)
+data/
 
 # Video files
 *.mp4
