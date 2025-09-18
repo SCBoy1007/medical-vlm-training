@@ -35,8 +35,8 @@ LEARNING_RATE = 2e-7
 BATCH_SIZE = 1  # Single GPU batch size
 GRAD_ACCUM_STEPS = 4  # Restore original gradient accumulation
 NUM_EPOCHS = 0.5
-MAX_PIXELS = 576*28*28     # 451,584 pixels (official recommended range)
-MIN_PIXELS = 16*28*28      # 12,544 pixels (official recommended range)
+MAX_PIXELS = 256*28*28     # 200,704 pixels (reduced from 451,584 for memory efficiency)
+MIN_PIXELS = 16*28*28      # 12,544 pixels (keep same)
 
 # Hardware configuration
 USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
@@ -128,7 +128,7 @@ def main():
     logger.info("TRAINING MODE: LoRA Fine-tuning")
     logger.info(f"LoRA rank: 32")
     logger.info(f"LoRA alpha: 16")
-    logger.info(f"Expected memory usage: ~18GB (LoRA r=32)")
+    logger.info(f"Expected memory usage: ~12GB (LoRA r=32 + reduced resolution)")
     logger.info(f"CUDA available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():
         logger.info(f"GPU count: {torch.cuda.device_count()}")
@@ -274,21 +274,17 @@ def main():
                 # Apply LoRA to model
                 model = get_peft_model(model, lora_config)
 
-                # Enable training for LoRA parameters
+                # Set training mode (PEFT handles parameter freezing correctly)
                 model.train()
-                for param in model.parameters():
-                    if hasattr(param, 'requires_grad'):
-                        param.requires_grad = True
 
                 logger.info("✅ LoRA applied successfully!")
                 logger.info(f"   LoRA rank: {training_args.lora_r}")
                 logger.info(f"   LoRA alpha: {training_args.lora_alpha}")
                 logger.info(f"   Target modules: {lora_config.target_modules}")
 
-                # Verify gradient requirements
-                trainable_count = sum(1 for p in model.parameters() if p.requires_grad)
-                total_count = sum(1 for p in model.parameters())
-                logger.info(f"   Parameters requiring gradients: {trainable_count}/{total_count}")
+                # Use PEFT's built-in method for accurate parameter statistics
+                logger.info("   PEFT Parameter Statistics:")
+                model.print_trainable_parameters()
 
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
@@ -348,13 +344,17 @@ def main():
         )
         logger.info("✓ Trainer created successfully")
 
-        # 检查LoRA参数统计
-        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-        total_params = sum(p.numel() for p in model.parameters())
-        logger.info(f"LoRA Parameter Statistics:")
-        logger.info(f"  Trainable parameters: {trainable_params:,}")
-        logger.info(f"  Total parameters: {total_params:,}")
-        logger.info(f"  Trainable ratio: {trainable_params/total_params*100:.2f}%")
+        # Verify final LoRA configuration with PEFT's method
+        logger.info("Final LoRA Parameter Verification:")
+        if hasattr(model, 'print_trainable_parameters'):
+            model.print_trainable_parameters()
+        else:
+            # Fallback for non-PEFT models
+            trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+            total_params = sum(p.numel() for p in model.parameters())
+            logger.info(f"  Trainable parameters: {trainable_params:,}")
+            logger.info(f"  Total parameters: {total_params:,}")
+            logger.info(f"  Trainable ratio: {trainable_params/total_params*100:.2f}%")
 
         print_gpu_memory_usage(logger, "After Trainer Creation")
     except Exception as e:
