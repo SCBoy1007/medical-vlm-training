@@ -13,6 +13,7 @@ import torch
 import logging
 from datetime import datetime
 from pathlib import Path
+from transformers import TrainerCallback
 
 # ====== MULTI-GPU CONFIGURATION ======
 # Fix for tensor dimension issues: Use single GPU to avoid DataParallel problems
@@ -195,8 +196,7 @@ def main():
         Qwen2_5_VLForConditionalGeneration,
         AutoTokenizer,
         AutoProcessor,
-        Trainer,
-        TrainerCallback
+        Trainer
     )
 
     logger.info("="*60)
