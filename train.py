@@ -359,6 +359,32 @@ def main():
                 else:
                     logger.info("✅ All trainable parameters are LoRA parameters")
 
+                # Deep tensor debugging: Check specific parameter grad states
+                logger.info("🔬 Deep Parameter State Analysis:")
+                embedding_params = []
+                lm_head_params = []
+                other_params = []
+
+                for name, param in model.named_parameters():
+                    if 'embed' in name.lower():
+                        embedding_params.append((name, param.requires_grad, param.grad_fn is not None))
+                    elif 'lm_head' in name.lower():
+                        lm_head_params.append((name, param.requires_grad, param.grad_fn is not None))
+                    elif param.requires_grad and 'lora' not in name.lower():
+                        other_params.append((name, param.requires_grad, param.grad_fn is not None))
+
+                logger.info(f"   Embedding parameters: {len(embedding_params)}")
+                for name, req_grad, has_grad_fn in embedding_params[:3]:
+                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
+
+                logger.info(f"   LM Head parameters: {len(lm_head_params)}")
+                for name, req_grad, has_grad_fn in lm_head_params[:3]:
+                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
+
+                logger.info(f"   Other non-LoRA trainable parameters: {len(other_params)}")
+                for name, req_grad, has_grad_fn in other_params[:3]:
+                    logger.info(f"      {name}: requires_grad={req_grad}, has_grad_fn={has_grad_fn}")
+
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
                 logger.info("💡 Falling back to full parameter training")
@@ -428,6 +454,34 @@ def main():
             logger.info(f"  Trainable parameters: {trainable_params:,}")
             logger.info(f"  Total parameters: {total_params:,}")
             logger.info(f"  Trainable ratio: {trainable_params/total_params*100:.2f}%")
+
+        # Add debugging hook for first forward pass
+        first_forward_done = [False]
+
+        def debug_forward_hook(module, input, output):
+            if not first_forward_done[0]:
+                logger.info("🧪 First Forward Pass Debug:")
+                logger.info(f"   Module: {module.__class__.__name__}")
+
+                # Check input tensors
+                if isinstance(input, (tuple, list)):
+                    for i, inp in enumerate(input[:3]):  # Check first 3 inputs
+                        if isinstance(inp, torch.Tensor):
+                            logger.info(f"   Input[{i}]: shape={inp.shape}, requires_grad={inp.requires_grad}, grad_fn={inp.grad_fn is not None}")
+
+                # Check output tensors
+                if isinstance(output, torch.Tensor):
+                    logger.info(f"   Output: shape={output.shape}, requires_grad={output.requires_grad}, grad_fn={output.grad_fn is not None}")
+                elif isinstance(output, (tuple, list)):
+                    for i, out in enumerate(output[:2]):  # Check first 2 outputs
+                        if isinstance(out, torch.Tensor):
+                            logger.info(f"   Output[{i}]: shape={out.shape}, requires_grad={out.requires_grad}, grad_fn={out.grad_fn is not None}")
+
+                first_forward_done[0] = True
+
+        # Register hook on the main model
+        model.register_forward_hook(debug_forward_hook)
+        logger.info("🔍 Registered forward pass debugging hook")
 
         print_gpu_memory_usage(logger, "After Trainer Creation")
     except Exception as e:
