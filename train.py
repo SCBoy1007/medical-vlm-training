@@ -34,14 +34,20 @@ LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
 LORA_METHOD = "lora" # Training method identifier for output directory
 
 # Examples for different configurations:
-# - Small/Fast:     LORA_R=16,  LORA_ALPHA=8,  OUTPUT: ./output_grounding_lora_r16_alpha8
-# - Balanced:       LORA_R=32,  LORA_ALPHA=16, OUTPUT: ./output_grounding_lora_r32_alpha16
-# - High Quality:   LORA_R=64,  LORA_ALPHA=32, OUTPUT: ./output_grounding_lora_r64_alpha32
-# - Linear Probing: LORA_R=0,   METHOD="linear", OUTPUT: ./output_grounding_linear_r0_alpha0
+# Current (r=32, lr=2e-7, ep=0.5, bs=4): ./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4
+# - Small/Fast:     LORA_R=16,  LR=1e-6,  EP=0.5, BS=8  -> output_grounding_lora_r16_alpha8_lr1e-6_ep0p5_bs8
+# - High Quality:   LORA_R=64,  LR=1e-7,  EP=1.0, BS=2  -> output_grounding_lora_r64_alpha32_lr1e-7_ep1p0_bs2
+# - Fast Iteration: LORA_R=32,  LR=5e-7,  EP=0.3, BS=4  -> output_grounding_lora_r32_alpha16_lr5e-7_ep0p3_bs4
+# - Linear Probing: METHOD="linear", LR=1e-5, EP=1.0     -> output_grounding_linear_r0_alpha0_lr1e-5_ep1p0_bs4
 
-# Dynamic output directory based on training method
-OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}"
-RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}"
+# Dynamic output directory based on training configuration
+# Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}x{grad_accum}
+lr_str = f"{LEARNING_RATE:.0e}".replace('e-0', 'e-').replace('e+0', 'e+')  # Clean format: 2e-7
+ep_str = f"{NUM_EPOCHS}".replace('.', 'p')  # Replace . with p: 0.5 -> 0p5
+effective_batch_size = BATCH_SIZE * GRAD_ACCUM_STEPS
+
+OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}_lr{lr_str}_ep{ep_str}_bs{effective_batch_size}"
+RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}-lr{lr_str}-bs{effective_batch_size}"
 
 # Training hyperparameters
 LEARNING_RATE = 2e-7
