@@ -117,15 +117,41 @@ def preprocess_qwen_2_visual(
 class LazySupervisedDataset(Dataset):
     """Simplified dataset class following official approach"""
 
-    def __init__(self, data_path: str, tokenizer: transformers.PreTrainedTokenizer, data_args):
+    def __init__(self, tokenizer: transformers.PreTrainedTokenizer, data_args):
         super(LazySupervisedDataset, self).__init__()
-        list_data_dict = json.load(open(data_path, "r"))
 
-        rank0_print("Formatting inputs...Skip in lazy mode")
+        # Use the same dataset loading logic as original
+        dataset = data_args.dataset_use.split(",")
+        dataset_list = data_list(dataset)
+        rank0_print(f"Loading datasets: {dataset_list}")
+
         self.tokenizer = tokenizer
-        self.list_data_dict = list_data_dict
         self.data_args = data_args
         self.model_type = getattr(data_args, 'model_type', 'qwen2.5vl')
+
+        # Load all datasets and combine them
+        list_data_dict = []
+        for data in dataset_list:
+            file_format = data["annotation_path"].split(".")[-1]
+            if file_format == "jsonl":
+                annotations = read_jsonl(data["annotation_path"])
+            else:
+                annotations = json.load(open(data["annotation_path"], "r"))
+
+            # Add data_path to each annotation
+            for annotation in annotations:
+                annotation["data_path"] = data["data_path"]
+
+            list_data_dict.extend(annotations)
+
+        self.list_data_dict = list_data_dict
+        rank0_print(f"Total annotations loaded: {len(list_data_dict)}")
+
+        # Set up RoPE index generation based on model type
+        if self.model_type == "qwen2.5vl":
+            self.get_rope_index = get_rope_index_25
+        else:
+            self.get_rope_index = get_rope_index_2
 
     def __len__(self):
         return len(self.list_data_dict)
@@ -262,7 +288,6 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, dat
     """Create simplified data module"""
     train_dataset = LazySupervisedDataset(
         tokenizer=tokenizer,
-        data_path=data_args.data_path,
         data_args=data_args
     )
     data_collator = DataCollatorForSupervisedDataset(tokenizer=tokenizer)
@@ -270,4 +295,4 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, dat
         train_dataset=train_dataset,
         eval_dataset=None,
         data_collator=data_collator
-    )
+    )# Test modification
