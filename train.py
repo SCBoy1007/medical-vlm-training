@@ -14,6 +14,13 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+# ====== MULTI-GPU CONFIGURATION ======
+# Fix for tensor dimension issues: Use single GPU to avoid DataParallel problems
+# The previous error was caused by DataParallel incompatibility with Qwen2.5-VL attention
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Use single GPU for stable training
+# For multi-GPU in future: need proper DDP setup with torchrun
+# =====================================
+
 # ====== CONFIGURATION SECTION ======
 # Change this to switch between datasets:
 DATASET_TYPE = "grounding"  # Options: "grounding", "text", "text_grounding"
@@ -25,18 +32,17 @@ RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}"
 
 # Training hyperparameters
 LEARNING_RATE = 2e-7
-BATCH_SIZE = 1  # Simplified for debugging CUDA index issues
-GRAD_ACCUM_STEPS = 4
+BATCH_SIZE = 1  # Single GPU batch size
+GRAD_ACCUM_STEPS = 4  # Restore original gradient accumulation
 NUM_EPOCHS = 0.5
-MAX_PIXELS = 1024*28*28    # 802,816 pixels (safe value that's multiple of 28 for spatial_merge_unit)
-MIN_PIXELS = 56*56         # 3,136 pixels (consistent with data generation)
+MAX_PIXELS = 576*28*28     # 451,584 pixels (official recommended range)
+MIN_PIXELS = 16*28*28      # 12,544 pixels (official recommended range)
 
 # Hardware configuration
 USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
 DEEPSPEED_CONFIG = "./scripts/zero3.json"
 
-# Compatibility configuration - ENABLED: Required for proper tensor reshaping after padding
-ENABLE_SPATIAL_MERGE_COMPATIBILITY = True  # Required: padding + spatial merge compatibility work together
+# Simplified: No longer needed with 700x1400 resized images
 # ===================================
 
 def setup_logging():
@@ -77,7 +83,8 @@ def main():
 
     # Import after adding to path
     from qwenvl.train.argument import ModelArguments, DataArguments, TrainingArguments
-    from qwenvl.data.data_qwen import make_supervised_data_module
+    # Use simplified data processing (remove complex padding logic)
+    from qwenvl.data.data_qwen_simplified import make_supervised_data_module
     from qwenvl.train.trainer import replace_qwen2_vl_attention_class
     from transformers import (
         Qwen2VLForConditionalGeneration,
@@ -100,7 +107,7 @@ def main():
     logger.info(f"Max pixels: {MAX_PIXELS}")
     logger.info(f"Min pixels: {MIN_PIXELS}")
     logger.info(f"DeepSpeed enabled: {USE_DEEPSPEED}")
-    logger.info(f"Spatial merge compatibility: {ENABLE_SPATIAL_MERGE_COMPATIBILITY}")
+    logger.info("Using simplified image processing (no custom padding)")
     logger.info(f"CUDA available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():
         logger.info(f"GPU count: {torch.cuda.device_count()}")
@@ -153,8 +160,7 @@ def main():
         data_flatten=False
     )
 
-    # Add compatibility configuration
-    data_args.enable_spatial_merge_compatibility = ENABLE_SPATIAL_MERGE_COMPATIBILITY
+    # Simplified: No need for spatial merge compatibility with 700x1400 resized images
 
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
@@ -205,6 +211,10 @@ def main():
         # DeepSpeed
         deepspeed=DEEPSPEED_CONFIG if USE_DEEPSPEED else None,
 
+        # Multi-GPU configuration - force DDP over DataParallel
+        ddp_find_unused_parameters=False,  # Improves performance for VLM
+        dataloader_drop_last=True,        # Ensures consistent batch sizes across GPUs
+
         # Logging (already configured above to disable wandb)
     )
 
@@ -248,9 +258,6 @@ def main():
     # Create data module
     logger.info(f"Loading dataset: {dataset_name}")
 
-    # Setup padding debug log
-    Path("./logs").mkdir(exist_ok=True)
-    logger.info("Created logs directory and initialized padding debug logging")
     try:
         data_module = make_supervised_data_module(
             tokenizer=tokenizer,
@@ -259,21 +266,6 @@ def main():
         train_dataset = data_module.get('train_dataset')
         if train_dataset:
             logger.info(f"✓ Dataset loaded successfully. Size: {len(train_dataset)}")
-
-            # Report compatibility statistics if enabled
-            if ENABLE_SPATIAL_MERGE_COMPATIBILITY and hasattr(train_dataset.data_args.image_processor, 'get_stats'):
-                try:
-                    # Process a few samples to get initial statistics
-                    for i in range(min(10, len(train_dataset))):
-                        _ = train_dataset[i]  # This will trigger image processing
-
-                    stats = train_dataset.data_args.image_processor.get_stats()
-                    if stats['total_processed'] > 0:
-                        logger.info(f"Compatibility mode stats: {stats['adjusted_images']}/{stats['total_processed']} images adjusted ({stats['adjustment_rate_percent']:.1f}%)")
-                        if stats['adjusted_images'] > 0:
-                            logger.info(f"✓ Spatial merge compatibility fix is working - adjusted {stats['adjusted_images']} images")
-                except Exception as e:
-                    logger.warning(f"Could not get compatibility statistics: {e}")
         else:
             logger.warning("No training dataset found in data module")
     except Exception as e:
