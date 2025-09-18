@@ -42,7 +42,6 @@ class DataArguments:
     video_max_frame_pixels: int = field(default=32 * 28 * 28)
     video_min_frame_pixels: int = field(default=4 * 28 * 28)
     model_type: str = field(default="qwen2.5vl")
-    enable_spatial_merge_compatibility: bool = field(default=False)
 
 
 @dataclass

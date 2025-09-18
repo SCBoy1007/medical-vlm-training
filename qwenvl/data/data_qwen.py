@@ -26,15 +26,7 @@ import transformers
 
 from . import data_list
 from .rope2d import get_rope_index_25, get_rope_index_2
-# Removed image_processor_wrapper - using direct processor with spatial merge compatible padding
 
-# Setup logger for padding debug info
-padding_logger = logging.getLogger('padding_debug')
-padding_logger.setLevel(logging.DEBUG)
-if not padding_logger.handlers:
-    handler = logging.FileHandler('./logs/padding_debug.log', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    padding_logger.addHandler(handler)
 
 IGNORE_INDEX = -100
 IMAGE_TOKEN_INDEX = 151655
@@ -247,182 +239,19 @@ class LazySupervisedDataset(Dataset):
             print("No pre-calculated length available.")
             return np.array([1] * len(self.list_data_dict))
 
-    def _pad_image_to_28_multiple(self, image):
-        """
-        强化的spatial merge compatible padding方案：
-        1. 确保28的倍数（patch size要求）
-        2. 确保 total_patches % 16 == 0（spatial merge要求）
-        3. 一次性解决，避免processor后续破坏
-        """
-        width, height = image.size
 
-        # 首先确保28的倍数
-        new_width = ((width + 27) // 28) * 28
-        new_height = ((height + 27) // 28) * 28
-
-        # 计算patch数量
-        h_patches = new_height // 28
-        w_patches = new_width // 28
-        total_patches = h_patches * w_patches
-
-        # 检查spatial merge compatibility: total_patches % 16 == 0
-        if total_patches % 16 != 0:
-            # 使用搜索算法找到满足条件的最小padding方案
-            best_solution = None
-            min_extra_patches = float('inf')
-
-            # 限制搜索范围：每个维度最多增加6个patches（168像素）
-            # 这个范围已经足够覆盖大部分情况
-            for extra_h in range(7):  # 0到6
-                for extra_w in range(7):  # 0到6
-                    candidate_h = h_patches + extra_h
-                    candidate_w = w_patches + extra_w
-                    candidate_total = candidate_h * candidate_w
-
-                    # 检查是否满足spatial merge条件
-                    if candidate_total % 16 == 0:
-                        extra_patches = candidate_total - total_patches
-
-                        # 寻找增加patches最少的方案
-                        if extra_patches < min_extra_patches:
-                            min_extra_patches = extra_patches
-                            best_solution = (candidate_h, candidate_w)
-
-            # 应用找到的最优解
-            if best_solution is not None:
-                new_height = best_solution[0] * 28
-                new_width = best_solution[1] * 28
-                padding_logger.info(f"Found solution: {h_patches}x{w_patches}={total_patches} → {best_solution[0]}x{best_solution[1]}={best_solution[0]*best_solution[1]} (added {min_extra_patches} patches)")
-            else:
-                # 搜索范围内没找到解，使用保证兼容的方案
-                # 方法：将patches数直接增加到下一个16的倍数
-                target_patches = ((total_patches + 15) // 16) * 16
-
-                # 简单直接的策略：找到能容纳target_patches的最小矩形
-                # 保持原有宽度，调整高度
-                new_h_patches = (target_patches + w_patches - 1) // w_patches  # 向上取整
-                if new_h_patches * w_patches >= target_patches:
-                    new_height = new_h_patches * 28
-                    # new_width保持不变
-                else:
-                    # 如果还是不够，增加宽度
-                    new_w_patches = w_patches + 1
-                    new_h_patches = (target_patches + new_w_patches - 1) // new_w_patches
-                    new_height = new_h_patches * 28
-                    new_width = new_w_patches * 28
-
-                padding_logger.info(f"Fallback solution: target_patches={target_patches}, final={new_h_patches}x{new_w_patches}={new_h_patches*new_w_patches}")
-
-        if new_width == width and new_height == height:
-            padding_logger.info(f"Image {width}x{height} already compatible, no padding needed")
-            return image
-
-        # 创建黑色背景的新图像
-        padded_image = Image.new('RGB', (new_width, new_height), (0, 0, 0))
-        padded_image.paste(image, (0, 0))  # 粘贴到左上角
-
-        # 验证结果
-        final_h_patches = new_height // 28
-        final_w_patches = new_width // 28
-        final_total_patches = final_h_patches * final_w_patches
-        is_compatible = final_total_patches % 16 == 0
-
-        padding_logger.info(f"PADDED: {width}x{height} → {new_width}x{new_height} (added {new_width-width}x{new_height-height} padding)")
-        padding_logger.info(f"  Patches: {h_patches}x{w_patches}={total_patches} → {final_h_patches}x{final_w_patches}={final_total_patches}")
-        padding_logger.info(f"  Spatial merge compatible: {is_compatible} (patches % 16 = {final_total_patches % 16})")
-
-        return padded_image
-
-    def _post_processor_spatial_fix(self, pixel_values, grid_thw, image_file):
-        """
-        POST-PROCESSOR修复：确保spatial merge兼容性
-        基于测试结果的精确修复策略
-        """
-        import torch
-        import math
-
-        num_patches, hidden_dim = pixel_values.shape
-        spatial_merge_unit = 4  # Qwen2.5-VL spatial merge unit
-
-        padding_logger.info(f"POST-PROCESSOR CHECK: {image_file}")
-        padding_logger.info(f"  Input tensor: [{num_patches}, {hidden_dim}]")
-        padding_logger.info(f"  Grid THW: {grid_thw}")
-
-        # 计算seq_len用于spatial merge
-        seq_len = num_patches // spatial_merge_unit
-        remainder = num_patches % spatial_merge_unit
-
-        padding_logger.info(f"  Calculated seq_len: {seq_len}")
-        padding_logger.info(f"  Patches % spatial_merge_unit: {remainder}")
-
-        if remainder != 0:
-            # 需要修复：补齐到4的倍数
-            target_patches = ((num_patches + spatial_merge_unit - 1) // spatial_merge_unit) * spatial_merge_unit
-            pad_patches = target_patches - num_patches
-
-            padding_logger.info(f"  🔧 FIXING: need to add {pad_patches} patches")
-            padding_logger.info(f"  Target patches: {target_patches}")
-
-            # 在tensor末尾添加零填充
-            padding_tensor = torch.zeros(pad_patches, hidden_dim, dtype=pixel_values.dtype, device=pixel_values.device)
-            pixel_values = torch.cat([pixel_values, padding_tensor], dim=0)
-
-            # 更新grid_thw以匹配新的patch数量
-            # 策略：增加高度维度以保持宽度不变
-            t, h, w = grid_thw
-            new_h = target_patches // w
-            if target_patches % w != 0:
-                # 如果不能整除，调整宽度
-                new_w = w
-                while target_patches % new_w != 0:
-                    new_w += 1
-                new_h = target_patches // new_w
-            else:
-                new_w = w
-
-            grid_thw = torch.tensor([t, new_h, new_w], dtype=grid_thw.dtype, device=grid_thw.device)
-
-            # 验证修复结果
-            final_patches = pixel_values.shape[0]
-            final_seq_len = final_patches // spatial_merge_unit
-            final_remainder = final_patches % spatial_merge_unit
-
-            padding_logger.info(f"  ✅ FIXED tensor: [{final_patches}, {hidden_dim}]")
-            padding_logger.info(f"  ✅ Updated Grid THW: {grid_thw}")
-            padding_logger.info(f"  ✅ Final seq_len: {final_seq_len}")
-            padding_logger.info(f"  ✅ Spatial merge compatible: {final_remainder == 0}")
-
-        else:
-            padding_logger.info(f"  ✅ Already compatible, no fix needed")
-
-        return pixel_values, grid_thw
 
     def process_image_unified(self, image_file):
-        processor = self.data_args.image_processor
+        """Simplified image processing following official Qwen2.5-VL approach"""
+        processor = copy.deepcopy(self.data_args.image_processor)
         image = Image.open(image_file).convert("RGB")
 
-        # Apply padding for Qwen2.5-VL to ensure 28-multiple dimensions
-        padding_logger.info(f"DEBUG: model_type={self.model_type}, processing image {image_file}")
-        if self.model_type == "qwen2.5vl":
-            padding_logger.info("DEBUG: Applying padding check for qwen2.5vl")
-            image = self._pad_image_to_28_multiple(image)
-        else:
-            padding_logger.info(f"DEBUG: Skipping padding - model_type is {self.model_type}, not qwen2.5vl")
-
-        # Different processing for Qwen2.5-VL vs Qwen2-VL
-        if self.model_type == "qwen2.5vl":
-            # For Qwen2.5-VL, use the image processor (no text parameter for image-only processing)
-            visual_processed = processor(images=image, return_tensors="pt")
-        else:
-            # For Qwen2-VL, use preprocess method
-            visual_processed = processor.preprocess(image, return_tensors="pt")
-
+        # Official approach: direct processing without manual padding
+        visual_processed = processor.preprocess(image, return_tensors="pt")
         image_tensor = visual_processed["pixel_values"]
         if isinstance(image_tensor, List):
             image_tensor = image_tensor[0]
         grid_thw = visual_processed["image_grid_thw"][0]
-
-        # Note: Relying on pre-padding only for spatial merge compatibility
 
         return image_tensor, grid_thw
 
