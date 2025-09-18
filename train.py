@@ -133,6 +133,16 @@ class TrainingMonitorCallback(TrainerCallback):
         """Called when logging occurs - this has the complete data we need"""
         if logs is not None:
             self._log_progress(state, logs)
+            # Mark that we've logged this step
+            self.last_logged_step = state.global_step
+
+    def on_step_end(self, args, state, control, **kwargs):
+        """Fallback logging in case on_log doesn't trigger"""
+        # Only log every 5 steps and if we haven't already logged this step
+        if (state.global_step % 5 == 0 and
+            (not hasattr(self, 'last_logged_step') or
+             self.last_logged_step != state.global_step)):
+            self._log_progress(state)
 
     def on_train_end(self, args, state, control, **kwargs):
         import time
@@ -305,7 +315,7 @@ def main():
         report_to=[],  # 禁用wandb等所有报告
         logging_dir=None,  # 禁用tensorboard
         run_name=RUN_NAME,  # 设置运行名称
-        logging_steps=10,  # Log every 10 steps for reasonable frequency
+        logging_steps=5,  # Log every 5 steps for higher frequency monitoring
         tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
         gradient_checkpointing=True,
