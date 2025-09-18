@@ -321,6 +321,26 @@ def main():
                 model.lm_head.requires_grad = False
                 logger.info(f"   lm_head.requires_grad: {model.lm_head.requires_grad}")
 
+                # CRITICAL: Freeze Vision LoRA parameters if tune_mm_vision=False
+                if not model_args.tune_mm_vision:
+                    logger.info("🔒 Freezing Vision LoRA parameters (tune_mm_vision=False)...")
+                    vision_lora_frozen = 0
+                    for name, param in model.named_parameters():
+                        if 'visual' in name and 'lora' in name.lower():
+                            param.requires_grad = False
+                            vision_lora_frozen += 1
+                    logger.info(f"   Frozen {vision_lora_frozen} Vision LoRA parameters")
+
+                # Similarly, freeze MLP LoRA parameters if tune_mm_mlp=False
+                if not model_args.tune_mm_mlp:
+                    logger.info("🔒 Freezing MLP LoRA parameters (tune_mm_mlp=False)...")
+                    mlp_lora_frozen = 0
+                    for name, param in model.named_parameters():
+                        if 'merger' in name and 'lora' in name.lower():
+                            param.requires_grad = False
+                            mlp_lora_frozen += 1
+                    logger.info(f"   Frozen {mlp_lora_frozen} MLP LoRA parameters")
+
                 # Double-check: ensure only LoRA parameters have gradients
                 non_lora_trainable = []
                 for name, param in model.named_parameters():
