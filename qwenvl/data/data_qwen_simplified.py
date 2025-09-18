@@ -173,6 +173,32 @@ class LazySupervisedDataset(Dataset):
 
         return image_tensor, grid_thw
 
+    def resolve_image_path(self, img_path, base_folder):
+        """Smart path resolution: handle 'images/filename.jpg' format"""
+        if img_path.startswith("images/"):
+            # Remove "images/" prefix and find actual file location
+            filename = img_path[7:]  # Remove "images/" prefix
+
+            # Try different possible locations
+            possible_paths = [
+                os.path.join(base_folder, "train", "high_quality", filename),
+                os.path.join(base_folder, "train", "low_quality", filename),
+                os.path.join(base_folder, "val", "high_quality", filename),
+                os.path.join(base_folder, "val", "low_quality", filename),
+                os.path.join(base_folder, "test", "high_quality", filename),
+                os.path.join(base_folder, "test", "low_quality", filename),
+            ]
+
+            # Find the first existing file
+            for path in possible_paths:
+                if os.path.exists(path):
+                    return path
+
+            # If not found, fallback to original path
+            return os.path.join(base_folder, filename)
+        else:
+            return os.path.join(base_folder, img_path)
+
     def __getitem__(self, i) -> Dict[str, torch.Tensor]:
         sources = self.list_data_dict[i]
         if isinstance(i, int):
@@ -182,21 +208,21 @@ class LazySupervisedDataset(Dataset):
 
         # Handle image data
         if "image" in sources[0]:
-            image_file = self.list_data_dict[i]["image"]
             image_folder = self.list_data_dict[i]["data_path"]
+            image_file = self.list_data_dict[i]["image"]
 
             if isinstance(image_file, list):
                 if len(image_file) > 1:
-                    image_file = [os.path.join(image_folder, file) for file in image_file]
+                    image_file = [self.resolve_image_path(file, image_folder) for file in image_file]
                     results = [self.process_image_simplified(file) for file in image_file]
                     image, grid_thw = zip(*results)
                 else:
                     image_file = image_file[0]
-                    image_file = os.path.join(image_folder, image_file)
+                    image_file = self.resolve_image_path(image_file, image_folder)
                     image, grid_thw = self.process_image_simplified(image_file)
                     image = [image]
             else:
-                image_file = os.path.join(image_folder, image_file)
+                image_file = self.resolve_image_path(image_file, image_folder)
                 image, grid_thw = self.process_image_simplified(image_file)
                 image = [image]
 
