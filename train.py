@@ -258,15 +258,18 @@ def main():
         logger.info("✓ Model loaded successfully")
         print_gpu_memory_usage(logger, "After Model Loading")
 
-        # Configure model components (CRITICAL: must be called before LoRA application)
-        logger.info("🔧 Configuring model component training states...")
-        logger.info(f"   tune_mm_llm: {model_args.tune_mm_llm}")
-        logger.info(f"   tune_mm_vision: {model_args.tune_mm_vision}")
-        logger.info(f"   tune_mm_mlp: {model_args.tune_mm_mlp}")
+        # Configure model components (ONLY for full parameter training, NOT LoRA)
+        if not training_args.lora_enable:
+            logger.info("🔧 Configuring model component training states (Full Parameter Mode)...")
+            logger.info(f"   tune_mm_llm: {model_args.tune_mm_llm}")
+            logger.info(f"   tune_mm_vision: {model_args.tune_mm_vision}")
+            logger.info(f"   tune_mm_mlp: {model_args.tune_mm_mlp}")
 
-        from qwenvl.train.train_qwen import set_model
-        set_model(model_args, model)
-        logger.info("✓ Model component states configured successfully")
+            from qwenvl.train.train_qwen import set_model
+            set_model(model_args, model)
+            logger.info("✓ Model component states configured successfully")
+        else:
+            logger.info("🎯 LoRA Mode: Skipping set_model() - PEFT will handle parameter states")
 
         # Apply LoRA if enabled
         if training_args.lora_enable:
