@@ -45,6 +45,23 @@ DEEPSPEED_CONFIG = "./scripts/zero3.json"
 # Simplified: No longer needed with 700x1400 resized images
 # ===================================
 
+def print_gpu_memory_usage(logger, stage=""):
+    """打印详细的GPU显存使用情况"""
+    if torch.cuda.is_available():
+        device = torch.cuda.current_device()
+        total_memory = torch.cuda.get_device_properties(device).total_memory / (1024**3)  # GB
+        allocated = torch.cuda.memory_allocated(device) / (1024**3)  # GB
+        reserved = torch.cuda.memory_reserved(device) / (1024**3)  # GB
+        free = total_memory - allocated
+
+        logger.info(f"=== GPU Memory Usage - {stage} ===")
+        logger.info(f"Total GPU Memory: {total_memory:.2f} GB")
+        logger.info(f"Allocated Memory: {allocated:.2f} GB ({allocated/total_memory*100:.1f}%)")
+        logger.info(f"Reserved Memory: {reserved:.2f} GB ({reserved/total_memory*100:.1f}%)")
+        logger.info(f"Free Memory: {free:.2f} GB ({free/total_memory*100:.1f}%)")
+        logger.info(f"Memory Efficiency: {allocated/reserved*100:.1f}% (allocated/reserved)")
+        logger.info("=" * 50)
+
 def setup_logging():
     """Setup comprehensive logging to file and console"""
     # Create logs directory
@@ -116,6 +133,7 @@ def main():
         logger.info(f"GPU count: {torch.cuda.device_count()}")
         logger.info(f"Current GPU: {torch.cuda.current_device()}")
         logger.info(f"GPU name: {torch.cuda.get_device_name()}")
+    print_gpu_memory_usage(logger, "Initial State")
     logger.info("="*60)
 
     # Dataset mapping
@@ -234,6 +252,7 @@ def main():
             torch_dtype=torch.bfloat16,
         )
         logger.info("✓ Model loaded successfully")
+        print_gpu_memory_usage(logger, "After Model Loading")
 
         tokenizer = AutoTokenizer.from_pretrained(
             MODEL_NAME,
@@ -269,6 +288,7 @@ def main():
         train_dataset = data_module.get('train_dataset')
         if train_dataset:
             logger.info(f"✓ Dataset loaded successfully. Size: {len(train_dataset)}")
+            print_gpu_memory_usage(logger, "After Dataset Loading")
         else:
             logger.warning("No training dataset found in data module")
     except Exception as e:
@@ -285,6 +305,16 @@ def main():
             **data_module
         )
         logger.info("✓ Trainer created successfully")
+
+        # 检查LoRA参数统计
+        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        total_params = sum(p.numel() for p in model.parameters())
+        logger.info(f"LoRA Parameter Statistics:")
+        logger.info(f"  Trainable parameters: {trainable_params:,}")
+        logger.info(f"  Total parameters: {total_params:,}")
+        logger.info(f"  Trainable ratio: {trainable_params/total_params*100:.2f}%")
+
+        print_gpu_memory_usage(logger, "After Trainer Creation")
     except Exception as e:
         logger.error(f"Failed to create trainer: {e}")
         raise
@@ -299,6 +329,7 @@ def main():
             trainer.train(resume_from_checkpoint=True)
         else:
             logger.info("Starting training from scratch...")
+            print_gpu_memory_usage(logger, "Before Training Start")
             trainer.train()
 
         logger.info("✓ Training completed successfully")
