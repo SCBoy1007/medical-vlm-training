@@ -107,6 +107,10 @@ def main():
     logger.info(f"Min pixels: {MIN_PIXELS}")
     logger.info(f"DeepSpeed enabled: {USE_DEEPSPEED}")
     logger.info("Using simplified image processing (no custom padding)")
+    logger.info("TRAINING MODE: LoRA Fine-tuning")
+    logger.info(f"LoRA rank: 32")
+    logger.info(f"LoRA alpha: 16")
+    logger.info(f"Expected memory usage: ~18GB (LoRA r=32)")
     logger.info(f"CUDA available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():
         logger.info(f"GPU count: {torch.cuda.device_count()}")
@@ -133,7 +137,7 @@ def main():
     model_args = ModelArguments(
         model_name_or_path=MODEL_NAME,
         version="qwen",
-        freeze_backbone=True,  # 冻结backbone节省显存
+        freeze_backbone=False,  # LoRA模式不需要冻结backbone
         tune_mm_mlp_adapter=True,
         vision_tower=None,
         mm_vision_select_layer=-2,
@@ -172,9 +176,9 @@ def main():
         double_quant=True,
         quant_type="nf4",
         bits=16,
-        lora_enable=False,
-        lora_r=64,
-        lora_alpha=16,
+        lora_enable=True,   # 启用LoRA微调
+        lora_r=32,          # LoRA rank=32 (平衡效果和显存)
+        lora_alpha=16,      # LoRA alpha参数
         lora_dropout=0.05,
         lora_weight_path="",
         lora_bias="none",
