@@ -130,15 +130,9 @@ class TrainingMonitorCallback(TrainerCallback):
                 self.logger.info(f"GPU Memory: {allocated:.1f}GB")
 
     def on_log(self, args, state, control, logs=None, **kwargs):
-        """Called when logging occurs"""
+        """Called when logging occurs - this has the complete data we need"""
         if logs is not None:
             self._log_progress(state, logs)
-
-    def on_step_end(self, args, state, control, **kwargs):
-        """Called at the end of each training step"""
-        # Log every 10 steps or at key milestones
-        if state.global_step % 10 == 0 or state.global_step in [1, 5]:
-            self._log_progress(state)
 
     def on_train_end(self, args, state, control, **kwargs):
         import time
