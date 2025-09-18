@@ -79,10 +79,8 @@ class TrainingMonitorCallback(TrainerCallback):
         self.last_log_time = self.start_time
         self.logger.info("🚀 Training started...")
 
-    def on_log(self, args, state, control, logs=None, **kwargs):
-        if logs is None:
-            return
-
+    def _log_progress(self, state, logs=None):
+        """Helper method to log training progress"""
         import time
         current_time = time.time()
 
@@ -110,23 +108,37 @@ class TrainingMonitorCallback(TrainerCallback):
                 return f"{seconds}s"
 
         # Extract key metrics
-        loss = logs.get('train_loss', logs.get('loss', 'N/A'))
-        lr = logs.get('learning_rate', 'N/A')
+        loss = 'N/A'
+        lr = 'N/A'
+        if logs:
+            loss = logs.get('train_loss', logs.get('loss', 'N/A'))
+            lr = logs.get('learning_rate', 'N/A')
 
         # Log training progress
         progress_bar = "█" * int(progress // 5) + "░" * (20 - int(progress // 5))
 
         self.logger.info(
             f"Step {current_step:4d}/{max_steps} [{progress_bar}] {progress:5.1f}% | "
-            f"Loss: {loss:.4f} | LR: {lr:.2e} | "
+            f"Loss: {loss} | LR: {lr} | "
             f"Elapsed: {format_time(elapsed_time)} | ETA: {format_time(eta)}"
         )
 
         # GPU memory update (less frequent to avoid spam)
-        if current_step % 50 == 0:
+        if current_step % 25 == 0:
             if torch.cuda.is_available():
                 allocated = torch.cuda.memory_allocated() / (1024**3)
                 self.logger.info(f"GPU Memory: {allocated:.1f}GB")
+
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        """Called when logging occurs"""
+        if logs is not None:
+            self._log_progress(state, logs)
+
+    def on_step_end(self, args, state, control, **kwargs):
+        """Called at the end of each training step"""
+        # Log every 10 steps or at key milestones
+        if state.global_step % 10 == 0 or state.global_step in [1, 5]:
+            self._log_progress(state)
 
     def on_train_end(self, args, state, control, **kwargs):
         import time
