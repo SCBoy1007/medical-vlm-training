@@ -277,6 +277,14 @@ def main():
             try:
                 from peft import LoraConfig, get_peft_model, TaskType
 
+                # CRITICAL: Enable embedding gradients for LoRA (from official Qwen code)
+                logger.info("🔗 Enabling embedding layer gradients for LoRA compatibility...")
+                def make_inputs_require_grad(module, input, output):
+                    output.requires_grad_(True)
+
+                model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+                logger.info("✓ Embedding gradient hook registered")
+
                 # Create LoRA configuration
                 lora_config = LoraConfig(
                     task_type=TaskType.CAUSAL_LM,
