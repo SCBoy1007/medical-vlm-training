@@ -255,6 +255,35 @@ def main():
         logger.info("✓ Model loaded successfully")
         print_gpu_memory_usage(logger, "After Model Loading")
 
+        # Apply LoRA if enabled
+        if training_args.lora_enable:
+            logger.info("🔄 Applying LoRA configuration...")
+            try:
+                from peft import LoraConfig, get_peft_model, TaskType
+
+                # Create LoRA configuration
+                lora_config = LoraConfig(
+                    task_type=TaskType.CAUSAL_LM,
+                    r=training_args.lora_r,
+                    lora_alpha=training_args.lora_alpha,
+                    lora_dropout=training_args.lora_dropout,
+                    target_modules=["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],  # Common attention and MLP layers
+                    bias=training_args.lora_bias,
+                )
+
+                # Apply LoRA to model
+                model = get_peft_model(model, lora_config)
+                logger.info("✅ LoRA applied successfully!")
+                logger.info(f"   LoRA rank: {training_args.lora_r}")
+                logger.info(f"   LoRA alpha: {training_args.lora_alpha}")
+                logger.info(f"   Target modules: {lora_config.target_modules}")
+
+            except Exception as e:
+                logger.error(f"❌ Failed to apply LoRA: {e}")
+                logger.info("💡 Falling back to full parameter training")
+
+            print_gpu_memory_usage(logger, "After LoRA Application")
+
         tokenizer = AutoTokenizer.from_pretrained(
             MODEL_NAME,
             cache_dir=training_args.cache_dir,
