@@ -316,6 +316,26 @@ def main():
                 else:
                     logger.info(f"✅ {lora_params_with_grad} LoRA parameters ready for training")
 
+                # CRITICAL: In LoRA mode, freeze lm_head to prevent gradient conflicts
+                logger.info("🔒 Freezing lm_head for LoRA compatibility...")
+                model.lm_head.requires_grad = False
+                logger.info(f"   lm_head.requires_grad: {model.lm_head.requires_grad}")
+
+                # Double-check: ensure only LoRA parameters have gradients
+                non_lora_trainable = []
+                for name, param in model.named_parameters():
+                    if param.requires_grad and 'lora' not in name.lower():
+                        non_lora_trainable.append(name)
+
+                if non_lora_trainable:
+                    logger.warning(f"⚠️  WARNING: Found {len(non_lora_trainable)} non-LoRA trainable parameters:")
+                    for name in non_lora_trainable[:5]:  # Show first 5
+                        logger.warning(f"     {name}")
+                    if len(non_lora_trainable) > 5:
+                        logger.warning(f"     ... and {len(non_lora_trainable) - 5} more")
+                else:
+                    logger.info("✅ All trainable parameters are LoRA parameters")
+
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
                 logger.info("💡 Falling back to full parameter training")
