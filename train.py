@@ -83,8 +83,7 @@ def main():
 
     # Import after adding to path
     from qwenvl.train.argument import ModelArguments, DataArguments, TrainingArguments
-    # Use simplified data processing (remove complex padding logic)
-    from qwenvl.data.data_qwen_simplified import make_supervised_data_module
+    from qwenvl.data.data_qwen import make_supervised_data_module
     from qwenvl.train.trainer import replace_qwen2_vl_attention_class
     from transformers import (
         Qwen2VLForConditionalGeneration,
