@@ -59,7 +59,8 @@ def print_gpu_memory_usage(logger, stage=""):
         logger.info(f"Allocated Memory: {allocated:.2f} GB ({allocated/total_memory*100:.1f}%)")
         logger.info(f"Reserved Memory: {reserved:.2f} GB ({reserved/total_memory*100:.1f}%)")
         logger.info(f"Free Memory: {free:.2f} GB ({free/total_memory*100:.1f}%)")
-        logger.info(f"Memory Efficiency: {allocated/reserved*100:.1f}% (allocated/reserved)")
+        efficiency = (allocated/reserved*100) if reserved > 0 else 0.0
+        logger.info(f"Memory Efficiency: {efficiency:.1f}% (allocated/reserved)")
         logger.info("=" * 50)
 
 def setup_logging():
