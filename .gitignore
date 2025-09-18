@@ -43,8 +43,9 @@ checkpoints/*/
 # Data and logs
 *.log
 logs/
-# Exclude entire data directory (large files, processed locally)
+# Exclude data files but keep code in qwenvl/data/
 data/
+!qwenvl/data/*.py
 
 # Video files
 *.mp4
