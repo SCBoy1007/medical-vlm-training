@@ -1,45 +1,130 @@
-# QwenVL Training Framework
+# Medical VLM Training Framework
 
-This repository provides a training framework for Qwen VL models. The are two steps to use our repo:
+A streamlined **LoRA fine-tuning framework** for **Qwen2.5-VL** models, specifically optimized for **medical image analysis**. This repository provides efficient parameter-efficient fine-tuning for medical vision-language tasks.
 
-1. Customize your dataset: downloading data, implement the config
-2. Modify training scripts: 
+## ✨ Key Features
+
+- **LoRA Fine-tuning**: Memory-efficient training using PEFT (Parameter-Efficient Fine-Tuning)
+- **Medical Domain Optimized**: Configured for medical image grounding and bbox analysis tasks
+- **Robust Implementation**: Follows official Qwen2.5-VL best practices with embedding gradient fixes
+- **GPU Efficient**: Optimized for V100 32GB GPUs with single-GPU training
+- **Evaluation Ready**: Built-in IoU performance evaluation for model comparison
+
+## 🚀 Quick Start
+
+### LoRA Training
+
+For medical VLM LoRA fine-tuning, simply run:
+
+```bash
+python train.py
+```
+
+The script automatically:
+- Applies LoRA adapters to Qwen2.5-VL model (rank=32, alpha=16)
+- Enables embedding gradient flow for PEFT compatibility
+- Loads medical grounding datasets (curve detection, vertebrae analysis)
+- Saves LoRA adapters to `./output_grounding/`
+
+### Model Evaluation
+
+After training, evaluate IoU performance:
+
+```bash
+# Edit evaluate_iou_performance.py configuration:
+USE_LORA = True  # Test LoRA model
+LORA_PATH = "./output_grounding"
+
+# Run evaluation
+python evaluate_iou_performance.py
+``` 
 
 ## Repository Structure
 
-The `qwenvl` directory contains the following components:
+### 🏗️ Main Scripts
+- `train.py`: **Main LoRA training script** - simplified configuration with PEFT integration
+- `evaluate_iou_performance.py`: **IoU evaluation script** - compare base vs LoRA model performance
 
-### `train/`
-- `trainer.py`: Main trainer updated from Huggingface Trainer
-- `train_qwen.py`: Main file for training
-- `argument.py`: Dataclasses for model, data and training arguments
+### 📁 Training Framework (`qwenvl/`)
 
-### `data/`
-- `__init__.py`: Contains datasets configs
-- `data_qwen.py`: Data processing module for QwenVL models
-- `data_qwen_packed.py`: Packed data processing module for QwenVL models
-- `rope2d.py`: Provide RoPE implementation
+**`train/`**
+- `trainer.py`: Enhanced Huggingface Trainer with LoRA support
+- `train_qwen.py`: Core training logic with embedding gradient fixes
+- `argument.py`: Training arguments with LoRA parameters
 
-### `tools`
-- `process_bbox.ipynb`: Convert bbox into QwenVL format. If you have grounding data, please refer this file to tranform your data.
-- `pack_data.py`: Pack data into even length buckets.
+**`data/`**
+- `__init__.py`: Medical datasets configs (grounding, curve detection, vertebrae analysis)
+- `data_qwen.py`: Qwen2.5-VL data processing module
+- `data_qwen_packed.py`: Packed data processing for efficient training
+- `rope2d.py`: RoPE (Rotary Position Embedding) for 2D vision
 
-## Requirements
+**`tools/`**
+- `process_bbox.ipynb`: Convert bbox data into QwenVL format
+- `pack_data.py`: Pack data into even length buckets
 
-You could use follow version of packages:
+### 📊 Model and Data
+- `models/`: Base Qwen2.5-VL model directory
+- `data/`: Medical image datasets and annotations
+- `output_grounding/`: LoRA adapter outputs (created after training)
+- `iou_evaluation_results/`: Evaluation results and visualizations
 
-- `torch==2.6.0`
-- `torchvision==0.21.0`
-- `transformers==4.50.0.dev0`
-- `deepspeed==0.16.4`
-- `flash_attn==2.7.4.post1` (Optional, removed for server compatibility)
-- `triton==3.0.0`
-- `accelerate==1.4.0`
-- `torchcodec==0.2`
+## 📋 Requirements
 
-## Custom Dataset Configuration
+### Core Dependencies
+```bash
+pip install torch==2.6.0 torchvision==0.21.0
+pip install transformers==4.50.0.dev0
+pip install accelerate==1.4.0
+pip install triton==3.0.0
+pip install peft>=0.12.0             # LoRA fine-tuning
+```
 
-The customized data should have the format like:
+### Optional Dependencies
+```bash
+pip install deepspeed==0.16.4        # For multi-GPU scaling (not required for single GPU)
+pip install torchcodec==0.2          # For video processing
+# flash_attn==2.7.4.post1           # Removed for V100 compatibility
+```
+
+### Hardware Requirements
+- **Recommended**: NVIDIA V100 32GB or similar
+- **Minimum**: 16GB VRAM for LoRA training
+- **CPU**: Multi-core processor for data loading
+
+### Medical Dataset Structure
+Your medical images should be organized as:
+```
+data/images/
+├── train/
+│   ├── high_quality/    # High-quality medical images (700×1400)
+│   └── low_quality/     # Lower-quality medical images (700×1400)
+└── annotations/         # JSON files with grounding annotations
+```
+
+## 🏥 Medical Dataset Configuration
+
+### Medical Grounding Example
+For medical image analysis with bounding box annotations:
+
+```json
+{
+    "image": "images/spine_xray_001.jpg",
+    "conversations": [
+        {
+            "from": "human",
+            "value": "<image>\nLocate the apex vertebrae in this X-ray and provide coordinates."
+        },
+        {
+            "from": "gpt",
+            "value": "{\n\"bbox_2d\": [245, 156, 398, 267]\n}"
+        }
+    ]
+}
+```
+
+### Standard Dataset Configuration
+
+The framework supports various data formats:
 
 ### JSON Data Structure
 
@@ -299,7 +384,57 @@ torchrun --nproc_per_node=$NPROC_PER_NODE \
          --deepspeed zero3.json \           # DeepSpeed configuration
 ```
 
-The script accepts arguments in three categories:
+## ⚙️ Configuration and Usage
+
+### Training Configuration
+
+The main training script `train.py` uses simple configuration variables (no command line arguments needed):
+
+```python
+# Training dataset type
+DATASET_TYPE = "grounding"  # Options: "grounding", "text", "text_grounding"
+
+# Model configuration
+MODEL_NAME = "./models/Qwen2.5-VL-7B-Instruct"
+OUTPUT_DIR = f"./output_{DATASET_TYPE}"
+
+# LoRA hyperparameters
+LEARNING_RATE = 2e-7
+BATCH_SIZE = 1
+GRAD_ACCUM_STEPS = 4
+NUM_EPOCHS = 0.5
+
+# LoRA configuration (in TrainingArguments)
+lora_enable=True
+lora_r=32           # LoRA rank
+lora_alpha=16       # LoRA alpha parameter
+lora_dropout=0.05
+```
+
+### Evaluation Configuration
+
+The evaluation script `evaluate_iou_performance.py` also uses simple configuration:
+
+```python
+# Model selection
+USE_LORA = False  # Set to True for LoRA model evaluation
+LORA_PATH = "./output_grounding"  # LoRA adapter path
+
+# Paths
+BASE_MODEL_PATH = "./models/Qwen2.5-VL-7B-Instruct"
+OUTPUT_DIR = "./iou_evaluation_results"
+```
+
+### Typical Workflow
+
+1. **Training**: `python train.py` (saves LoRA adapters to `./output_grounding/`)
+2. **Base Model Evaluation**: Set `USE_LORA = False`, run `python evaluate_iou_performance.py`
+3. **LoRA Model Evaluation**: Set `USE_LORA = True`, run `python evaluate_iou_performance.py`
+4. **Compare Results**: Check `./iou_evaluation_results/` for JSON results and visualizations
+
+## 🔧 Advanced Configuration
+
+The script accepts configuration in three categories:
 
    - Flags to control which components to tune (`tune_mm_vision`, `tune_mm_mlp`, `tune_mm_llm`). If trained with both image and video data, tune_mm_vision should be False: `tune_mm_vision=False`
    - `data_flatten` flag means data in a batch are concat into one sequence
