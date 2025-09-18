@@ -158,6 +158,9 @@ def main():
         version="qwen",
         freeze_backbone=False,  # LoRA模式不需要冻结backbone
         tune_mm_mlp_adapter=True,
+        tune_mm_llm=True,       # 启用LLM训练 (LoRA关键参数)
+        tune_mm_vision=False,   # 医学图像分析通常冻结vision encoder
+        tune_mm_mlp=True,       # 启用multimodal projector
         vision_tower=None,
         mm_vision_select_layer=-2,
         pretrain_mm_mlp_adapter=None,
@@ -255,6 +258,16 @@ def main():
         logger.info("✓ Model loaded successfully")
         print_gpu_memory_usage(logger, "After Model Loading")
 
+        # Configure model components (CRITICAL: must be called before LoRA application)
+        logger.info("🔧 Configuring model component training states...")
+        logger.info(f"   tune_mm_llm: {model_args.tune_mm_llm}")
+        logger.info(f"   tune_mm_vision: {model_args.tune_mm_vision}")
+        logger.info(f"   tune_mm_mlp: {model_args.tune_mm_mlp}")
+
+        from qwenvl.train.train_qwen import set_model
+        set_model(model_args, model)
+        logger.info("✓ Model component states configured successfully")
+
         # Apply LoRA if enabled
         if training_args.lora_enable:
             logger.info("🔄 Applying LoRA configuration...")
@@ -285,6 +298,23 @@ def main():
                 # Use PEFT's built-in method for accurate parameter statistics
                 logger.info("   PEFT Parameter Statistics:")
                 model.print_trainable_parameters()
+
+                # Additional debug: Check if LoRA parameters actually require gradients
+                logger.info("🔍 LoRA Parameter Gradient Debug:")
+                lora_params_with_grad = 0
+                lora_params_total = 0
+                for name, param in model.named_parameters():
+                    if 'lora' in name.lower():
+                        lora_params_total += 1
+                        if param.requires_grad:
+                            lora_params_with_grad += 1
+                        logger.info(f"   {name}: requires_grad={param.requires_grad}")
+
+                logger.info(f"   LoRA parameters with gradient: {lora_params_with_grad}/{lora_params_total}")
+                if lora_params_with_grad == 0:
+                    logger.warning("⚠️  WARNING: No LoRA parameters have gradients enabled!")
+                else:
+                    logger.info(f"✅ {lora_params_with_grad} LoRA parameters ready for training")
 
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
