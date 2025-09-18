@@ -273,10 +273,22 @@ def main():
 
                 # Apply LoRA to model
                 model = get_peft_model(model, lora_config)
+
+                # Enable training for LoRA parameters
+                model.train()
+                for param in model.parameters():
+                    if hasattr(param, 'requires_grad'):
+                        param.requires_grad = True
+
                 logger.info("✅ LoRA applied successfully!")
                 logger.info(f"   LoRA rank: {training_args.lora_r}")
                 logger.info(f"   LoRA alpha: {training_args.lora_alpha}")
                 logger.info(f"   Target modules: {lora_config.target_modules}")
+
+                # Verify gradient requirements
+                trainable_count = sum(1 for p in model.parameters() if p.requires_grad)
+                total_count = sum(1 for p in model.parameters())
+                logger.info(f"   Parameters requiring gradients: {trainable_count}/{total_count}")
 
             except Exception as e:
                 logger.error(f"❌ Failed to apply LoRA: {e}")
