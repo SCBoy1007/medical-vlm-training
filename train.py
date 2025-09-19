@@ -57,7 +57,7 @@ LORA_METHOD = "lora" # Training method identifier for output directory
 
 # Multi-GPU Training hyperparameters (optimized for 4x V100)
 LEARNING_RATE = 5e-6  # Increased for better LoRA convergence
-BATCH_SIZE = 6  # Maximized per-GPU batch size for V100 32GB
+BATCH_SIZE = 4  # Reduced to avoid CUDA memory allocation failures
 GRAD_ACCUM_STEPS = 1  # Simplified for faster convergence
 NUM_EPOCHS = 0.5
 
@@ -72,7 +72,7 @@ NUM_EPOCHS = 0.5
 # Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}
 lr_str = f"{LEARNING_RATE:.0e}".replace('e-0', 'e-').replace('e+0', 'e+')  # Clean format: 2e-7
 ep_str = f"{NUM_EPOCHS}".replace('.', 'p')  # Replace . with p: 0.5 -> 0p5
-effective_batch_size = 4 * BATCH_SIZE * GRAD_ACCUM_STEPS  # 4 GPUs * 6 batch * 1 accum = 24
+effective_batch_size = 4 * BATCH_SIZE * GRAD_ACCUM_STEPS  # 4 GPUs * 4 batch * 1 accum = 16
 
 OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}_lr{lr_str}_ep{ep_str}_bs{effective_batch_size}"
 RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}-lr{lr_str}-bs{effective_batch_size}"
@@ -347,7 +347,7 @@ def main():
         report_to=[],  # 禁用wandb等所有报告
         logging_dir=None,  # 禁用tensorboard
         run_name=RUN_NAME,  # 设置运行名称
-        logging_steps=10 if int(os.environ.get('WORLD_SIZE', 1)) > 1 else 5,  # Adjust for multi-GPU
+        logging_steps=1,  # Log every step for detailed monitoring
         tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
         gradient_checkpointing=True,
