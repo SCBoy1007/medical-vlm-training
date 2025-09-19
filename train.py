@@ -11,16 +11,37 @@ import os
 import sys
 import torch
 import logging
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from transformers import TrainerCallback
 
-# ====== MULTI-GPU CONFIGURATION ======
-# Fix for tensor dimension issues: Use single GPU to avoid DataParallel problems
-# The previous error was caused by DataParallel incompatibility with Qwen2.5-VL attention
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Use single GPU for stable training
-# For multi-GPU in future: need proper DDP setup with torchrun
-# =====================================
+# ====== AUTO MULTI-GPU CONFIGURATION ======
+# Automatically detects and uses all available GPUs
+# No need for torchrun - just run: python train.py
+# ============================================
+
+def auto_launch_distributed():
+    """Auto-launch distributed training if multiple GPUs detected"""
+    if 'RANK' in os.environ:
+        # Already in distributed mode
+        return False
+
+    gpu_count = torch.cuda.device_count()
+    if gpu_count <= 1:
+        print(f"Single GPU mode: {gpu_count} GPU detected")
+        return False
+
+    print(f"Auto-launching {gpu_count}-GPU distributed training...")
+    cmd = [
+        sys.executable, '-m', 'torch.distributed.run',
+        '--nproc_per_node', str(gpu_count),
+        '--master_port', '29500',
+        __file__
+    ] + sys.argv[1:]
+
+    subprocess.run(cmd)
+    return True
 
 # ====== CONFIGURATION SECTION ======
 # Change this to switch between datasets:
@@ -34,10 +55,10 @@ LORA_R = 32          # LoRA rank: 16 (faster), 32 (balanced), 64 (better quality
 LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
 LORA_METHOD = "lora" # Training method identifier for output directory
 
-# Training hyperparameters
+# Multi-GPU Training hyperparameters (optimized for 4x V100)
 LEARNING_RATE = 2e-7
-BATCH_SIZE = 1  # Single GPU batch size
-GRAD_ACCUM_STEPS = 4  # Restore original gradient accumulation
+BATCH_SIZE = 2  # Per-GPU batch size (increased for multi-GPU)
+GRAD_ACCUM_STEPS = 2  # Reduced due to more GPUs
 NUM_EPOCHS = 0.5
 
 # Examples for different configurations:
@@ -59,25 +80,31 @@ MAX_PIXELS = 256*28*28     # 200,704 pixels (reduced from 451,584 for memory eff
 MIN_PIXELS = 16*28*28      # 12,544 pixels (keep same)
 
 # Hardware configuration
-USE_DEEPSPEED = False  # Temporarily disabled to debug tensor dimension issues
-DEEPSPEED_CONFIG = "./scripts/zero3.json"
+USE_DEEPSPEED = True  # Enable DeepSpeed ZeRO for multi-GPU
+DEEPSPEED_CONFIG = "./scripts/zero2.json"  # ZeRO-2 for 4x V100
 
 # Simplified: No longer needed with 700x1400 resized images
 # ===================================
 
 class TrainingMonitorCallback(TrainerCallback):
-    """自定义训练监控回调，提供清晰的训练进度信息"""
+    """自定义训练监控回调，支持多GPU训练监控"""
 
     def __init__(self, logger):
         self.logger = logger
         self.start_time = None
         self.last_log_time = None
+        # Get distributed training info
+        self.rank = int(os.environ.get('RANK', 0))
+        self.world_size = int(os.environ.get('WORLD_SIZE', 1))
+        self.is_distributed = self.world_size > 1
 
     def on_train_begin(self, args, state, control, **kwargs):
         import time
         self.start_time = time.time()
         self.last_log_time = self.start_time
-        self.logger.info("🚀 Training started...")
+        if self.rank == 0:  # Only log from master process
+            gpu_info = f"{self.world_size}x GPU" if self.is_distributed else "Single GPU"
+            self.logger.info(f"🚀 Training started on {gpu_info}...")
 
     def _log_progress(self, state, logs=None):
         """Helper method to log training progress"""
@@ -124,30 +151,31 @@ class TrainingMonitorCallback(TrainerCallback):
         )
 
         # GPU memory update (less frequent to avoid spam)
-        if current_step % 25 == 0:
+        if current_step % 25 == 0 and self.rank == 0:
             if torch.cuda.is_available():
-                allocated = torch.cuda.memory_allocated() / (1024**3)
-                self.logger.info(f"GPU Memory: {allocated:.1f}GB")
+                if self.is_distributed:
+                    # Show average memory across all GPUs
+                    total_memory = 0
+                    for i in range(min(self.world_size, torch.cuda.device_count())):
+                        allocated = torch.cuda.memory_allocated(i) / (1024**3)
+                        total_memory += allocated
+                    avg_memory = total_memory / self.world_size
+                    self.logger.info(f"Avg GPU Memory: {avg_memory:.1f}GB across {self.world_size} GPUs")
+                else:
+                    allocated = torch.cuda.memory_allocated() / (1024**3)
+                    self.logger.info(f"GPU Memory: {allocated:.1f}GB")
 
     def on_log(self, args, state, control, logs=None, **kwargs):
         """Called when logging occurs - this has the complete data we need"""
-        if logs is not None:
+        if logs is not None and self.rank == 0:  # Only log from master process
             self._log_progress(state, logs)
-            # Mark that we've logged this step
-            self.last_logged_step = state.global_step
-
-    def on_step_end(self, args, state, control, **kwargs):
-        """Fallback logging in case on_log doesn't trigger"""
-        # Only log every 5 steps and if we haven't already logged this step
-        if (state.global_step % 5 == 0 and
-            (not hasattr(self, 'last_logged_step') or
-             self.last_logged_step != state.global_step)):
-            self._log_progress(state)
 
     def on_train_end(self, args, state, control, **kwargs):
-        import time
-        total_time = time.time() - self.start_time
-        self.logger.info(f"✅ Training completed in {total_time/60:.1f} minutes")
+        if self.rank == 0:  # Only log from master process
+            import time
+            total_time = time.time() - self.start_time
+            gpu_info = f"on {self.world_size} GPUs" if self.is_distributed else ""
+            self.logger.info(f"✅ Training completed {gpu_info} in {total_time/60:.1f} minutes")
 
 def print_gpu_memory_usage(logger, stage=""):
     """打印详细的GPU显存使用情况"""
@@ -192,6 +220,10 @@ def setup_logging():
     return logger
 
 def main():
+    # Auto-launch distributed training if needed
+    if auto_launch_distributed():
+        return  # Exit if we launched distributed training
+
     # Setup logging first
     logger = setup_logging()
 
@@ -304,7 +336,7 @@ def main():
         gradient_accumulation_steps=GRAD_ACCUM_STEPS,
         evaluation_strategy="no",
         save_strategy="steps",
-        save_steps=1000,
+        save_steps=500,  # More frequent saves for multi-GPU training
         save_total_limit=1,
         learning_rate=LEARNING_RATE,
         weight_decay=0.,
@@ -315,7 +347,7 @@ def main():
         report_to=[],  # 禁用wandb等所有报告
         logging_dir=None,  # 禁用tensorboard
         run_name=RUN_NAME,  # 设置运行名称
-        logging_steps=5,  # Log every 5 steps for higher frequency monitoring
+        logging_steps=10 if int(os.environ.get('WORLD_SIZE', 1)) > 1 else 5,  # Adjust for multi-GPU
         tf32=False,  # Disabled for V100 compatibility (TF32 requires Ampere+)
         dataloader_num_workers=4,
         gradient_checkpointing=True,
@@ -324,9 +356,11 @@ def main():
         # DeepSpeed
         deepspeed=DEEPSPEED_CONFIG if USE_DEEPSPEED else None,
 
-        # Multi-GPU configuration - force DDP over DataParallel
+        # Multi-GPU DDP configuration
+        ddp_backend="nccl",                # NCCL backend for multi-GPU
         ddp_find_unused_parameters=False,  # Improves performance for VLM
         dataloader_drop_last=True,        # Ensures consistent batch sizes across GPUs
+        ddp_timeout=7200,                 # 2 hours timeout for large model loading
 
         # Logging (already configured above to disable wandb)
     )
