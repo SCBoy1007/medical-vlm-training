@@ -5,8 +5,8 @@ IoU性能评估脚本
 测试 curve_detection, apex_vertebrae, end_vertebrae 的所有 test 数据
 
 使用方法：
-1. 测试基础模型：设置 USE_LORA = False
-2. 测试LoRA模型：设置 USE_LORA = True，并指定 LORA_PATH
+1. 测试基础模型：设置 EVALUATION_MODE = "base"
+2. 测试LoRA模型：设置 EVALUATION_MODE = "lora"，并指定 LORA_PATH
 """
 
 import os
@@ -29,22 +29,38 @@ import random
 # 基础模型路径
 BASE_MODEL_PATH = "./models/Qwen2.5-VL-7B-Instruct"
 
-# LoRA配置 - 修改这里来切换测试模型
-USE_LORA = False  # 改为True来测试LoRA微调模型
-LORA_PATH = "./output_grounding"  # LoRA适配器路径，训练完成后会保存在这里
+# LoRA配置 - 选择要评估的模型
+EVALUATION_MODE = "lora"  # Options: "base", "lora"
+
+# LoRA模型选择 - 直接指定要评估的LoRA文件夹
+LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"  # 刚训练完成的模型
+
+# 常用LoRA模型路径 (快速切换):
+# LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"    # 当前训练的模型
+# LORA_PATH = "./output_grounding_lora_r16_alpha8_lr1e-6_ep0p5_bs4"     # 小rank快速模型
+# LORA_PATH = "./output_grounding_lora_r64_alpha32_lr1e-7_ep1p0_bs4"    # 大rank高质量模型
+# LORA_PATH = "./output_grounding_linear_r0_alpha0_lr1e-5_ep1p0_bs4"    # 线性探测模型
 
 # 数据和输出路径
 DATA_BASE_PATH = "./data/datasets_grounding"
 IMAGE_BASE_PATH = "./data/images/test"
-OUTPUT_DIR = "./iou_evaluation_results"  # 结果保存目录
+
+# 动态输出目录 - 根据评估模型自动命名
+if EVALUATION_MODE == "base":
+    OUTPUT_DIR = "./iou_evaluation_results/base_model"
+else:
+    # 从LoRA路径提取模型名称
+    model_name = LORA_PATH.replace("./output_", "").replace("/", "_")
+    OUTPUT_DIR = f"./iou_evaluation_results/{model_name}"
 
 # 系统配置
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # 快速切换示例：
-# 1. 测试基础模型： USE_LORA = False
-# 2. 测试LoRA模型： USE_LORA = True, LORA_PATH = "./output_grounding"
-# 3. 对比结果查看： ./iou_evaluation_results/ 目录下的json文件
+# 1. 测试基础模型： EVALUATION_MODE = "base"
+# 2. 测试当前LoRA： EVALUATION_MODE = "lora", LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"
+# 3. 测试其他LoRA： 修改LORA_PATH为对应的输出文件夹
+# 4. 对比结果查看： ./iou_evaluation_results/{model_name}/ 目录下的json文件
 # ========================================
 
 # Task configurations
@@ -600,14 +616,15 @@ def load_model(model_path, lora_path=None):
 def main():
     """Main function - IoU performance evaluation for medical VLM tasks"""
     # 根据配置设置LoRA路径
-    lora_path = LORA_PATH if USE_LORA else None
+    use_lora = EVALUATION_MODE == "lora"
+    lora_path = LORA_PATH if use_lora else None
 
     print("=" * 60)
     print("IoU性能评估")
     print("=" * 60)
     print(f"Base Model: {BASE_MODEL_PATH}")
-    print(f"Use LoRA: {USE_LORA}")
-    if USE_LORA:
+    print(f"Evaluation Mode: {EVALUATION_MODE}")
+    if use_lora:
         print(f"LoRA Path: {LORA_PATH}")
     print(f"Output Dir: {OUTPUT_DIR}")
     print(f"Device: {DEVICE}")
@@ -723,7 +740,7 @@ def main():
 
     # Generate timestamp for file naming
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_prefix = "lora" if USE_LORA else "base"
+    model_prefix = "lora" if use_lora else "base"
 
     # Save results with model type and timestamp
     output_file = os.path.join(OUTPUT_DIR, f"{model_prefix}_model_iou_results_{timestamp}.json")
@@ -734,7 +751,8 @@ def main():
             'device': DEVICE,
             'total_duration': total_time,
             'base_model': BASE_MODEL_PATH,
-            'use_lora': USE_LORA,
+            'evaluation_mode': EVALUATION_MODE,
+            'use_lora': use_lora,
             'lora_path': lora_path,
             'model_type': model_type,
             'visualization_dir': visualization_dir,
