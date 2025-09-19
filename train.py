@@ -56,9 +56,9 @@ LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
 LORA_METHOD = "lora" # Training method identifier for output directory
 
 # Multi-GPU Training hyperparameters (optimized for 4x V100)
-LEARNING_RATE = 2e-7
-BATCH_SIZE = 2  # Per-GPU batch size (increased for multi-GPU)
-GRAD_ACCUM_STEPS = 2  # Reduced due to more GPUs
+LEARNING_RATE = 5e-6  # Increased for better LoRA convergence
+BATCH_SIZE = 6  # Maximized per-GPU batch size for V100 32GB
+GRAD_ACCUM_STEPS = 1  # Simplified for faster convergence
 NUM_EPOCHS = 0.5
 
 # Examples for different configurations:
@@ -72,7 +72,7 @@ NUM_EPOCHS = 0.5
 # Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}
 lr_str = f"{LEARNING_RATE:.0e}".replace('e-0', 'e-').replace('e+0', 'e+')  # Clean format: 2e-7
 ep_str = f"{NUM_EPOCHS}".replace('.', 'p')  # Replace . with p: 0.5 -> 0p5
-effective_batch_size = BATCH_SIZE * GRAD_ACCUM_STEPS
+effective_batch_size = 4 * BATCH_SIZE * GRAD_ACCUM_STEPS  # 4 GPUs * 6 batch * 1 accum = 24
 
 OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}_lr{lr_str}_ep{ep_str}_bs{effective_batch_size}"
 RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}-lr{lr_str}-bs{effective_batch_size}"
