@@ -56,10 +56,10 @@ LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
 LORA_METHOD = "lora" # Training method identifier for output directory
 
 # Multi-GPU Training hyperparameters (optimized for 4x V100)
-LEARNING_RATE = 5e-6  # Increased for better LoRA convergence
+LEARNING_RATE = 1e-5  # Increased for better LoRA convergence
 BATCH_SIZE = 4  # Reduced to avoid CUDA memory allocation failures
 GRAD_ACCUM_STEPS = 1  # Simplified for faster convergence
-NUM_EPOCHS = 0.5
+NUM_EPOCHS = 3.0
 
 # Examples for different configurations:
 # Current (r=32, lr=2e-7, ep=0.5, bs=4): ./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4
