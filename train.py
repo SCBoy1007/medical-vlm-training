@@ -196,27 +196,41 @@ def print_gpu_memory_usage(logger, stage=""):
         logger.info("=" * 50)
 
 def setup_logging():
-    """Setup comprehensive logging to file and console"""
-    # Create logs directory
-    log_dir = Path("./logs")
-    log_dir.mkdir(exist_ok=True)
+    """Setup comprehensive logging to file and console (master process only writes to file)"""
+    # Get distributed training info
+    rank = int(os.environ.get('RANK', 0))
 
-    # Create log filename with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = log_dir / f"training_{DATASET_TYPE}_{timestamp}.log"
+    # Create logs directory (only from master process)
+    if rank == 0:
+        log_dir = Path("./logs")
+        log_dir.mkdir(exist_ok=True)
 
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file, mode='w'),
-            logging.StreamHandler(sys.stdout)
-        ]
-    )
+        # Create log filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_file = log_dir / f"training_{DATASET_TYPE}_{timestamp}.log"
 
-    logger = logging.getLogger(__name__)
-    logger.info(f"Logging initialized. Log file: {log_file}")
+        # Master process: log to both file and console
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(log_file, mode='w'),
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
+
+        logger = logging.getLogger(__name__)
+        logger.info(f"Logging initialized. Log file: {log_file}")
+    else:
+        # Worker processes: only log to console with rank info
+        logging.basicConfig(
+            level=logging.WARNING,  # Reduce verbosity for worker processes
+            format=f'[GPU-{rank}] %(asctime)s - %(levelname)s - %(message)s',
+            handlers=[logging.StreamHandler(sys.stdout)]
+        )
+
+        logger = logging.getLogger(__name__)
+
     return logger
 
 def main():
