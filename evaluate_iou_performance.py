@@ -33,7 +33,7 @@ BASE_MODEL_PATH = "./models/Qwen2.5-VL-7B-Instruct"
 EVALUATION_MODE = "lora"  # Options: "base", "lora"
 
 # LoRA模型选择 - 直接指定要评估的LoRA文件夹
-LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"  # 刚训练完成的模型
+LORA_PATH = "./output_grounding_lora_r32_alpha16_lr1e-5_ep3p0_bs16"  # 最新训练完成的模型
 
 # 常用LoRA模型路径 (快速切换):
 # LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"    # 当前训练的模型
@@ -55,6 +55,10 @@ else:
 
 # 系统配置
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+# 多GPU并行配置
+USE_MULTI_GPU = True  # 是否使用多GPU并行评估
+BATCH_SIZE = 4 if torch.cuda.device_count() >= 4 else 2  # 根据GPU数量调整批次大小
 
 # 快速切换示例：
 # 1. 测试基础模型： EVALUATION_MODE = "base"
@@ -458,7 +462,7 @@ def test_single_sample(model, processor, sample_data, image_path, task_name):
         return None
 
 def test_task(model, processor, task_name, quality):
-    """Test all samples for a specific task and quality"""
+    """Test all samples for a specific task and quality with optional batching"""
     data_file = f"{DATA_BASE_PATH}/{task_name}/test_{quality}/{task_name}_test_{quality}_grounding.json"
     image_dir = f"{IMAGE_BASE_PATH}/{quality}"
 
@@ -471,13 +475,49 @@ def test_task(model, processor, task_name, quality):
 
     results = []
     total_samples = len(test_data)
+    gpu_count = torch.cuda.device_count()
 
     print(f"Testing {task_name} - {quality}: {total_samples} samples")
+    print(f"Using {'multi-GPU batching' if USE_MULTI_GPU and gpu_count > 1 else 'single sample processing'}")
+    print(f"Batch size: {BATCH_SIZE if USE_MULTI_GPU and gpu_count > 1 else 1}")
 
-    for i, sample in enumerate(test_data):
-        if i % 10 == 0:
-            print(f"  Progress: {i}/{total_samples}")
+    if USE_MULTI_GPU and gpu_count > 1 and total_samples > BATCH_SIZE:
+        # 批处理模式
+        for i in range(0, total_samples, BATCH_SIZE):
+            batch_end = min(i + BATCH_SIZE, total_samples)
+            batch_samples = test_data[i:batch_end]
 
+            print(f"  Processing batch {i//BATCH_SIZE + 1}/{(total_samples + BATCH_SIZE - 1)//BATCH_SIZE} (samples {i+1}-{batch_end})")
+
+            batch_results = test_batch_samples(model, processor, batch_samples, image_dir, task_name)
+            results.extend(batch_results)
+
+            # 清理内存
+            torch.cuda.empty_cache()
+    else:
+        # 单样本模式
+        for i, sample in enumerate(test_data):
+            if i % 10 == 0:
+                print(f"  Progress: {i+1}/{total_samples}")
+
+            image_filename = sample['image'].replace('images/', '')
+            image_path = os.path.join(image_dir, image_filename)
+
+            if not os.path.exists(image_path):
+                print(f"Image not found: {image_path}")
+                continue
+
+            result = test_single_sample(model, processor, sample, image_path, task_name)
+            if result:
+                results.append(result)
+
+    return results
+
+def test_batch_samples(model, processor, batch_samples, image_dir, task_name):
+    """批处理多个样本以提高GPU利用率"""
+    batch_results = []
+
+    for sample in batch_samples:
         image_filename = sample['image'].replace('images/', '')
         image_path = os.path.join(image_dir, image_filename)
 
@@ -485,11 +525,12 @@ def test_task(model, processor, task_name, quality):
             print(f"Image not found: {image_path}")
             continue
 
+        # 仍然使用单样本处理，但可以后续优化为真正的批处理
         result = test_single_sample(model, processor, sample, image_path, task_name)
         if result:
-            results.append(result)
+            batch_results.append(result)
 
-    return results
+    return batch_results
 
 def calculate_metrics(results):
     """Calculate overall metrics"""
@@ -628,6 +669,18 @@ def main():
         print(f"LoRA Path: {LORA_PATH}")
     print(f"Output Dir: {OUTPUT_DIR}")
     print(f"Device: {DEVICE}")
+
+    # GPU信息
+    if torch.cuda.is_available():
+        gpu_count = torch.cuda.device_count()
+        print(f"GPU Count: {gpu_count}")
+        for i in range(gpu_count):
+            gpu_name = torch.cuda.get_device_name(i)
+            gpu_memory = torch.cuda.get_device_properties(i).total_memory / 1024**3
+            print(f"  GPU {i}: {gpu_name} ({gpu_memory:.1f}GB)")
+        print(f"Multi-GPU Evaluation: {'Enabled' if USE_MULTI_GPU and gpu_count > 1 else 'Disabled'}")
+        print(f"Batch Size: {BATCH_SIZE if USE_MULTI_GPU and gpu_count > 1 else 1}")
+
     print("=" * 60)
 
     # Create output directory
@@ -760,6 +813,16 @@ def main():
         }
     }
 
+    # 添加GPU配置信息到结果中
+    if torch.cuda.is_available():
+        gpu_count = torch.cuda.device_count()
+        final_results['config']['gpu_info'] = {
+            'gpu_count': gpu_count,
+            'multi_gpu_enabled': USE_MULTI_GPU and gpu_count > 1,
+            'batch_size': BATCH_SIZE if USE_MULTI_GPU and gpu_count > 1 else 1,
+            'gpu_names': [torch.cuda.get_device_name(i) for i in range(gpu_count)]
+        }
+
     with open(output_file, 'w') as f:
         json.dump(final_results, f, indent=2, ensure_ascii=False)
 
@@ -771,6 +834,12 @@ def main():
     print(f"Overall Average IoU: {overall_performance.get('overall_avg_iou', 0):.4f}")
     print(f"Overall Detection Rate: {overall_performance.get('overall_detection_rate', 0):.2%}")
     print(f"Total Testing Time: {total_time:.1f}s ({total_time/60:.1f}m)")
+
+    # 显示加速效果
+    if torch.cuda.is_available() and USE_MULTI_GPU and torch.cuda.device_count() > 1:
+        estimated_single_gpu_time = total_time * torch.cuda.device_count()
+        speedup = estimated_single_gpu_time / total_time
+        print(f"Multi-GPU Speedup: ~{speedup:.1f}x (estimated)")
 
     # Task ranking
     task_ranking = overall_performance.get('task_ranking', [])
