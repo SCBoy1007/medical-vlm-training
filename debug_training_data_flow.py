@@ -42,8 +42,7 @@ def debug_data_loading():
         version="qwen",
         freeze_backbone=False,
         tune_mm_mlp_adapter=True,
-        tune_mm_llm=True,
-        model_type="qwen2.5vl"
+        tune_mm_llm=True
     )
 
     data_args = DataArguments(
