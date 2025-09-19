@@ -251,8 +251,12 @@ def main():
     logger.info("MEDICAL VLM TRAINING STARTED")
     logger.info("="*60)
     logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-7B | Mode: {LORA_METHOD.upper()} Fine-tuning")
-    logger.info(f"Learning Rate: {LEARNING_RATE} | Batch Size: {BATCH_SIZE} | Epochs: {NUM_EPOCHS}")
-    logger.info(f"LoRA Config: r={LORA_R}, alpha={LORA_ALPHA} | GPU: {torch.cuda.get_device_name() if torch.cuda.is_available() else 'CPU'}")
+    # Calculate GPU count for accurate batch size display
+    world_size = int(os.environ.get('WORLD_SIZE', 1))
+    current_effective_batch = world_size * BATCH_SIZE * GRAD_ACCUM_STEPS
+    logger.info(f"Learning Rate: {LEARNING_RATE} | Per-GPU Batch: {BATCH_SIZE} | Effective Batch: {current_effective_batch} | Epochs: {NUM_EPOCHS}")
+    gpu_info = f"{world_size}x {torch.cuda.get_device_name()}" if torch.cuda.is_available() and world_size > 1 else torch.cuda.get_device_name() if torch.cuda.is_available() else 'CPU'
+    logger.info(f"LoRA Config: r={LORA_R}, alpha={LORA_ALPHA} | GPU: {gpu_info}")
     logger.info(f"Output Directory: {OUTPUT_DIR}")
     print_gpu_memory_usage(logger, "Initial State")
     logger.info("="*60)
