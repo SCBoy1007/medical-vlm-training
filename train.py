@@ -48,18 +48,18 @@ def auto_launch_distributed():
 DATASET_TYPE = "grounding"  # Options: "grounding", "text", "text_grounding"
 
 # Model configuration
-MODEL_NAME = "./models/Qwen2.5-VL-7B-Instruct"
+MODEL_NAME = "Qwen/Qwen2.5-VL-3B-Instruct"  # Use HuggingFace 3B model directly
 
-# LoRA configuration
-LORA_R = 32          # LoRA rank: 16 (faster), 32 (balanced), 64 (better quality)
-LORA_ALPHA = 16      # LoRA alpha: typically r/2 or r
-LORA_METHOD = "lora" # Training method identifier for output directory
+# Full parameter training configuration (no LoRA)
+LORA_R = 0           # No LoRA rank
+LORA_ALPHA = 0       # No LoRA alpha
+LORA_METHOD = "full" # Full parameter training identifier
 
-# Multi-GPU Training hyperparameters (optimized for 4x V100)
-LEARNING_RATE = 1e-5  # Increased for better LoRA convergence
-BATCH_SIZE = 4  # Reduced to avoid CUDA memory allocation failures
-GRAD_ACCUM_STEPS = 1  # Simplified for faster convergence
-NUM_EPOCHS = 3.0
+# Multi-GPU Training hyperparameters (optimized for 4x V100, full parameter training)
+LEARNING_RATE = 2e-6  # Lower learning rate for full parameter training
+BATCH_SIZE = 2  # Reduced batch size for full parameter training
+GRAD_ACCUM_STEPS = 2  # Gradient accumulation to maintain effective batch size
+NUM_EPOCHS = 2.0
 
 # Examples for different configurations:
 # Current (r=32, lr=2e-7, ep=0.5, bs=4): ./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4
@@ -72,7 +72,7 @@ NUM_EPOCHS = 3.0
 # Format: ./output_{dataset}_{method}_r{rank}_alpha{alpha}_lr{lr}_ep{epochs}_bs{batch_size}
 lr_str = f"{LEARNING_RATE:.0e}".replace('e-0', 'e-').replace('e+0', 'e+')  # Clean format: 2e-7
 ep_str = f"{NUM_EPOCHS}".replace('.', 'p')  # Replace . with p: 0.5 -> 0p5
-effective_batch_size = 4 * BATCH_SIZE * GRAD_ACCUM_STEPS  # 4 GPUs * 4 batch * 1 accum = 16
+effective_batch_size = 4 * BATCH_SIZE * GRAD_ACCUM_STEPS  # 4 GPUs * 2 batch * 2 accum = 16
 
 OUTPUT_DIR = f"./output_{DATASET_TYPE}_{LORA_METHOD}_r{LORA_R}_alpha{LORA_ALPHA}_lr{lr_str}_ep{ep_str}_bs{effective_batch_size}"
 RUN_NAME = f"qwen2vl-medical-{DATASET_TYPE}-{LORA_METHOD}-r{LORA_R}-lr{lr_str}-bs{effective_batch_size}"
@@ -81,7 +81,7 @@ MIN_PIXELS = 16*28*28      # 12,544 pixels (keep same)
 
 # Hardware configuration
 USE_DEEPSPEED = True  # Enable DeepSpeed ZeRO for multi-GPU
-DEEPSPEED_CONFIG = "./scripts/zero2.json"  # ZeRO-2 for 4x V100
+DEEPSPEED_CONFIG = "./scripts/zero3.json"  # ZeRO-3 for full parameter training
 
 # Simplified: No longer needed with 700x1400 resized images
 # ===================================
@@ -264,7 +264,7 @@ def main():
     logger.info("="*60)
     logger.info("MEDICAL VLM TRAINING STARTED")
     logger.info("="*60)
-    logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-7B | Mode: {LORA_METHOD.upper()} Fine-tuning")
+    logger.info(f"Dataset: {DATASET_TYPE} | Model: Qwen2.5-VL-3B | Mode: {LORA_METHOD.upper()} Parameter Fine-tuning")
     # Calculate GPU count for accurate batch size display
     world_size = int(os.environ.get('WORLD_SIZE', 1))
     current_effective_batch = world_size * BATCH_SIZE * GRAD_ACCUM_STEPS
@@ -294,10 +294,10 @@ def main():
     model_args = ModelArguments(
         model_name_or_path=MODEL_NAME,
         version="qwen",
-        freeze_backbone=False,  # LoRA模式不需要冻结backbone
+        freeze_backbone=False,  # 全参数微调不冻结backbone
         tune_mm_mlp_adapter=True,
-        tune_mm_llm=True,       # 启用LLM训练 (LoRA关键参数)
-        tune_mm_vision=False,   # 医学图像分析通常冻结vision encoder
+        tune_mm_llm=True,       # 启用LLM训练 (全参数微调)
+        tune_mm_vision=True,    # 全参数微调启用vision encoder训练
         tune_mm_mlp=True,       # 启用multimodal projector
         vision_tower=None,
         mm_vision_select_layer=-2,
@@ -336,10 +336,10 @@ def main():
         double_quant=True,
         quant_type="nf4",
         bits=16,
-        lora_enable=True,   # 启用LoRA微调
-        lora_r=LORA_R,      # LoRA rank (configurable)
-        lora_alpha=LORA_ALPHA,  # LoRA alpha参数 (configurable)
-        lora_dropout=0.05,
+        lora_enable=False,  # 禁用LoRA，使用全参数微调
+        lora_r=LORA_R,      # Not used when LoRA disabled
+        lora_alpha=LORA_ALPHA,  # Not used when LoRA disabled
+        lora_dropout=0.05,  # Not used when LoRA disabled
         lora_weight_path="",
         lora_bias="none",
         mm_projector_lr=None,
