@@ -26,20 +26,18 @@ import random
 
 # ====== 配置区域 - 直接修改这里的配置 ======
 #
-# 基础模型路径
-BASE_MODEL_PATH = "./models/Qwen2.5-VL-7B-Instruct"
+# 基础模型路径 - 使用HuggingFace 3B模型
+BASE_MODEL_PATH = "Qwen/Qwen2.5-VL-3B-Instruct"
 
-# LoRA配置 - 选择要评估的模型
-EVALUATION_MODE = "lora"  # Options: "base", "lora"
+# 评估模式配置 - 选择要评估的模型类型
+EVALUATION_MODE = "full_finetuned"  # Options: "base", "lora", "full_finetuned"
 
-# LoRA模型选择 - 直接指定要评估的LoRA文件夹
-LORA_PATH = "./output_grounding_lora_r32_alpha16_lr1e-5_ep3p0_bs16"  # 最新训练完成的模型
+# 全参数微调模型路径 - 服务器上的训练输出路径
+FULL_FINETUNED_PATH = "./output_grounding_full_r0_alpha0_lr2e-6_ep2p0_bs16"
+# 这个路径应该和train.py中的OUTPUT_DIR一致
 
-# 常用LoRA模型路径 (快速切换):
-# LORA_PATH = "./output_grounding_lora_r32_alpha16_lr2e-7_ep0p5_bs4"    # 当前训练的模型
-# LORA_PATH = "./output_grounding_lora_r16_alpha8_lr1e-6_ep0p5_bs4"     # 小rank快速模型
-# LORA_PATH = "./output_grounding_lora_r64_alpha32_lr1e-7_ep1p0_bs4"    # 大rank高质量模型
-# LORA_PATH = "./output_grounding_linear_r0_alpha0_lr1e-5_ep1p0_bs4"    # 线性探测模型
+# LoRA模型路径 (保留用于以后的LoRA实验)
+# LORA_PATH = "./output_grounding_lora_r32_alpha16_lr1e-5_ep3p0_bs16"
 
 # 数据和输出路径
 DATA_BASE_PATH = "./data/datasets_grounding"
@@ -47,8 +45,12 @@ IMAGE_BASE_PATH = "./data/images/test"
 
 # 动态输出目录 - 根据评估模型自动命名
 if EVALUATION_MODE == "base":
-    OUTPUT_DIR = "./iou_evaluation_results/base_model"
-else:
+    OUTPUT_DIR = "./iou_evaluation_results/base_model_3b"
+elif EVALUATION_MODE == "full_finetuned":
+    # 从全参数微调路径提取模型名称
+    model_name = FULL_FINETUNED_PATH.split("/")[-1] if "/" in FULL_FINETUNED_PATH else FULL_FINETUNED_PATH
+    OUTPUT_DIR = f"./iou_evaluation_results/{model_name}"
+else:  # LoRA mode
     # 从LoRA路径提取模型名称
     model_name = LORA_PATH.replace("./output_", "").replace("/", "_")
     OUTPUT_DIR = f"./iou_evaluation_results/{model_name}"
@@ -623,15 +625,35 @@ def calculate_overall_performance(all_results):
     }
 
 def load_model(model_path, lora_path=None):
-    """Load base model and optionally apply LoRA adapter"""
-    print(f"Loading base model from: {model_path}")
+    """Load model - supports base model, full fine-tuned model, or LoRA adapter"""
+    print(f"Loading model from: {model_path}")
     try:
+        # 判断是否为本地微调后的模型还是HuggingFace模型
+        if os.path.exists(model_path) and os.path.isdir(model_path):
+            print("检测到本地模型路径，加载全参数微调模型...")
+            model_type = "Full Fine-tuned Model"
+        elif model_path.startswith("Qwen/"):
+            print("检测到HuggingFace模型路径，从HuggingFace下载...")
+            model_type = "Base Model (HuggingFace)"
+        else:
+            print("尝试加载模型...")
+            model_type = "Unknown Model Type"
+
+        # 加载模型
         model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             model_path,
             torch_dtype=torch.bfloat16,
-            device_map="auto"
+            device_map="auto",
+            trust_remote_code=True  # 添加这个参数以支持自定义模型
         )
-        processor = AutoProcessor.from_pretrained(model_path, use_fast=False)
+
+        # 尝试从同一路径加载processor，如果失败则使用基础路径
+        try:
+            processor = AutoProcessor.from_pretrained(model_path, use_fast=False, trust_remote_code=True)
+        except:
+            print("从模型路径加载processor失败，使用基础模型processor...")
+            base_model_name = "Qwen/Qwen2.5-VL-3B-Instruct"
+            processor = AutoProcessor.from_pretrained(base_model_name, use_fast=False, trust_remote_code=True)
 
         # Apply LoRA adapter if provided
         if lora_path and os.path.exists(lora_path):
@@ -640,33 +662,46 @@ def load_model(model_path, lora_path=None):
                 from peft import PeftModel
                 model = PeftModel.from_pretrained(model, lora_path)
                 print("✓ LoRA adapter loaded successfully!")
-                model_type = "LoRA Fine-tuned"
+                model_type = "LoRA Fine-tuned Model"
             except Exception as e:
                 print(f"Warning: Failed to load LoRA adapter: {e}")
                 print("Continuing with base model...")
-                model_type = "Base Model"
-        else:
-            model_type = "Base Model"
 
         print(f"✓ {model_type} loaded successfully!")
         return model, processor, model_type
     except Exception as e:
         print(f"Failed to load model: {e}")
+        import traceback
+        traceback.print_exc()
         return None, None, None
 
 def main():
     """Main function - IoU performance evaluation for medical VLM tasks"""
-    # 根据配置设置LoRA路径
-    use_lora = EVALUATION_MODE == "lora"
-    lora_path = LORA_PATH if use_lora else None
+    # 根据配置确定模型路径
+    if EVALUATION_MODE == "base":
+        model_path = BASE_MODEL_PATH
+        lora_path = None
+        print(f"评估模式: 基础模型")
+    elif EVALUATION_MODE == "full_finetuned":
+        model_path = FULL_FINETUNED_PATH
+        lora_path = None
+        print(f"评估模式: 全参数微调模型")
+    elif EVALUATION_MODE == "lora":
+        model_path = BASE_MODEL_PATH
+        lora_path = LORA_PATH
+        print(f"评估模式: LoRA微调模型")
+    else:
+        raise ValueError(f"未知的评估模式: {EVALUATION_MODE}")
 
     print("=" * 60)
     print("IoU性能评估")
     print("=" * 60)
-    print(f"Base Model: {BASE_MODEL_PATH}")
-    print(f"Evaluation Mode: {EVALUATION_MODE}")
-    if use_lora:
-        print(f"LoRA Path: {LORA_PATH}")
+    print(f"模型路径: {model_path}")
+    print(f"评估模式: {EVALUATION_MODE}")
+    if EVALUATION_MODE == "lora":
+        print(f"LoRA路径: {lora_path}")
+    elif EVALUATION_MODE == "full_finetuned":
+        print(f"全参数微调模型路径: {model_path}")
     print(f"Output Dir: {OUTPUT_DIR}")
     print(f"Device: {DEVICE}")
 
@@ -687,7 +722,7 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     # Load model
-    model, processor, model_type = load_model(BASE_MODEL_PATH, lora_path)
+    model, processor, model_type = load_model(model_path, lora_path)
     if model is None:
         return
 

@@ -98,13 +98,27 @@ class TrainingMonitorCallback(TrainerCallback):
         self.world_size = int(os.environ.get('WORLD_SIZE', 1))
         self.is_distributed = self.world_size > 1
 
+        # Peak memory tracking
+        self.peak_memory_allocated = 0.0
+        self.peak_memory_reserved = 0.0
+        self.initial_memory = 0.0
+
     def on_train_begin(self, args, state, control, **kwargs):
         import time
         self.start_time = time.time()
         self.last_log_time = self.start_time
+
+        # Initialize peak memory tracking
+        if torch.cuda.is_available():
+            self.initial_memory = torch.cuda.memory_allocated() / (1024**3)
+            self.peak_memory_allocated = self.initial_memory
+            self.peak_memory_reserved = torch.cuda.memory_reserved() / (1024**3)
+
         if self.rank == 0:  # Only log from master process
             gpu_info = f"{self.world_size}x GPU" if self.is_distributed else "Single GPU"
             self.logger.info(f"🚀 Training started on {gpu_info}...")
+            if torch.cuda.is_available():
+                self.logger.info(f"📊 Peak memory tracking initialized: {self.initial_memory:.2f}GB baseline")
 
     def _log_progress(self, state, logs=None):
         """Helper method to log training progress"""
@@ -150,20 +164,31 @@ class TrainingMonitorCallback(TrainerCallback):
             f"Elapsed: {format_time(elapsed_time)} | ETA: {format_time(eta)}"
         )
 
+        # Update peak memory tracking
+        self._update_peak_memory()
+
         # GPU memory update (less frequent to avoid spam)
-        if current_step % 25 == 0 and self.rank == 0:
+        if current_step % 25 == 0:
             if torch.cuda.is_available():
-                if self.is_distributed:
-                    # Show average memory across all GPUs
-                    total_memory = 0
-                    for i in range(min(self.world_size, torch.cuda.device_count())):
-                        allocated = torch.cuda.memory_allocated(i) / (1024**3)
-                        total_memory += allocated
-                    avg_memory = total_memory / self.world_size
-                    self.logger.info(f"Avg GPU Memory: {avg_memory:.1f}GB across {self.world_size} GPUs")
-                else:
-                    allocated = torch.cuda.memory_allocated() / (1024**3)
-                    self.logger.info(f"GPU Memory: {allocated:.1f}GB")
+                current_allocated = torch.cuda.memory_allocated() / (1024**3)
+                current_reserved = torch.cuda.memory_reserved() / (1024**3)
+
+                self.logger.info(
+                    f"📊 GPU Memory: Current {current_allocated:.1f}GB | "
+                    f"Peak {self.peak_memory_allocated:.1f}GB | "
+                    f"Reserved {current_reserved:.1f}GB (Peak {self.peak_memory_reserved:.1f}GB)"
+                )
+
+    def _update_peak_memory(self):
+        """Update peak memory tracking"""
+        if torch.cuda.is_available():
+            current_allocated = torch.cuda.memory_allocated() / (1024**3)
+            current_reserved = torch.cuda.memory_reserved() / (1024**3)
+
+            if current_allocated > self.peak_memory_allocated:
+                self.peak_memory_allocated = current_allocated
+            if current_reserved > self.peak_memory_reserved:
+                self.peak_memory_reserved = current_reserved
 
     def on_log(self, args, state, control, logs=None, **kwargs):
         """Called when logging occurs - this has the complete data we need"""
@@ -176,6 +201,25 @@ class TrainingMonitorCallback(TrainerCallback):
             total_time = time.time() - self.start_time
             gpu_info = f"on {self.world_size} GPUs" if self.is_distributed else ""
             self.logger.info(f"✅ Training completed {gpu_info} in {total_time/60:.1f} minutes")
+
+            # Log final peak memory statistics
+            if torch.cuda.is_available():
+                current_allocated = torch.cuda.memory_allocated() / 1024**3
+                current_reserved = torch.cuda.memory_reserved() / 1024**3
+                total_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
+
+                self.logger.info("=" * 60)
+                self.logger.info("=== FINAL GPU MEMORY USAGE SUMMARY ===")
+                self.logger.info(f"Peak Memory Allocated: {self.peak_memory_allocated:.2f} GB")
+                self.logger.info(f"Peak Memory Reserved: {self.peak_memory_reserved:.2f} GB")
+                self.logger.info(f"Final Allocated Memory: {current_allocated:.2f} GB")
+                self.logger.info(f"Final Reserved Memory: {current_reserved:.2f} GB")
+                self.logger.info(f"Total GPU Memory: {total_memory:.2f} GB")
+                peak_efficiency = (self.peak_memory_allocated/self.peak_memory_reserved*100) if self.peak_memory_reserved > 0 else 0.0
+                peak_utilization = (self.peak_memory_reserved/total_memory*100) if total_memory > 0 else 0.0
+                self.logger.info(f"Peak Memory Efficiency: {peak_efficiency:.1f}% (allocated/reserved)")
+                self.logger.info(f"Peak GPU Utilization: {peak_utilization:.1f}% (peak reserved/total)")
+                self.logger.info("=" * 60)
 
 def print_gpu_memory_usage(logger, stage=""):
     """打印详细的GPU显存使用情况"""
