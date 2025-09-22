@@ -549,7 +549,12 @@ def main():
         else:
             trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             total_params = sum(p.numel() for p in model.parameters())
-            logger.info(f"Trainable: {trainable_params:,}/{total_params:,} ({trainable_params/total_params*100:.2f}%)")
+            if total_params > 0:
+                percentage = trainable_params / total_params * 100
+                logger.info(f"Trainable: {trainable_params:,}/{total_params:,} ({percentage:.2f}%)")
+            else:
+                logger.info(f"Trainable: {trainable_params:,} (ZeRO-3 mode: total params distributed across GPUs)")
+                logger.info("Note: In ZeRO-3, individual GPU cannot see all parameters. Full statistics available after training.")
 
         # Forward pass debugging (commented out for cleaner logs)
         # first_forward_done = [False]
