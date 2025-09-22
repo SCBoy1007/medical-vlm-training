@@ -828,7 +828,16 @@ def main():
 
     # Generate timestamp for file naming
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_prefix = "lora" if use_lora else "base"
+
+    # Determine model prefix based on evaluation mode
+    if EVALUATION_MODE == "base":
+        model_prefix = "base"
+    elif EVALUATION_MODE == "lora":
+        model_prefix = "lora"
+    elif EVALUATION_MODE == "full_finetuned":
+        model_prefix = "full_finetuned"
+    else:
+        model_prefix = "unknown"
 
     # Save results with model type and timestamp
     output_file = os.path.join(OUTPUT_DIR, f"{model_prefix}_model_iou_results_{timestamp}.json")
@@ -840,8 +849,9 @@ def main():
             'total_duration': total_time,
             'base_model': BASE_MODEL_PATH,
             'evaluation_mode': EVALUATION_MODE,
-            'use_lora': use_lora,
-            'lora_path': lora_path,
+            'model_path': model_path,
+            'lora_path': lora_path if EVALUATION_MODE == "lora" else None,
+            'full_finetuned_path': FULL_FINETUNED_PATH if EVALUATION_MODE == "full_finetuned" else None,
             'model_type': model_type,
             'visualization_dir': visualization_dir,
             'timestamp': timestamp
